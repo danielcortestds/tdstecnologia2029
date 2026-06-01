@@ -1,0 +1,183 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using TdsTecnologia2027.Web.Models;
+
+namespace TdsTecnologia2027.Web.Data;
+
+public static class SeedData
+{
+    public static async Task InitializeAsync(IServiceProvider serviceProvider, IConfiguration configuration)
+    {
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+        // 1) Criar role Admin se não existir
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+
+        // 2) Criar usuário admin inicial se não existir
+        var adminEmail = configuration["AdminSeed:Email"] ?? "admin@tdstecnologia.com.br";
+        var adminSenha = configuration["AdminSeed:Senha"] ?? "Admin@123";
+
+        var adminExistente = await userManager.FindByEmailAsync(adminEmail);
+        if (adminExistente == null)
+        {
+            var novoAdmin = new IdentityUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var resultado = await userManager.CreateAsync(novoAdmin, adminSenha);
+            if (resultado.Succeeded)
+            {
+                await userManager.AddToRoleAsync(novoAdmin, "Admin");
+            }
+        }
+
+        // 3) Popular cursos iniciais (apenas se a tabela estiver vazia)
+        if (!await db.Cursos.AnyAsync())
+        {
+            var cursos = new List<Curso>
+            {
+                new()
+                {
+                    Slug = "powerbi",
+                    Titulo = "Power BI Essencial",
+                    Categoria = "Análise de Dados",
+                    Icone = "fa-solid fa-chart-bar",
+                    DescricaoCurta = "Domine a ferramenta de BI mais usada nas empresas. Dashboards profissionais, DAX e relatórios para decisões estratégicas.",
+                    Descricao = "O Power BI é a ferramenta de Business Intelligence mais utilizada nas empresas do mundo. Você aprende do zero a construir dashboards profissionais, trabalhar com DAX, conectar fontes de dados e gerar relatórios que suportam decisões estratégicas.",
+                    CargaHoraria = 40,
+                    Preco = 1490.00m,
+                    DataInicio = new DateTime(2026, 5, 21),
+                    PillSecundaria = "10x sem juros",
+                    IconePillSecundaria = "fa-solid fa-credit-card",
+                    Topicos = string.Join('\n', new[]
+                    {
+                        "Construção de dashboards interativos e profissionais",
+                        "Linguagem DAX — medidas, colunas calculadas e funções avançadas",
+                        "Conexão com Excel, SQL, APIs e Azure",
+                        "Publicação e compartilhamento no Power BI Service",
+                        "Projeto prático com dados reais de negócio",
+                        "Certificado oficial Microsoft ao concluir"
+                    }),
+                    WhatsAppMensagem = "Olá, quero saber mais sobre o Power BI Essencial!",
+                    Ordem = 1,
+                    Ativo = true
+                },
+                new()
+                {
+                    Slug = "python",
+                    Titulo = "Python para Análise de Dados Aplicada",
+                    Categoria = "Python & Dados",
+                    Icone = "fa-brands fa-python",
+                    DescricaoCurta = "Pandas, NumPy, Matplotlib e Scikit-learn aplicados a casos reais de negócio. Do zero à análise preditiva com Python.",
+                    Descricao = "Python é a linguagem mais demandada pelo mercado de dados. Você aprende desde a sintaxe até análise exploratória, visualização de dados e introdução ao machine learning — com projetos reais do início ao fim.",
+                    CargaHoraria = 60,
+                    Preco = 1990.00m,
+                    DataInicio = new DateTime(2026, 5, 28),
+                    PillSecundaria = "10x sem juros",
+                    IconePillSecundaria = "fa-solid fa-credit-card",
+                    Topicos = string.Join('\n', new[]
+                    {
+                        "Python do zero — sintaxe, estruturas e lógica de programação",
+                        "Análise e manipulação de dados com Pandas e NumPy",
+                        "Visualização de dados com Matplotlib e Seaborn",
+                        "Introdução ao Machine Learning com Scikit-learn",
+                        "Automação de relatórios e pipelines de dados",
+                        "Certificado oficial Microsoft ao concluir"
+                    }),
+                    WhatsAppMensagem = "Olá, quero saber mais sobre Python para Análise de Dados!",
+                    Ordem = 2,
+                    Ativo = true
+                },
+                new()
+                {
+                    Slug = "agentes",
+                    Titulo = "Dados & Agentes de IA",
+                    Categoria = "Inteligência Artificial",
+                    Icone = "fa-solid fa-robot",
+                    DescricaoCurta = "Construa agentes inteligentes com dados reais. LLMs, automação e pipelines de IA para ambientes corporativos e governo.",
+                    Descricao = "Aprenda a construir agentes de inteligência artificial que trabalham com dados reais. O curso abrange LLMs, frameworks modernos de agentes e pipelines de IA aplicados a ambientes corporativos e órgãos de governo.",
+                    CargaHoraria = 80,
+                    Preco = 2990.00m,
+                    DataInicio = new DateTime(2026, 6, 4),
+                    PillSecundaria = "In Company",
+                    IconePillSecundaria = "fa-solid fa-building",
+                    Topicos = string.Join('\n', new[]
+                    {
+                        "Fundamentos de IA generativa e modelos de linguagem (LLMs)",
+                        "Criação de agentes autônomos com frameworks modernos",
+                        "Pipelines de dados para alimentar e orquestrar modelos de IA",
+                        "Integração com APIs de IA — Azure AI e OpenAI",
+                        "Casos de uso em ambientes corporativos e governo",
+                        "Certificado oficial Microsoft ao concluir"
+                    }),
+                    WhatsAppMensagem = "Olá, quero saber mais sobre Dados e Agentes de IA!",
+                    Ordem = 3,
+                    Ativo = true
+                },
+                new()
+                {
+                    Slug = "engenharia",
+                    Titulo = "Engenharia de Dados",
+                    Categoria = "Engenharia & Cloud",
+                    Icone = "fa-solid fa-database",
+                    DescricaoCurta = "Azure Data Factory, Databricks, ETL/ELT e arquiteturas modernas de dados. Formação avançada para engenheiros de dados.",
+                    Descricao = "Formação avançada para quem quer projetar e manter arquiteturas modernas de dados. Você trabalha com as principais ferramentas do ecossistema Microsoft Azure para construir pipelines robustos e escaláveis.",
+                    CargaHoraria = 80,
+                    Preco = 3490.00m,
+                    DataInicio = new DateTime(2026, 6, 11),
+                    PillSecundaria = "In Company",
+                    IconePillSecundaria = "fa-solid fa-building",
+                    Topicos = string.Join('\n', new[]
+                    {
+                        "Arquitetura moderna de dados — Data Lake, Warehouse e Lakehouse",
+                        "Pipelines ETL/ELT com Azure Data Factory",
+                        "Processamento de big data com Databricks e Apache Spark",
+                        "Orquestração e monitoramento com Azure Synapse Analytics",
+                        "Modelagem de dados e governança corporativa",
+                        "Certificado oficial Microsoft ao concluir"
+                    }),
+                    WhatsAppMensagem = "Olá, quero saber mais sobre Engenharia de Dados!",
+                    Ordem = 4,
+                    Ativo = true
+                },
+                new()
+                {
+                    Slug = "lgpd",
+                    Titulo = "LGPD — Privacidade e Proteção de Dados",
+                    Categoria = "Compliance",
+                    Icone = "fa-solid fa-shield-halved",
+                    DescricaoCurta = "Conformidade legal, gestão de dados pessoais, DPO e implementação da LGPD em empresas e órgãos públicos do MT.",
+                    Descricao = "Compreenda e aplique a Lei Geral de Proteção de Dados na prática. Formação ideal para gestores, jurídico, RH e TI que precisam adequar suas organizações à legislação e às melhores práticas de privacidade.",
+                    CargaHoraria = 32,
+                    Preco = 1290.00m,
+                    DataInicio = new DateTime(2026, 6, 18),
+                    PillSecundaria = "In Company",
+                    IconePillSecundaria = "fa-solid fa-building",
+                    Topicos = string.Join('\n', new[]
+                    {
+                        "Fundamentos da LGPD e direitos dos titulares de dados",
+                        "Papel e atribuições do DPO (Encarregado de Dados)",
+                        "Mapeamento e inventário de dados pessoais da organização",
+                        "Gestão de incidentes de segurança e notificações à ANPD",
+                        "Implementação de compliance em empresas e órgãos públicos",
+                        "Certificado de conclusão ao encerrar o curso"
+                    }),
+                    WhatsAppMensagem = "Olá, quero saber mais sobre LGPD Privacidade e Proteção de Dados!",
+                    Ordem = 5,
+                    Ativo = true
+                }
+            };
+
+            db.Cursos.AddRange(cursos);
+            await db.SaveChangesAsync();
+        }
+    }
+}

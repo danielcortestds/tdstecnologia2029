@@ -1,0 +1,74 @@
+## .NET
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+[Bb]in/
+[Oo]bj/
+.vs/
+*.swp
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## ASP.NET
+wwwroot/lib/
+
+## EF Core
+*.db
+*.db-shm
+*.db-wal
+
+## Logs
+*.log
+logs/
+
+## User secrets
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## node_modules (não há, mas por segurança)
+node_modules/
+
+## Canvas template — assets de demo (não usados pela aplicação)
+## Mantemos apenas: demos/chatbot/, css/, js/, images/*.{png,gif,svg,ico} da raiz
+src/TdsTecnologia2027.Web/wwwroot/demos/*
+!src/TdsTecnologia2027.Web/wwwroot/demos/chatbot
+src/TdsTecnologia2027.Web/wwwroot/include/
+src/TdsTecnologia2027.Web/wwwroot/images/about/
+src/TdsTecnologia2027.Web/wwwroot/images/appshowcase/
+src/TdsTecnologia2027.Web/wwwroot/images/author/
+src/TdsTecnologia2027.Web/wwwroot/images/blocks/
+src/TdsTecnologia2027.Web/wwwroot/images/blog/
+src/TdsTecnologia2027.Web/wwwroot/images/clients/
+src/TdsTecnologia2027.Web/wwwroot/images/events/
+src/TdsTecnologia2027.Web/wwwroot/images/extras/
+src/TdsTecnologia2027.Web/wwwroot/images/forms/
+src/TdsTecnologia2027.Web/wwwroot/images/grid.png
+src/TdsTecnologia2027.Web/wwwroot/images/icons/
+src/TdsTecnologia2027.Web/wwwroot/images/ils/
+src/TdsTecnologia2027.Web/wwwroot/images/intro/
+src/TdsTecnologia2027.Web/wwwroot/images/landing/
+src/TdsTecnologia2027.Web/wwwroot/images/lightbox/
+src/TdsTecnologia2027.Web/wwwroot/images/magazine/
+src/TdsTecnologia2027.Web/wwwroot/images/modals/
+src/TdsTecnologia2027.Web/wwwroot/images/others/
+src/TdsTecnologia2027.Web/wwwroot/images/parallax/
+src/TdsTecnologia2027.Web/wwwroot/images/portfolio/
+src/TdsTecnologia2027.Web/wwwroot/images/restaurant/
+src/TdsTecnologia2027.Web/wwwroot/images/services/
+src/TdsTecnologia2027.Web/wwwroot/images/shape-divider/
+src/TdsTecnologia2027.Web/wwwroot/images/shop/
+src/TdsTecnologia2027.Web/wwwroot/images/slider/
+src/TdsTecnologia2027.Web/wwwroot/images/splash/
+src/TdsTecnologia2027.Web/wwwroot/images/svg/
+src/TdsTecnologia2027.Web/wwwroot/images/team/
+src/TdsTecnologia2027.Web/wwwroot/images/testimonials/
+src/TdsTecnologia2027.Web/wwwroot/images/videos/
+src/TdsTecnologia2027.Web/wwwroot/images/wedding/

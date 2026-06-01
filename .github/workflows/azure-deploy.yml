@@ -1,0 +1,51 @@
+name: Deploy — TDS Tecnologia 2027 → Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:          # permite disparar manualmente pelo GitHub
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build .NET 8 e publica no Azure
+
+    steps:
+      # ── 1. Código-fonte ────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. SDK .NET 8 ──────────────────────────────────────────────────
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # ── 3. Restaurar dependências ──────────────────────────────────────
+      - name: Restore
+        run: dotnet restore src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj
+
+      # ── 4. Build Release ───────────────────────────────────────────────
+      - name: Build
+        run: |
+          dotnet build src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj \
+            --configuration Release \
+            --no-restore
+
+      # ── 5. Publicar ────────────────────────────────────────────────────
+      - name: Publish
+        run: |
+          dotnet publish src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj \
+            --configuration Release \
+            --no-build \
+            --output ./publish
+
+      # ── 6. Deploy → Azure App Service ─────────────────────────────────
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'tdstecnologia2028'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

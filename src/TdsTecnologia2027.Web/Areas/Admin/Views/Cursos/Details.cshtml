@@ -1,0 +1,116 @@
+@model TdsTecnologia2027.Web.Models.Curso
+@{
+    ViewData["Title"] = "Detalhes do Curso";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a href="/Admin/Cursos" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="mb-0 fw-bold">Detalhes do Curso</h4>
+    <span class="text-muted small">#@Model.Id</span>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width:700px;">
+    <div class="card-body p-4">
+        @if (!string.IsNullOrWhiteSpace(Model.ImagemUrl))
+        {
+            <img src="@Model.ImagemUrl" alt="@Model.Titulo" class="img-fluid rounded mb-4" style="max-height:200px; object-fit:cover; width:100%;">
+        }
+
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Título</dt>
+            <dd class="col-sm-8 fw-semibold">@Model.Titulo</dd>
+
+            <dt class="col-sm-4 text-muted">Slug</dt>
+            <dd class="col-sm-8"><code>@Model.Slug</code></dd>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Categoria))
+            {
+                <dt class="col-sm-4 text-muted">Categoria</dt>
+                <dd class="col-sm-8">@Model.Categoria</dd>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Icone))
+            {
+                <dt class="col-sm-4 text-muted">Ícone</dt>
+                <dd class="col-sm-8"><i class="@Model.Icone me-2"></i><code class="small">@Model.Icone</code></dd>
+            }
+
+            <dt class="col-sm-4 text-muted">Descrição curta (card)</dt>
+            <dd class="col-sm-8" style="white-space:pre-wrap">@Model.DescricaoCurta</dd>
+
+            <dt class="col-sm-4 text-muted">Descrição completa (modal)</dt>
+            <dd class="col-sm-8" style="white-space:pre-wrap">@Model.Descricao</dd>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Topicos))
+            {
+                <dt class="col-sm-4 text-muted">Tópicos</dt>
+                <dd class="col-sm-8">
+                    <ul class="mb-0 ps-3">
+                        @foreach (var t in Model.Topicos.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <li>@t.Trim()</li>
+                        }
+                    </ul>
+                </dd>
+            }
+
+            <dt class="col-sm-4 text-muted">Carga Horária</dt>
+            <dd class="col-sm-8">@Model.CargaHoraria horas</dd>
+
+            <dt class="col-sm-4 text-muted">Preço</dt>
+            <dd class="col-sm-8">R$ @Model.Preco.ToString("N2")</dd>
+
+            @if (Model.DataInicio.HasValue)
+            {
+                <dt class="col-sm-4 text-muted">Data de início</dt>
+                <dd class="col-sm-8">@Model.DataInicio.Value.ToString("dd/MM/yyyy")</dd>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.PillSecundaria))
+            {
+                <dt class="col-sm-4 text-muted">Pill secundária</dt>
+                <dd class="col-sm-8">@Model.PillSecundaria <span class="text-muted small">(@Model.IconePillSecundaria)</span></dd>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.WhatsAppMensagem))
+            {
+                <dt class="col-sm-4 text-muted">Mensagem WhatsApp</dt>
+                <dd class="col-sm-8 small">@Model.WhatsAppMensagem</dd>
+            }
+
+            <dt class="col-sm-4 text-muted">Ordem de exibição</dt>
+            <dd class="col-sm-8">@Model.Ordem</dd>
+
+            <dt class="col-sm-4 text-muted">Status</dt>
+            <dd class="col-sm-8">
+                @if (Model.Ativo)
+                {
+                    <span class="badge badge-ativo rounded-pill px-3">Ativo</span>
+                }
+                else
+                {
+                    <span class="badge badge-inativo rounded-pill px-3">Inativo</span>
+                }
+            </dd>
+
+            <dt class="col-sm-4 text-muted">Criado em</dt>
+            <dd class="col-sm-8">@Model.CriadoEm.ToString("dd/MM/yyyy HH:mm")</dd>
+
+            @if (Model.AtualizadoEm.HasValue)
+            {
+                <dt class="col-sm-4 text-muted">Atualizado em</dt>
+                <dd class="col-sm-8">@Model.AtualizadoEm.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+            }
+        </dl>
+
+        <div class="d-flex gap-2 mt-4 pt-3 border-top">
+            <a href="/Admin/Cursos/Edit/@Model.Id" class="btn btn-dark btn-sm">
+                <i class="bi bi-pencil me-1"></i>Editar
+            </a>
+            <a href="/Admin/Cursos/Delete/@Model.Id" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash me-1"></i>Desativar
+            </a>
+        </div>
+    </div>
+</div>

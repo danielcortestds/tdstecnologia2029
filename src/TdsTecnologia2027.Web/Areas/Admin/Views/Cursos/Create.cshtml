@@ -1,0 +1,27 @@
+@model TdsTecnologia2027.Web.Models.Curso
+@{
+    ViewData["Title"] = "Novo Curso";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a href="/Admin/Cursos" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="mb-0 fw-bold">Novo Curso</h4>
+</div>
+
+<div class="card border-0 shadow-sm" style="max-width:920px;">
+    <div class="card-body p-4">
+        <form asp-action="Create" method="post">
+            <partial name="_FormCurso" model="Model" />
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Salvar Curso</button>
+                <a href="/Admin/Cursos" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

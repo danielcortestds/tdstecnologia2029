@@ -1,0 +1,705 @@
+@model IEnumerable<TdsTecnologia2027.Web.Models.Curso>
+@using System.Globalization
+@{
+    Layout = null;
+
+    // Número padrão do WhatsApp do consultor (formato wa.me sem o "+").
+    const string telefoneWhatsApp = "556599106589";
+
+    string LinkWhats(string? mensagem)
+    {
+        var texto = string.IsNullOrWhiteSpace(mensagem)
+            ? "Olá, quero saber mais sobre os cursos da TDS Tecnologia!"
+            : mensagem;
+        return $"https://wa.me/{telefoneWhatsApp}?text={Uri.EscapeDataString(texto)}";
+    }
+
+    string FormatarData(DateTime? data)
+    {
+        if (!data.HasValue) return string.Empty;
+        var pt = new CultureInfo("pt-BR");
+        // Ex: "21/Mai"
+        return data.Value.ToString("dd/MMM", pt).TrimEnd('.');
+    }
+
+    IEnumerable<string> Bullets(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) yield break;
+        foreach (var linha in raw.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var t = linha.Trim();
+            if (t.Length > 0) yield return t;
+        }
+    }
+}
+<!DOCTYPE html>
+<html dir="ltr" lang="pt-BR">
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="TDS Tecnologia">
+	<meta name="description" content="Aprenda as habilidades que o mercado procura. Cursos em TI, Dados, Cloud e Inteligência Artificial com certificação oficial Microsoft. Presencial e Online ao Vivo em Mato Grosso.">
+
+	<!-- Open Graph / SEO -->
+	<meta property="og:title" content="TDS Tecnologia &mdash; Cursos com Certificação Microsoft Oficial">
+	<meta property="og:description" content="Aprenda as habilidades que o mercado procura. Cursos em TI, Dados, Cloud e Inteligência Artificial com certificação oficial Microsoft. Presencial e Online ao Vivo.">
+	<meta property="og:type" content="website">
+	<meta name="twitter:card" content="summary_large_image">
+
+	<!-- Core Style -->
+	<link rel="stylesheet" href="~/style.css">
+
+	<!-- Font Icons -->
+	<link rel="stylesheet" href="~/css/font-icons.css">
+
+	<!-- Niche Demo -->
+	<link rel="stylesheet" href="~/demos/chatbot/chatbot.css">
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="~/css/custom.css">
+
+	<style>
+	.te-modal-overlay {
+		display: none; position: fixed; inset: 0;
+		background: rgba(15,23,42,0.65); z-index: 99999;
+		align-items: center; justify-content: center;
+		padding: 20px; backdrop-filter: blur(3px);
+	}
+	.te-modal-overlay.is-open { display: flex; }
+	.te-modal {
+		background: #fff; border-radius: 16px; padding: 32px;
+		max-width: 580px; width: 100%; position: relative;
+		max-height: 90vh; overflow-y: auto;
+		box-shadow: 0 30px 70px rgba(0,0,0,0.22);
+		animation: teIn 0.22s ease;
+	}
+	@@keyframes teIn {
+		from { opacity:0; transform:scale(0.96) translateY(10px); }
+		to   { opacity:1; transform:scale(1)    translateY(0); }
+	}
+	.te-modal-close {
+		position: absolute; top:14px; right:14px;
+		background:#f1f5f9; border:none; border-radius:7px;
+		width:34px; height:34px; cursor:pointer;
+		font-size:0.9rem; color:#64748b;
+		display:flex; align-items:center; justify-content:center;
+		transition: background 0.15s;
+	}
+	.te-modal-close:hover { background:#e2e8f0; color:#0f172a; }
+	.te-modal-tag {
+		display:inline-block; font-size:0.68rem; font-weight:700;
+		letter-spacing:0.08em; text-transform:uppercase;
+		padding:3px 10px; border-radius:5px; margin-bottom:12px;
+		background:rgba(13,148,136,0.1); color:#0d9488;
+		border:1px solid rgba(13,148,136,0.2);
+	}
+	.te-modal-title {
+		font-size:1.4rem; font-weight:700; color:#0f172a;
+		margin:0 0 12px; line-height:1.3; padding-right:20px;
+	}
+	.te-modal-desc {
+		font-size:0.9rem; color:#64748b; line-height:1.75; margin-bottom:4px;
+	}
+	.te-modal-list { list-style:none; padding:0; margin:16px 0 28px; }
+	.te-modal-list li {
+		display:flex; align-items:flex-start; gap:10px;
+		padding:8px 0; font-size:0.875rem; color:#334155;
+		border-bottom:1px solid #f1f5f9;
+	}
+	.te-modal-list li:last-child { border-bottom:none; }
+	.te-modal-list li i { color:#0d9488; flex-shrink:0; margin-top:2px; font-size:0.8rem; }
+	.te-modal-actions {
+		display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+	}
+	.te-modal-actions .btn-bd-primary,
+	.te-modal-actions .btn-bd-outline {
+		display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+	}
+	#footer, #footer #copyrights { background-color: #0f172a !important; }
+	@@media (max-width: 991.98px) {
+		#header, #header #header-wrap { background-color: #0f172a !important; }
+	}
+	#te-back-top {
+		position: fixed; bottom: 26px; right: 22px; z-index: 9990;
+		width: 38px; height: 38px; border-radius: 50%;
+		background: rgba(255,255,255,0.07);
+		border: 1px solid rgba(255,255,255,0.13);
+		color: rgba(255,255,255,0.38);
+		font-size: 0.82rem; cursor: pointer;
+		display: flex; align-items: center; justify-content: center;
+		opacity: 0; pointer-events: none;
+		transition: opacity 0.35s, background 0.2s, color 0.2s, border-color 0.2s;
+		backdrop-filter: blur(4px);
+	}
+	#te-back-top.te-visible { opacity: 1; pointer-events: auto; }
+	#te-back-top:hover {
+		background: rgba(13,148,136,0.22);
+		border-color: rgba(13,148,136,0.35);
+		color: rgba(255,255,255,0.8);
+	}
+	</style>
+
+	<title>TDS Tecnologia &mdash; Cursos de TI, Dados, Cloud e IA | Certificação Microsoft</title>
+
+</head>
+
+<body class="stretched">
+
+	<div id="wrapper">
+
+		<header id="header" class="transparent-header dark" data-sticky-class="dark-color" data-sticky-shrink-offset="0">
+			<div id="header-wrap">
+				<div class="container">
+					<div class="header-row">
+
+						<div id="logo">
+							<a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+								<img class="logo-default" srcset="~/images/logo.png, ~/images/logo@@2x.png 2x" src="~/images/logo@@2x.png" alt="TDS Tecnologia Logo">
+								<img class="logo-dark" srcset="~/images/logo-dark.png, ~/images/logo-dark@@2x.png 2x" src="~/images/logo-dark@@2x.png" alt="TDS Tecnologia Logo">
+							</a>
+						</div>
+
+						<div class="header-misc">
+							<a href="https://wa.me/556599106589?text=Ol%C3%A1%2C+quero+saber+mais+sobre+os+cursos+da+TDS+Tecnologia!" class="btn-bd-header" target="_blank" rel="noopener">Falar com Consultor <i class="fa-brands fa-whatsapp" style="font-size:0.85rem;"></i></a>
+						</div>
+
+						<div class="primary-menu-trigger">
+							<button class="cnvs-hamburger" type="button" title="Open Mobile Menu">
+								<span class="cnvs-hamburger-box"><span class="cnvs-hamburger-inner"></span></span>
+							</button>
+						</div>
+
+						<nav class="primary-menu" aria-label="Main navigation">
+							<ul class="one-page-menu menu-container" data-easing="easeInOutExpo" data-speed="1250" data-offset="60">
+								<li class="current menu-item"><a class="menu-link" href="#" data-href="#features"><div>Cursos</div></a></li>
+								<li class="menu-item"><a class="menu-link" href="#" data-href="#pricing"><div>Corporativo &amp; Governo</div></a></li>
+								<li class="menu-item"><a class="menu-link" href="#" data-href="#timeline"><div>Como Funciona</div></a></li>
+								<li class="menu-item"><a class="menu-link" href="#" data-href="#reviews"><div>Depoimentos</div></a></li>
+							</ul>
+						</nav>
+
+					</div>
+				</div>
+			</div>
+			<div class="header-wrap-clone"></div>
+		</header>
+
+		<section id="hero" class="vh-100 d-flex align-items-center dark include-header mb-0" style="background:#0f172a; position:relative; overflow:hidden;">
+			<div class="container" style="position:relative; z-index:2;">
+				<div class="row align-items-center g-5">
+
+					<div class="col-lg-6">
+						<div class="d-flex flex-wrap gap-2 mb-4">
+							<span class="bd-badge-pill">&#11088; Parceiro Oficial Microsoft</span>
+							<span class="bd-badge-pill">Presencial &amp; Online ao Vivo</span>
+							<span class="bd-badge-pill">Certificação Incluída</span>
+						</div>
+						<h1 class="bd-h1" style="font-family:'Plus Jakarta Sans',sans-serif;">
+							Aprenda as Habilidades Que o Mercado Procura
+							<span style="color:#5eead4;">&mdash;</span>
+							Agora
+						</h1>
+						<p style="font-size:1.05rem; color:#94a3b8; line-height:1.7; max-width:480px; margin-bottom:36px;">
+							Cursos em TI, Dados, Cloud e Inteligência Artificial. Formações práticas para quem quer se destacar em um mercado cada vez mais digital.
+						</p>
+						<div class="d-flex flex-wrap gap-3 align-items-center">
+							<a href="#features" class="btn-bd-primary">Ver Nossos Cursos &rarr;</a>
+							<a href="https://wa.me/556599106589?text=Ol%C3%A1%2C+quero+saber+mais+sobre+os+cursos!" class="btn-bd-outline" target="_blank" rel="noopener">&#128172; Falar pelo WhatsApp</a>
+						</div>
+						<div class="d-flex align-items-center gap-2 mt-4">
+							<div class="avatar-stack">
+								<img src="https://i.pravatar.cc/150?img=11" alt="Aluno da TDS Tecnologia">
+								<img src="https://i.pravatar.cc/150?img=22" alt="Aluno da TDS Tecnologia">
+								<img src="https://i.pravatar.cc/150?img=33" alt="Aluno da TDS Tecnologia">
+							</div>
+							<span style="font-size:0.8rem; color:#64748b;">Mais de 500 profissionais formados &middot; Certificação Microsoft oficial</span>
+						</div>
+					</div>
+
+					<div class="col-lg-6 d-none d-lg-block">
+						<div class="chat-window">
+							<div class="chat-header">
+								<div class="chat-header-left">
+									<div class="chat-avatar">T</div>
+									<div>
+										<div style="font-size:0.875rem; font-weight:700; color:#f1f5f9;">TDS Tecnologia</div>
+										<div style="font-size:0.75rem; color:#0d9488;">
+											<span class="chat-dot-online"></span>Online agora
+										</div>
+									</div>
+								</div>
+								<div class="chat-traffic">
+									<span style="background:#ef4444;"></span>
+									<span style="background:#f59e0b;"></span>
+									<span style="background:#22c55e;"></span>
+								</div>
+							</div>
+							<div class="chat-body">
+								<div class="bubble-bot">Olá! &#128075; Seja bem-vindo à TDS Tecnologia. Posso te ajudar a escolher o curso ideal?</div>
+								<div class="bubble-user">Quero aprender Power BI para mudar de área</div>
+								<div class="bubble-bot">Perfeito! O Power BI Essencial é ideal pra você. Do zero ao profissional — e você ainda sai com a certificação Microsoft.</div>
+								<div class="bubble-user">Tem parcelamento? É presencial?</div>
+								<div class="bubble-bot">&#9989; Sim! Parcelamos em até 10x sem juros. Temos turmas presenciais em MT e online ao vivo. Quer falar com um consultor agora? &#128640;</div>
+								<div class="bubble-typing">
+									<span class="typing-dot"></span>
+									<span class="typing-dot"></span>
+									<span class="typing-dot"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+
+		<section id="content">
+			<div class="content-wrap py-0">
+
+				<section id="features" class="section my-0" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
+					<div class="container">
+
+						<div class="row text-center mb-5">
+							<div class="col-12">
+								<span class="bd-section-label">NOSSOS CURSOS</span>
+								<h2 class="bd-section-h2 mt-1 mb-3">Formações práticas com certificação Microsoft oficial.</h2>
+								<p style="font-family:'Inter',sans-serif; color:#64748b; font-size:1rem; max-width:560px; margin:0 auto; line-height:1.7;">Presencial e Online ao Vivo. Com instrutores especialistas e projetos baseados em casos reais do mercado.</p>
+							</div>
+						</div>
+
+						@* ===========================================================
+						   Cards de cursos — alimentados do banco de dados.
+						   Mantém exatamente as mesmas classes/estrutura do Canvas.
+						   =========================================================== *@
+						<div class="row g-4 justify-content-center">
+							@foreach (var curso in Model)
+							{
+								var iconeCurso = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
+								var iconePill2 = string.IsNullOrWhiteSpace(curso.IconePillSecundaria) ? "fa-solid fa-circle-info" : curso.IconePillSecundaria;
+								var dataFormatada = FormatarData(curso.DataInicio);
+
+								<div class="col-lg-4 col-md-6">
+									<div class="bd-feature-card h-100">
+										<div class="bd-feature-icon"><i class="@iconeCurso"></i></div>
+										<h4>@curso.Titulo</h4>
+										<p>@curso.DescricaoCurta</p>
+										<div class="d-flex flex-wrap gap-2 mt-3 mb-3">
+											@if (!string.IsNullOrEmpty(dataFormatada))
+											{
+												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="fa-solid fa-calendar-day" style="margin-right:4px;"></i>@dataFormatada</div>
+											}
+											@if (!string.IsNullOrWhiteSpace(curso.PillSecundaria))
+											{
+												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="@iconePill2" style="margin-right:4px;"></i>@curso.PillSecundaria</div>
+											}
+										</div>
+										<div class="d-flex align-items-center gap-3">
+											<a href="#" onclick="teOpenModal('modal-@curso.Slug');return false;" class="btn-bd-primary" style="font-size:0.8rem; padding:8px 18px;">Ver detalhes &rarr;</a>
+											<a href="@LinkWhats(curso.WhatsAppMensagem)" target="_blank" rel="noopener" style="font-size:0.82rem; font-weight:600; color:#0d9488; text-decoration:none; display:flex; align-items:center; gap:5px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+
+					</div>
+				</section>
+
+				<section id="pricing" class="section my-0 dark" style="background:#0f172a; border-top:1px solid rgba(13,148,136,0.2); position:relative; overflow:hidden;">
+					<div class="container">
+
+						<div class="row justify-content-center text-center mb-5">
+							<div class="col-lg-7">
+								<span class="bd-section-label">ATENDIMENTO B2B</span>
+								<h2 class="bd-section-h2 text-white mb-3">Capacitação corporativa para empresas e governo.</h2>
+								<p style="color:#94a3b8; font-size:1rem; line-height:1.7; margin-bottom:32px;">
+									Turmas in company com currículo personalizado, instrutores certificados Microsoft e certificação para toda a equipe — presencial em MT ou online ao vivo.
+								</p>
+							</div>
+						</div>
+
+						<div class="row g-4 align-items-stretch justify-content-center">
+
+							<div class="col-lg-5 col-md-8">
+								<div class="bd-price-card featured">
+									<span class="bd-plan-label" style="color:#5eead4;">Empresas Privadas</span>
+									<div class="bd-plan-name">Capacite sua equipe com as ferramentas mais demandadas</div>
+									<p class="bd-plan-desc" style="color:#94a3b8;">Produtividade real com dados e IA.</p>
+									<div class="bd-price-amount">
+										<i class="fa-solid fa-building" style="font-size:2.8rem; color:#5eead4;"></i>
+									</div>
+									<div class="bd-price-period" style="color:#64748b;">Turmas in company sob demanda</div>
+									<div class="bd-price-strikethrough">&nbsp;</div>
+									<ul class="bd-feat-list">
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Turmas in company sob demanda</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Conteúdo personalizado ao seu negócio</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Relatório de desempenho dos colaboradores</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Certificação Microsoft para toda a equipe</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Suporte pós-treinamento incluído</li>
+									</ul>
+									<a href="https://wa.me/556599106589?text=Ol%C3%A1%2C+quero+uma+proposta+para+capacitar+minha+empresa!" class="bd-card-cta bd-card-cta-primary" target="_blank" rel="noopener">
+										Solicitar Proposta <i class="fa-solid fa-arrow-right" style="font-size:0.8125rem;"></i>
+									</a>
+								</div>
+							</div>
+
+							<div class="col-lg-5 col-md-8">
+								<div class="bd-price-card featured">
+									<span class="bd-plan-label" style="color:#5eead4;">Órgãos Públicos</span>
+									<div class="bd-plan-name">Modernize a gestão pública com capacitação em dados, LGPD e IA</div>
+									<p class="bd-plan-desc" style="color:#94a3b8;">Soluções para licitação e contratação.</p>
+									<div class="bd-price-amount">
+										<i class="fa-solid fa-landmark" style="font-size:2.8rem; color:#5eead4;"></i>
+									</div>
+									<div class="bd-price-period" style="color:#64748b;">Atendimento em todo o Mato Grosso</div>
+									<div class="bd-price-strikethrough">&nbsp;</div>
+									<ul class="bd-feat-list">
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Adequação à LGPD para servidores</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Análise de dados para gestão pública</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Proposta técnica para licitações</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Certificação Microsoft reconhecida</li>
+										<li><span class="bd-feat-check" style="background:rgba(13,148,136,0.25);"><i class="fa-solid fa-check" style="color:#5eead4;"></i></span>Atendimento em todo o Mato Grosso</li>
+									</ul>
+									<a href="https://wa.me/556599106589?text=Ol%C3%A1%2C+quero+uma+proposta+para+meu+%C3%B3rg%C3%A3o+p%C3%BAblico!" class="bd-card-cta bd-card-cta-primary" target="_blank" rel="noopener">
+										Solicitar Proposta <i class="fa-solid fa-arrow-right" style="font-size:0.8125rem;"></i>
+									</a>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="bd-pricing-note">
+							Elaboramos propostas personalizadas para cada organização — sem compromisso.<br>
+							Fale com nossa equipe no <a href="https://wa.me/556599106589" target="_blank" rel="noopener">WhatsApp</a> e receba um orçamento adequado à sua realidade.
+						</div>
+
+					</div>
+				</section>
+
+				<section id="timeline" class="section my-0" style="background: #f0fdfa; border-top: 1px solid #ccfbf1;">
+					<div class="container">
+
+						<div class="row justify-content-center text-center mb-5">
+							<div class="col-lg-7">
+								<span class="bd-section-label">SUA JORNADA CONOSCO</span>
+								<h2 class="bd-section-h2 mb-3">Do interesse à certificação em 4 passos.</h2>
+								<p style="color: #64748b; font-size: 1rem; line-height: 1.7; margin: 0;">Simples, direto e sem burocracia. Nossa equipe está pronta para guiar você em cada etapa da sua transformação profissional.</p>
+							</div>
+						</div>
+
+						<div class="row mb-6">
+							<div class="col-12">
+								<div class="bd-timeline-wrap">
+									<div class="bd-timeline-track"></div>
+									<div class="bd-timeline-steps">
+
+										<div class="bd-timeline-step">
+											<div class="bd-timeline-num">1</div>
+											<div class="bd-timeline-card">
+												<div class="bd-timeline-badge">&#9203; 5 min</div>
+												<div class="bd-timeline-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+												<h4>Explore os Cursos</h4>
+												<p>Navegue pelo portfólio e encontre o curso ideal para o seu momento de carreira — de Power BI a Engenharia de Dados.</p>
+											</div>
+										</div>
+
+										<div class="bd-timeline-step">
+											<div class="bd-timeline-num">2</div>
+											<div class="bd-timeline-card">
+												<div class="bd-timeline-badge">&#9203; 1 dia</div>
+												<div class="bd-timeline-icon"><i class="fa-brands fa-whatsapp"></i></div>
+												<h4>Fale com um Consultor</h4>
+												<p>Nossa equipe vai entender seu perfil e recomendar a melhor formação. Sem pressão, com orientação real pelo WhatsApp.</p>
+											</div>
+										</div>
+
+										<div class="bd-timeline-step">
+											<div class="bd-timeline-num">3</div>
+											<div class="bd-timeline-card">
+												<div class="bd-timeline-badge">&#9203; Na turma</div>
+												<div class="bd-timeline-icon"><i class="fa-solid fa-laptop"></i></div>
+												<h4>Inicie Sua Formação</h4>
+												<p>Participe das aulas presenciais em MT ou online ao vivo com instrutores especialistas, projetos práticos e material completo.</p>
+											</div>
+										</div>
+
+										<div class="bd-timeline-step">
+											<div class="bd-timeline-num">4</div>
+											<div class="bd-timeline-card">
+												<div class="bd-timeline-badge">&#127942; Ao concluir</div>
+												<div class="bd-timeline-icon"><i class="fa-solid fa-certificate"></i></div>
+												<h4>Obtenha a Certificação Microsoft</h4>
+												<p>Receba o certificado oficial Microsoft e o reconhecimento que o mercado valoriza. Sua carreira nunca mais será a mesma.</p>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row justify-content-center">
+							<div class="col-12 text-center">
+								<p style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; margin-bottom: 20px;">Tecnologias que você vai dominar nos nossos cursos.</p>
+								<div class="bd-integration-logos">
+									<div class="bd-integration-pill"><i class="fa-solid fa-chart-bar" style="color:#f2c811;"></i> Power BI</div>
+									<div class="bd-integration-pill"><i class="fa-brands fa-python" style="color:#3776ab;"></i> Python</div>
+									<div class="bd-integration-pill"><i class="fa-solid fa-cloud" style="color:#0078d4;"></i> Microsoft Azure</div>
+									<div class="bd-integration-pill"><i class="fa-solid fa-database" style="color:#cc2927;"></i> SQL Server</div>
+									<div class="bd-integration-pill"><i class="fa-solid fa-robot" style="color:#7c3aed;"></i> Agentes de IA</div>
+									<div class="bd-integration-pill"><i class="fa-solid fa-shield-halved" style="color:#16a34a;"></i> LGPD</div>
+									<div class="bd-integration-pill"><i class="fa-solid fa-brain" style="color:#ea580c;"></i> Machine Learning</div>
+									<div class="bd-integration-pill"><i class="fa-brands fa-microsoft" style="color:#0078d4;"></i> Microsoft 365</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</section>
+
+				<section id="reviews" class="section my-0" style="background:#f8fafc; border-top:1px solid #e2e8f0;">
+					<div class="container">
+
+						<div class="row text-center mb-5">
+							<div class="col-12">
+								<span class="bd-section-label">DEPOIMENTOS DE ALUNOS</span>
+								<h2 class="bd-section-h2 mb-3" style="color:#0f172a;">De quem viveu a transformação<br>na prática.</h2>
+								<p style="color:#64748b;max-width:500px;margin:0 auto;font-size:1rem;line-height:1.7;">Resultados reais de profissionais que decidiram investir em si mesmos e colhem os frutos no mercado de trabalho.</p>
+							</div>
+						</div>
+
+						<div class="row g-4 mb-5">
+
+							<div class="col-lg-4 col-md-6 d-flex">
+								<div class="bd-review-card d-flex flex-column w-100">
+									<span class="bd-review-quote-mark">"</span>
+									<div class="bd-review-stars">
+										<i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i>
+									</div>
+									<p class="bd-review-quote">"Antes do Power BI Essencial, eu lutava com planilhas de Excel. Hoje entrego dashboards executivos para a diretoria toda semana. A certificação Microsoft abriu portas que eu nem sabia que existiam."</p>
+									<div class="d-flex align-items-center gap-3 mt-auto">
+										<div>
+											<p class="bd-reviewer-name">João Alves</p>
+											<p class="bd-reviewer-meta">Analista de BI &middot; Cuiabá, MT</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-6 d-flex">
+								<div class="bd-review-card d-flex flex-column w-100" style="border-color:rgba(13,148,136,0.3);box-shadow:0 0 0 1px rgba(13,148,136,0.15),0 8px 32px rgba(13,148,136,0.1);">
+									<span class="bd-review-quote-mark">"</span>
+									<div class="bd-review-stars">
+										<i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i>
+									</div>
+									<p class="bd-review-quote">"O curso de Python para Análise de Dados mudou minha carreira. Fui promovida dois meses depois de concluir. O instrutor tem didática excepcional e experiência real de mercado — não é teoria, é prática."</p>
+									<div class="d-flex align-items-center gap-3 mt-auto">
+										<div>
+											<p class="bd-reviewer-name">Carla Mendes</p>
+											<p class="bd-reviewer-meta">Cientista de Dados &middot; Sinop, MT</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-6 d-flex">
+								<div class="bd-review-card d-flex flex-column w-100">
+									<span class="bd-review-quote-mark">"</span>
+									<div class="bd-review-stars">
+										<i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i>
+									</div>
+									<p class="bd-review-quote">"Contratamos turmas in company para toda a equipe de dados da nossa empresa. O nível técnico dos instrutores é impressionante e a certificação Microsoft agregou enorme valor ao nosso time."</p>
+									<div class="d-flex align-items-center gap-3 mt-auto">
+										<div>
+											<p class="bd-reviewer-name">Ricardo Souza</p>
+											<p class="bd-reviewer-meta">Gerente de TI &middot; Rondonópolis, MT</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row">
+							<div class="col-12">
+								<div class="bd-rating-bar">
+
+									<div class="text-center">
+										<div class="d-flex align-items-baseline gap-2 justify-content-center">
+											<span class="bd-rating-score">4.9</span>
+											<span style="font-size:1rem;color:#64748b;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;">/5</span>
+										</div>
+										<div class="d-flex gap-1 justify-content-center mt-1">
+											<i class="bi-star-fill" style="color:#0d9488;font-size:0.875rem;"></i>
+											<i class="bi-star-fill" style="color:#0d9488;font-size:0.875rem;"></i>
+											<i class="bi-star-fill" style="color:#0d9488;font-size:0.875rem;"></i>
+											<i class="bi-star-fill" style="color:#0d9488;font-size:0.875rem;"></i>
+											<i class="bi-star-fill" style="color:#0d9488;font-size:0.875rem;"></i>
+										</div>
+										<p style="font-size:0.8rem;color:#94a3b8;margin:6px 0 0;font-family:'Inter',sans-serif;">mais de 500 alunos formados</p>
+									</div>
+
+									<div class="bd-sep d-none d-md-block"></div>
+
+									<div class="bd-platform-badge">
+										<div class="bd-platform-icon" style="background:linear-gradient(135deg,#0a66c2,#064e9c);">in</div>
+										<div>
+											<p class="bd-platform-name" style="margin:0;">LinkedIn</p>
+											<div class="bd-platform-stars">
+												<i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i>
+												<span style="font-size:0.75rem;color:#64748b;margin-left:5px;font-family:'Inter',sans-serif;">4.9 &middot; Avaliações de alunos</span>
+											</div>
+										</div>
+									</div>
+
+									<div class="bd-platform-badge">
+										<div class="bd-platform-icon" style="background:linear-gradient(135deg,#ea4335,#c01b0e);">G</div>
+										<div>
+											<p class="bd-platform-name" style="margin:0;">Google Reviews</p>
+											<div class="bd-platform-stars">
+												<i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i><i class="bi-star-fill"></i>
+												<span style="font-size:0.75rem;color:#64748b;margin-left:5px;font-family:'Inter',sans-serif;">4.8 &middot; Avaliações verificadas</span>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</section>
+
+			</div>
+		</section>
+
+		<footer id="footer" class="page-section dark">
+			<div class="container">
+
+				<div class="footer-widgets-wrap">
+					<div class="row justify-content-between">
+						<div class="col-md-5">
+							<img src="~/images/logo-dark.png" alt="TDS Tecnologia Logo" width="120">
+							<p class="fw-normal">Escola de cursos em TI, Dados, Cloud e Inteligência Artificial. Parceiro Oficial Microsoft. Formações práticas com certificação para profissionais e empresas que buscam excelência no mercado digital.</p>
+							<div class="line line-sm border-contrast-200"></div>
+
+							<h4 class="text-transform-none ls-0 mb-2">Entre em Contato</h4>
+							<ul style="list-style:none; padding:0; margin:0 0 20px; display:flex; flex-direction:column; gap:6px;">
+								<li style="font-size:0.9rem; color:#cbd5e1;"><i class="fa-solid fa-phone" style="color:#0d9488; width:16px; margin-right:6px;"></i>(65) 3054-0039</li>
+								<li style="font-size:0.9rem; color:#cbd5e1;"><i class="fa-brands fa-whatsapp" style="color:#0d9488; width:16px; margin-right:6px;"></i>(65) 99354-1604</li>
+								<li style="font-size:0.9rem; color:#cbd5e1;"><i class="fa-brands fa-whatsapp" style="color:#0d9488; width:16px; margin-right:6px;"></i>(65) 99999-7928</li>
+								<li style="font-size:0.9rem; color:#cbd5e1;"><i class="fa-solid fa-envelope" style="color:#0d9488; width:16px; margin-right:6px;"></i><a href="mailto:contato&#64;tdstecnologia.com.br" style="color:#cbd5e1; text-decoration:none;">contato&#64;tdstecnologia.com.br</a></li>
+								<li style="font-size:0.9rem; color:#cbd5e1;"><i class="fa-solid fa-location-dot" style="color:#0d9488; width:16px; margin-right:6px;"></i><a href="https://maps.google.com/?q=Santa+Rosa+Tower+Av+Miguel+Sutil+8000+Cuiabá+MT" target="_blank" rel="noopener" style="color:#0d9488; text-decoration:none;">Google Maps</a></li>
+							</ul>
+
+							<h4 class="text-transform-none ls-0 mb-2 mt-3">Nosso Endereço</h4>
+							<address style="font-style:normal; font-size:0.9rem; color:#cbd5e1; line-height:1.6;">
+								Santa Rosa Tower &ndash; Av. Miguel Sutil,<br>
+								8000 &ndash; sala 1706 &ndash; Jardim Mariana,<br>
+								Cuiabá &ndash; MT, CEP: 78040-400
+							</address>
+						</div>
+
+						<div class="col-md-5 mt-5 mt-md-4">
+							<div id="q-contact" class="widget quick-contact-widget form-widget">
+								<h4 class="text-transform-none ls-0">Entre em Contato</h4>
+								<div class="form-result"></div>
+								<form id="quick-contact-form" name="quick-contact-form" action="include/form.php" method="post" class="quick-contact-form mb-0">
+									<div class="form-process"></div>
+									<input type="text" class="required form-control mb-2" id="quick-contact-form-name" name="quick-contact-form-name" value="" placeholder="Nome Completo">
+									<input type="text" class="required form-control email mb-2" id="quick-contact-form-email" name="quick-contact-form-email" value="" placeholder="E-mail">
+									<textarea class="required form-control mb-2 short-textarea" id="quick-contact-form-message" name="quick-contact-form-message" rows="6" cols="30" placeholder="Mensagem ou curso de interesse"></textarea>
+									<input type="text" class="d-none" id="quick-contact-form-botcheck" name="quick-contact-form-botcheck" value="">
+									<input type="hidden" name="prefix" value="quick-contact-form-">
+									<button type="submit" id="quick-contact-form-submit" name="quick-contact-form-submit" class="button button-circle button-large w-100 fw-normal mt-2 ls-1 text-uppercase mx-0" value="submit">Enviar Mensagem</button>
+								</form>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div id="copyrights" class="bg-transparent border-top border-contrast-300">
+					<div class="container">
+						<div class="row col-mb-30">
+							<div class="col-md-6 text-center text-md-start">
+								Direitos Reservados &copy; 2026 TDS Tecnologia.
+							</div>
+							<div class="col-md-6 text-center text-md-end">
+								<div class="d-flex justify-content-center justify-content-md-end">
+									<a href="#" class="social-icon si-small border-transparent h-bg-facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i><i class="fa-brands fa-facebook-f"></i></a>
+									<a href="#" class="social-icon si-small border-transparent h-bg-instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i><i class="fa-brands fa-instagram"></i></a>
+									<a href="https://wa.me/556599106589" target="_blank" rel="noopener" class="social-icon si-small border-transparent h-bg-whatsapp" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i><i class="fa-brands fa-whatsapp"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</footer>
+
+	</div>
+
+	@* ===========================================================
+	   Modais dos Cursos — alimentados do banco de dados.
+	   Renderiza um modal por curso ativo, na mesma ordem dos cards.
+	   =========================================================== *@
+	@foreach (var curso in Model)
+	{
+		<div class="te-modal-overlay" id="modal-@curso.Slug">
+			<div class="te-modal">
+				<button class="te-modal-close" onclick="teCloseModals()">&times;</button>
+				@if (!string.IsNullOrWhiteSpace(curso.Categoria))
+				{
+					<span class="te-modal-tag">@curso.Categoria</span>
+				}
+				<h2 class="te-modal-title">@curso.Titulo</h2>
+				<p class="te-modal-desc">@curso.Descricao</p>
+				@{
+					var topicos = Bullets(curso.Topicos).ToList();
+				}
+				@if (topicos.Count > 0)
+				{
+					<ul class="te-modal-list">
+						@foreach (var topico in topicos)
+						{
+							<li><i class="fa-solid fa-check"></i>@topico</li>
+						}
+					</ul>
+				}
+				<div class="te-modal-actions">
+					<a href="@LinkWhats(curso.WhatsAppMensagem)" class="btn-bd-primary" target="_blank" rel="noopener" style="flex:1; justify-content:center;"><i class="fa-brands fa-whatsapp"></i> &nbsp;Falar com Especialista</a>
+					<button onclick="teCloseModals()" class="btn-bd-outline" style="background:#fff; color:#0f172a;">Fechar</button>
+				</div>
+			</div>
+		</div>
+	}
+
+	<button id="te-back-top" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+		<i class="fa-solid fa-chevron-up"></i>
+	</button>
+
+	<script>
+	function teOpenModal(id) {
+		document.getElementById(id).classList.add('is-open');
+		document.body.style.overflow = 'hidden';
+	}
+	function teCloseModals() {
+		document.querySelectorAll('.te-modal-overlay').forEach(function(el){ el.classList.remove('is-open'); });
+		document.body.style.overflow = '';
+	}
+	document.addEventListener('keydown', function(e){ if(e.key==='Escape') teCloseModals(); });
+	document.querySelectorAll('.te-modal-overlay').forEach(function(o){
+		o.addEventListener('click', function(e){ if(e.target===o) teCloseModals(); });
+	});
+	var _btt = document.getElementById('te-back-top');
+	window.addEventListener('scroll', function(){ _btt.classList.toggle('te-visible', window.scrollY > 450); });
+	</script>
+
+	<script src="~/js/plugins.min.js"></script>
+	<script src="~/js/functions.bundle.js"></script>
+
+</body>
+</html>

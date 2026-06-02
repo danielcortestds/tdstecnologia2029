@@ -8,8 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Detecta automaticamente o ambiente: dev local (appsettings) ou Azure "MySQL no Aplicativo".
 var connectionString = ConnectionStringResolver.Resolve(builder.Configuration);
 
+// Log do destino da conexão (com a senha mascarada) — aparece no Log Stream do Azure
+// e ajuda a diagnosticar problemas de conexão sem expor a senha.
+Console.WriteLine($"[TDS] Connection string resolvida: {ConnectionStringResolver.Mask(connectionString)}");
+
+// IMPORTANTE: NÃO usar ServerVersion.AutoDetect aqui — ele abre uma conexão de forma
+// imediata durante a configuração do DI e, se o MySQL ainda não estiver pronto, derruba
+// a aplicação inteira (HTTP 500.30). Usamos uma versão fixa (MySQL no Aplicativo = 5.7)
+// e adiamos a conexão real para o passo de Migrate, onde há retry.
+var serverVersion = new MySqlServerVersion(new Version(5, 7, 42));
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, serverVersion));
 
 // ASP.NET Core Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -45,12 +55,36 @@ if (builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
-// Aplicar migrations e seed na inicialização
+// Aplicar migrations e seed na inicialização.
+// O MySQL no Aplicativo pode demorar alguns segundos para ficar disponível após o boot
+// do App Service, então tentamos várias vezes antes de desistir. Mesmo que falhe, a
+// aplicação continua subindo (o site carrega) para que possamos ler os logs.
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-    await SeedData.InitializeAsync(scope.ServiceProvider, builder.Configuration);
+    const int maxTentativas = 10;
+    for (var tentativa = 1; tentativa <= maxTentativas; tentativa++)
+    {
+        try
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            Console.WriteLine($"[TDS] Tentativa {tentativa}/{maxTentativas}: aplicando migrations...");
+            db.Database.Migrate();
+            await SeedData.InitializeAsync(scope.ServiceProvider, builder.Configuration);
+            Console.WriteLine("[TDS] Migrations e seed concluídos com sucesso.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[TDS] Falha na tentativa {tentativa}/{maxTentativas}: {ex.Message}");
+            if (tentativa == maxTentativas)
+            {
+                Console.WriteLine("[TDS] ERRO: não foi possível conectar ao MySQL após várias tentativas. " +
+                                  "A aplicação vai subir mesmo assim para permitir leitura dos logs.");
+                break;
+            }
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
 }
 
 if (!app.Environment.IsDevelopment())

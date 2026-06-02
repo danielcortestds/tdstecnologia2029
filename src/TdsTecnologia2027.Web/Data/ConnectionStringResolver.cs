@@ -31,6 +31,28 @@ public static class ConnectionStringResolver
             "Nenhuma connection string MySQL encontrada (DefaultConnection ou MYSQLCONNSTR_localdb).");
     }
 
+    /// <summary>
+    /// Devolve a connection string com a senha substituída por *** para log seguro.
+    /// </summary>
+    public static string Mask(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            return "(vazia)";
+
+        var parts = connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        for (var i = 0; i < parts.Length; i++)
+        {
+            var kv = parts[i].Split('=', 2);
+            if (kv.Length == 2)
+            {
+                var key = kv[0].Trim().ToLowerInvariant();
+                if (key is "password" or "pwd")
+                    parts[i] = $"{kv[0]}=***";
+            }
+        }
+        return string.Join(";", parts);
+    }
+
     private static string ConvertMySqlInApp(string raw)
     {
         string database = "", server = "127.0.0.1", port = "3306", user = "", password = "";

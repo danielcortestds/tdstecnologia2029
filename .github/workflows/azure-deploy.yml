@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    # Build no Windows para gerar o apphost/web.config corretos para o App Service Windows.
+    runs-on: windows-latest
     name: Build .NET 8 e publica no Azure
 
     steps:
@@ -26,22 +27,11 @@ jobs:
       - name: Restore
         run: dotnet restore src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj
 
-      # ── 4. Build Release ───────────────────────────────────────────────
-      - name: Build
-        run: |
-          dotnet build src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj \
-            --configuration Release \
-            --no-restore
-
-      # ── 5. Publicar ────────────────────────────────────────────────────
+      # ── 4. Publicar (Release, win-x64) ─────────────────────────────────
       - name: Publish
-        run: |
-          dotnet publish src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj \
-            --configuration Release \
-            --no-build \
-            --output ./publish
+        run: dotnet publish src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj -c Release -r win-x64 --self-contained false -o ./publish
 
-      # ── 6. Deploy → Azure App Service ─────────────────────────────────
+      # ── 5. Deploy → Azure App Service ─────────────────────────────────
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

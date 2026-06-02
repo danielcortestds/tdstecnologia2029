@@ -23,13 +23,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # ── 3. Restaurar dependências ──────────────────────────────────────
-      - name: Restore
-        run: dotnet restore src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj
-
-      # ── 4. Publicar (Release, win-x64) ─────────────────────────────────
+      # ── 3. Publicar self-contained (runtime .NET embutido, win-x64) ────
+      #     Self-contained elimina dependência do runtime instalado no Azure,
+      #     evitando o erro "failed to load coreclr".
       - name: Publish
-        run: dotnet publish src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj -c Release -r win-x64 --self-contained false -o ./publish
+        run: dotnet publish src/TdsTecnologia2027.Web/TdsTecnologia2027.Web.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
       # ── 5. Deploy → Azure App Service ─────────────────────────────────
       - name: Deploy to Azure Web App

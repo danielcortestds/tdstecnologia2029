@@ -602,8 +602,10 @@
 						</div>
 
 						<div class="col-md-5 mt-5 mt-md-4">
-							<div id="q-contact" class="widget quick-contact-widget form-widget">
+							<div id="q-contact" class="widget quick-contact-widget form-widget" data-alert-type="inline" data-loader="button">
 								<h4 class="text-transform-none ls-0">Entre em Contato</h4>
+									@* Onde o template Canvas exibe a mensagem de sucesso/erro (envio AJAX). *@
+									<div class="form-result"></div>
 
 								@if (TempData["ContatoSucesso"] != null)
 								{

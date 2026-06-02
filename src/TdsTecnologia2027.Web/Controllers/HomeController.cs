@@ -37,32 +37,45 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Contato(ContatoForm form)
     {
+        const string msgSucesso = "Mensagem enviada com sucesso! Em breve entraremos em contato.";
+        const string msgInvalido = "Por favor, preencha todos os campos corretamente.";
+        const string msgErro = "Não foi possível enviar sua mensagem agora. " +
+            "Tente novamente mais tarde ou fale conosco pelo WhatsApp.";
+
         // Honeypot anti-spam: se o campo invisível "Website" vier preenchido,
         // é um robô. Fingimos sucesso e descartamos a mensagem.
         if (!string.IsNullOrWhiteSpace(form.Website))
-        {
-            TempData["ContatoSucesso"] = "Mensagem enviada com sucesso! Em breve entraremos em contato.";
-            return RedirectToAction(nameof(Index), "Home", null, "q-contact");
-        }
+            return ResultadoContato(true, msgSucesso);
 
         if (!ModelState.IsValid)
-        {
-            TempData["ContatoErro"] = "Por favor, preencha todos os campos corretamente.";
-            return RedirectToAction(nameof(Index), "Home", null, "q-contact");
-        }
+            return ResultadoContato(false, msgInvalido);
 
         try
         {
             await _emailSender.EnviarContatoAsync(form);
-            TempData["ContatoSucesso"] = "Mensagem enviada com sucesso! Em breve entraremos em contato.";
+            return ResultadoContato(true, msgSucesso);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[TDS] Falha ao enviar e-mail de contato.");
-            TempData["ContatoErro"] = "Não foi possível enviar sua mensagem agora. " +
-                "Tente novamente mais tarde ou fale conosco pelo WhatsApp.";
+            return ResultadoContato(false, msgErro);
         }
+    }
 
+    /// <summary>
+    /// Responde ao formulário de contato. Para envios AJAX (feito pelo template Canvas),
+    /// devolve JSON no formato { alert, message } que o template espera. Para envios
+    /// normais (sem JavaScript), faz redirect com mensagem em TempData.
+    /// </summary>
+    private IActionResult ResultadoContato(bool sucesso, string mensagem)
+    {
+        var ehAjax = string.Equals(
+            Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+        if (ehAjax)
+            return Json(new { alert = sucesso ? "success" : "error", message = mensagem });
+
+        TempData[sucesso ? "ContatoSucesso" : "ContatoErro"] = mensagem;
         return RedirectToAction(nameof(Index), "Home", null, "q-contact");
     }
 

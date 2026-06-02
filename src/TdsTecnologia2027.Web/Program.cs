@@ -4,9 +4,9 @@ using TdsTecnologia2027.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Conexão com MySQL via Pomelo
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não encontrada.");
+// Conexão com MySQL via Pomelo.
+// Detecta automaticamente o ambiente: dev local (appsettings) ou Azure "MySQL no Aplicativo".
+var connectionString = ConnectionStringResolver.Resolve(builder.Configuration);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));

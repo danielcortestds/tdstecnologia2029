@@ -4,22 +4,14 @@ using TdsTecnologia2027.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Conexão com MySQL via Pomelo.
-// Detecta automaticamente o ambiente: dev local (appsettings) ou Azure "MySQL no Aplicativo".
-var connectionString = ConnectionStringResolver.Resolve(builder.Configuration);
-
-// Log do destino da conexão (com a senha mascarada) — aparece no Log Stream do Azure
-// e ajuda a diagnosticar problemas de conexão sem expor a senha.
-Console.WriteLine($"[TDS] Connection string resolvida: {ConnectionStringResolver.Mask(connectionString)}");
-
-// IMPORTANTE: NÃO usar ServerVersion.AutoDetect aqui — ele abre uma conexão de forma
-// imediata durante a configuração do DI e, se o MySQL ainda não estiver pronto, derruba
-// a aplicação inteira (HTTP 500.30). Usamos uma versão fixa (MySQL no Aplicativo = 5.7)
-// e adiamos a conexão real para o passo de Migrate, onde há retry.
-var serverVersion = new MySqlServerVersion(new Version(5, 7, 42));
+// Banco de dados SQLite (arquivo local, gratuito e sem servidor separado).
+// O caminho é resolvido conforme o ambiente: pasta persistente no Azure
+// (%HOME%\data) ou App_Data localmente.
+var connectionString = ConnectionStringResolver.Resolve(builder.Environment);
+Console.WriteLine($"[TDS] SQLite: {connectionString}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, serverVersion));
+    options.UseSqlite(connectionString));
 
 // ASP.NET Core Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>

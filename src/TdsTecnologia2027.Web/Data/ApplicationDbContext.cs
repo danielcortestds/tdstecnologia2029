@@ -18,58 +18,8 @@ public class ApplicationDbContext : IdentityDbContext
     {
         base.OnModelCreating(builder);
 
-        // Limita tamanho de colunas com índice do Identity para caber no
-        // limite de chave do MySQL InnoDB. Colunas usadas como chave de PK/FK/Index
-        // recebem charset ASCII (1 byte/char) — provider keys são sempre ASCII puros.
-        const string asciiVarchar = "varchar(128)";
-        const string asciiCharset = "ascii";
-
-        builder.Entity<IdentityUser>(b =>
-        {
-            b.Property(u => u.Id).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(u => u.UserName).HasMaxLength(128);
-            b.Property(u => u.NormalizedUserName).HasMaxLength(128);
-            b.Property(u => u.Email).HasMaxLength(128);
-            b.Property(u => u.NormalizedEmail).HasMaxLength(128);
-        });
-
-        builder.Entity<IdentityRole>(b =>
-        {
-            b.Property(r => r.Id).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(r => r.Name).HasMaxLength(128);
-            b.Property(r => r.NormalizedName).HasMaxLength(128);
-        });
-
-        builder.Entity<IdentityUserLogin<string>>(b =>
-        {
-            b.Property(l => l.LoginProvider).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(l => l.ProviderKey).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(l => l.UserId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-        });
-
-        builder.Entity<IdentityUserToken<string>>(b =>
-        {
-            b.Property(t => t.UserId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(t => t.LoginProvider).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(t => t.Name).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-        });
-
-        builder.Entity<IdentityUserRole<string>>(b =>
-        {
-            b.Property(ur => ur.UserId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-            b.Property(ur => ur.RoleId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-        });
-
-        builder.Entity<IdentityUserClaim<string>>(b =>
-        {
-            b.Property(uc => uc.UserId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-        });
-
-        builder.Entity<IdentityRoleClaim<string>>(b =>
-        {
-            b.Property(rc => rc.RoleId).HasColumnType(asciiVarchar).HasCharSet(asciiCharset);
-        });
-
+        // O SQLite não tem os limites de tamanho de chave do MySQL InnoDB,
+        // então não é preciso configurar charset/varchar das tabelas do Identity.
         builder.Entity<Curso>(entity =>
         {
             entity.HasKey(e => e.Id);

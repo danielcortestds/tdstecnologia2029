@@ -604,15 +604,28 @@
 						<div class="col-md-5 mt-5 mt-md-4">
 							<div id="q-contact" class="widget quick-contact-widget form-widget">
 								<h4 class="text-transform-none ls-0">Entre em Contato</h4>
-								<div class="form-result"></div>
-								<form id="quick-contact-form" name="quick-contact-form" action="include/form.php" method="post" class="quick-contact-form mb-0">
-									<div class="form-process"></div>
-									<input type="text" class="required form-control mb-2" id="quick-contact-form-name" name="quick-contact-form-name" value="" placeholder="Nome Completo">
-									<input type="text" class="required form-control email mb-2" id="quick-contact-form-email" name="quick-contact-form-email" value="" placeholder="E-mail">
-									<textarea class="required form-control mb-2 short-textarea" id="quick-contact-form-message" name="quick-contact-form-message" rows="6" cols="30" placeholder="Mensagem ou curso de interesse"></textarea>
-									<input type="text" class="d-none" id="quick-contact-form-botcheck" name="quick-contact-form-botcheck" value="">
-									<input type="hidden" name="prefix" value="quick-contact-form-">
-									<button type="submit" id="quick-contact-form-submit" name="quick-contact-form-submit" class="button button-circle button-large w-100 fw-normal mt-2 ls-1 text-uppercase mx-0" value="submit">Enviar Mensagem</button>
+
+								@if (TempData["ContatoSucesso"] != null)
+								{
+									<div class="alert alert-success py-2 px-3 mb-3" style="border-radius:8px;">
+										<i class="fa-solid fa-circle-check me-1"></i> @TempData["ContatoSucesso"]
+									</div>
+								}
+								@if (TempData["ContatoErro"] != null)
+								{
+									<div class="alert alert-danger py-2 px-3 mb-3" style="border-radius:8px;">
+										<i class="fa-solid fa-triangle-exclamation me-1"></i> @TempData["ContatoErro"]
+									</div>
+								}
+
+								<form asp-controller="Home" asp-action="Contato" method="post" class="mb-0">
+									<input type="text" class="form-control mb-2" name="Nome" value="" placeholder="Nome Completo" maxlength="150" required>
+									<input type="email" class="form-control mb-2" name="Email" value="" placeholder="E-mail" maxlength="150" required>
+									<input type="tel" class="form-control mb-2" name="Telefone" value="" placeholder="Telefone / WhatsApp" maxlength="40" required>
+									<textarea class="form-control mb-2 short-textarea" name="Mensagem" rows="6" cols="30" placeholder="Mensagem ou curso de interesse" maxlength="2000" required></textarea>
+									@* Campo "armadilha" invisível contra robôs de spam — não preencha. *@
+									<input type="text" name="Website" value="" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+									<button type="submit" class="button button-circle button-large w-100 fw-normal mt-2 ls-1 text-uppercase mx-0" value="submit">Enviar Mensagem</button>
 								</form>
 							</div>
 						</div>

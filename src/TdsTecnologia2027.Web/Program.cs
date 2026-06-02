@@ -13,6 +13,12 @@ Console.WriteLine($"[TDS] SQLite: {connectionString}");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
+// Configuração de e-mail (SMTP) e serviço de envio do formulário de contato.
+builder.Services.Configure<TdsTecnologia2027.Web.Services.SmtpSettings>(
+    builder.Configuration.GetSection(TdsTecnologia2027.Web.Services.SmtpSettings.SectionName));
+builder.Services.AddTransient<TdsTecnologia2027.Web.Services.IEmailSender,
+    TdsTecnologia2027.Web.Services.EmailSender>();
+
 // ASP.NET Core Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {

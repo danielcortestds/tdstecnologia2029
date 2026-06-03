@@ -13,10 +13,10 @@ Console.WriteLine($"[TDS] SQLite: {connectionString}");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
-// Configuração de e-mail (SMTP) e serviço de envio do formulário de contato.
-builder.Services.Configure<TdsTecnologia2027.Web.Services.SmtpSettings>(
-    builder.Configuration.GetSection(TdsTecnologia2027.Web.Services.SmtpSettings.SectionName));
-builder.Services.AddTransient<TdsTecnologia2027.Web.Services.IEmailSender,
+// Serviço de envio de e-mail via Microsoft Graph (Office 365).
+// Configuração fica na tabela ConfiguracaoEmail, editável em Admin → Configurações.
+// Scoped porque depende do ApplicationDbContext.
+builder.Services.AddScoped<TdsTecnologia2027.Web.Services.IEmailSender,
     TdsTecnologia2027.Web.Services.EmailSender>();
 
 // ASP.NET Core Identity

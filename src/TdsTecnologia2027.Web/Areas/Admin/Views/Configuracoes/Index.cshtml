@@ -1,0 +1,122 @@
+@model TdsTecnologia2027.Web.Models.ConfiguracaoEmail
+@{
+    ViewData["Title"] = "Configurações de E-mail";
+    var temSecret = !string.IsNullOrWhiteSpace(Model.ClientSecret);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1"><i class="bi bi-envelope-at me-2"></i>Configurações de E-mail</h3>
+        <p class="text-muted mb-0">Envio de e-mail do formulário de contato via Microsoft 365 (Graph API).</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <form asp-action="Salvar" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ClientId" class="form-label fw-semibold"></label>
+                        <input asp-for="ClientId" class="form-control" placeholder="ID do aplicativo (cliente) do Entra/Azure AD" />
+                        <div class="form-text">App registration → Application (client) ID.</div>
+                        <span asp-validation-for="ClientId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenantId" class="form-label fw-semibold"></label>
+                        <input asp-for="TenantId" class="form-control" placeholder="ID do diretório (locatário)" />
+                        <div class="form-text">App registration → Directory (tenant) ID.</div>
+                        <span asp-validation-for="TenantId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ClientSecret" class="form-label fw-semibold"></label>
+                        <div class="input-group">
+                            <input asp-for="ClientSecret" type="password" class="form-control"
+                                   placeholder="@(temSecret ? "•••••••• (deixe em branco para manter o atual)" : "Valor do segredo do cliente")"
+                                   value="" autocomplete="new-password" />
+                            <button type="button" class="btn btn-outline-secondary" onclick="toggleSecret(this)" title="Mostrar/ocultar">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            App registration → Certificates &amp; secrets → Client secret (o <strong>Value</strong>, não o Secret ID).
+                            @if (temSecret)
+                            {
+                                <span class="text-success"><i class="bi bi-check-circle"></i> Já existe um segredo salvo. Preencha só se quiser trocar.</span>
+                            }
+                        </div>
+                        <span asp-validation-for="ClientSecret" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailRemetente" class="form-label fw-semibold"></label>
+                        <input asp-for="EmailRemetente" class="form-control" placeholder="contato@tdstecnologia.com.br" />
+                        <div class="form-text">Caixa de e-mail do Microsoft 365 que envia as mensagens.</div>
+                        <span asp-validation-for="EmailRemetente" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailDestino" class="form-label fw-semibold"></label>
+                        <input asp-for="EmailDestino" class="form-control" placeholder="onde você quer receber os contatos" />
+                        <div class="form-text">E-mail que recebe as mensagens enviadas pelo formulário do site.</div>
+                        <span asp-validation-for="EmailDestino" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="Ativo" class="form-check-input" role="switch" />
+                        <label asp-for="Ativo" class="form-check-label fw-semibold"></label>
+                        <div class="form-text">Quando desligado, o formulário de contato não envia e-mails.</div>
+                    </div>
+
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Salvar configurações
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="mb-2"><i class="bi bi-send-check me-2"></i>Testar envio</h5>
+                <p class="text-muted">Envia um e-mail de teste para o endereço configurado em "Receber contatos em".
+                    Salve as configurações antes de testar.</p>
+                <form asp-action="Testar" method="post">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope-arrow-up me-1"></i>Enviar e-mail de teste
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 bg-light">
+            <div class="card-body">
+                <h6 class="fw-bold"><i class="bi bi-info-circle me-1"></i>Como obter esses dados</h6>
+                <ol class="small text-muted ps-3 mb-0">
+                    <li class="mb-2">No <strong>portal.azure.com</strong> → <em>Registros de aplicativo</em> → <em>Novo registro</em>.</li>
+                    <li class="mb-2">Copie o <strong>Client ID</strong> e o <strong>Tenant ID</strong> da tela de visão geral.</li>
+                    <li class="mb-2">Em <em>Certificados e segredos</em> → criar <strong>novo segredo</strong> e copiar o <strong>Value</strong>.</li>
+                    <li class="mb-2">Em <em>Permissões de API</em> → Microsoft Graph → <strong>Permissões de aplicativo</strong> → <strong>Mail.Send</strong>.</li>
+                    <li>Clicar em <strong>Conceder consentimento do administrador</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleSecret(btn) {
+            var input = btn.parentElement.querySelector("input");
+            var icon = btn.querySelector("i");
+            if (input.type === "password") { input.type = "text"; icon.className = "bi bi-eye-slash"; }
+            else { input.type = "password"; icon.className = "bi bi-eye"; }
+        }
+    </script>
+}

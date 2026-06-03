@@ -1,45 +1,41 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.Extensions.Options;
-using MimeKit;
+using Azure.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph;
+using Microsoft.Graph.Models;
+using Microsoft.Graph.Users.Item.SendMail;
+using TdsTecnologia2027.Web.Data;
 using TdsTecnologia2027.Web.Models;
 
 namespace TdsTecnologia2027.Web.Services;
 
 public interface IEmailSender
 {
+    /// <summary>Envia o e-mail do formulário de contato para o destino configurado.</summary>
     Task EnviarContatoAsync(ContatoForm contato);
+
+    /// <summary>Envio genérico (usado pelo botão "enviar e-mail de teste" do admin).</summary>
+    Task EnviarAsync(string para, string assunto, string corpoHtml, string? responderPara = null);
 }
 
 /// <summary>
-/// Envia o e-mail do formulário de contato via SMTP usando MailKit.
+/// Envia e-mail via Microsoft Graph (Office 365) usando o fluxo de credenciais de
+/// aplicativo (client credentials). As credenciais ficam na tabela ConfiguracaoEmail,
+/// editável pela área administrativa. Não depende de SMTP, senha de usuário nem MFA.
 /// </summary>
 public class EmailSender : IEmailSender
 {
-    private readonly SmtpSettings _settings;
+    private readonly ApplicationDbContext _db;
     private readonly ILogger<EmailSender> _logger;
 
-    public EmailSender(IOptions<SmtpSettings> settings, ILogger<EmailSender> logger)
+    public EmailSender(ApplicationDbContext db, ILogger<EmailSender> logger)
     {
-        _settings = settings.Value;
+        _db = db;
         _logger = logger;
     }
 
     public async Task EnviarContatoAsync(ContatoForm contato)
     {
-        if (!_settings.EstaConfigurado)
-        {
-            _logger.LogError("[TDS] SMTP não configurado. Defina as configurações Smtp__* no Azure.");
-            throw new InvalidOperationException("O serviço de e-mail não está configurado.");
-        }
-
-        var mensagem = new MimeMessage();
-        mensagem.From.Add(new MailboxAddress(_settings.FromName, _settings.From));
-        mensagem.To.Add(MailboxAddress.Parse(_settings.To));
-        // Permite responder direto ao visitante que enviou o contato.
-        mensagem.ReplyTo.Add(new MailboxAddress(contato.Nome, contato.Email));
-        mensagem.Subject = $"Novo contato pelo site — {contato.Nome}";
-
+        var assunto = $"Novo contato pelo site — {contato.Nome}";
         var corpo = $"""
             <h2>Novo contato pelo site TDS Tecnologia</h2>
             <p><strong>Nome:</strong> {Escapar(contato.Nome)}</p>
@@ -49,27 +45,51 @@ public class EmailSender : IEmailSender
             <p>{Escapar(contato.Mensagem).Replace("\n", "<br>")}</p>
             """;
 
-        mensagem.Body = new BodyBuilder
+        // Permite responder diretamente ao visitante que enviou o contato.
+        await EnviarAsync(para: null!, assunto: assunto, corpoHtml: corpo, responderPara: contato.Email);
+    }
+
+    public async Task EnviarAsync(string para, string assunto, string corpoHtml, string? responderPara = null)
+    {
+        var cfg = await _db.ConfiguracoesEmail.AsNoTracking().FirstOrDefaultAsync();
+
+        if (cfg is null || !cfg.Ativo)
+            throw new InvalidOperationException(
+                "O envio de e-mail (Office 365) não está ativado. Configure em Admin → Configurações.");
+
+        if (!cfg.EstaConfigurado)
+            throw new InvalidOperationException(
+                "Configuração de e-mail incompleta. Preencha Client ID, Tenant ID, Secret, remetente e destino.");
+
+        // Se não foi passado destinatário explícito, usa o destino configurado (formulário de contato).
+        var destino = string.IsNullOrWhiteSpace(para) ? cfg.EmailDestino! : para;
+
+        var credential = new ClientSecretCredential(cfg.TenantId, cfg.ClientId, cfg.ClientSecret);
+        var graph = new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" });
+
+        var mensagem = new Message
         {
-            HtmlBody = corpo,
-            TextBody = $"Nome: {contato.Nome}\nE-mail: {contato.Email}\nTelefone: {contato.Telefone}\n\n{contato.Mensagem}"
-        }.ToMessageBody();
+            Subject = assunto,
+            Body = new ItemBody { ContentType = BodyType.Html, Content = corpoHtml },
+            ToRecipients = new List<Recipient>
+            {
+                new() { EmailAddress = new EmailAddress { Address = destino } }
+            }
+        };
 
-        using var client = new SmtpClient();
+        if (!string.IsNullOrWhiteSpace(responderPara))
+        {
+            mensagem.ReplyTo = new List<Recipient>
+            {
+                new() { EmailAddress = new EmailAddress { Address = responderPara } }
+            };
+        }
 
-        var socketOptions = _settings.UseSsl
-            ? SecureSocketOptions.SslOnConnect      // porta 465
-            : SecureSocketOptions.StartTls;         // porta 587
+        await graph.Users[cfg.EmailRemetente]
+            .SendMail
+            .PostAsync(new SendMailPostRequestBody { Message = mensagem, SaveToSentItems = true });
 
-        await client.ConnectAsync(_settings.Host, _settings.Port, socketOptions);
-
-        if (!string.IsNullOrWhiteSpace(_settings.User))
-            await client.AuthenticateAsync(_settings.User, _settings.Password);
-
-        await client.SendAsync(mensagem);
-        await client.DisconnectAsync(true);
-
-        _logger.LogInformation("[TDS] E-mail de contato enviado de {Email}.", contato.Email);
+        _logger.LogInformation("[TDS] E-mail enviado via Graph para {Destino}.", destino);
     }
 
     private static string Escapar(string texto) =>

@@ -13,6 +13,7 @@ public class ApplicationDbContext : IdentityDbContext
     }
 
     public DbSet<Curso> Cursos { get; set; }
+    public DbSet<ConfiguracaoEmail> ConfiguracoesEmail { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

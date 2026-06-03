@@ -58,10 +58,7 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "[TDS] Falha ao enviar e-mail de contato.");
-            // DIAGNÓSTICO TEMPORÁRIO: expõe o motivo real do erro de SMTP na mensagem
-            // para facilitar a configuração. REMOVER depois que o envio funcionar.
-            var detalhe = ex.InnerException?.Message ?? ex.Message;
-            return ResultadoContato(false, msgErro + " [diag: " + detalhe + "]");
+            return ResultadoContato(false, msgErro);
         }
     }
 

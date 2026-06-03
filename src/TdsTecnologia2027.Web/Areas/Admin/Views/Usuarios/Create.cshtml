@@ -1,0 +1,52 @@
+@model TdsTecnologia2027.Web.Models.NovoUsuarioViewModel
+@{
+    ViewData["Title"] = "Novo usuário";
+    var papeis = ViewBag.Papeis as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-person-plus me-2"></i>Novo usuário</h3>
+    <p class="text-muted mb-0">Crie um acesso ao painel administrativo.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" placeholder="usuario@tdstecnologia.com.br" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Senha" class="form-label fw-semibold"></label>
+                        <input asp-for="Senha" class="form-control" />
+                        <div class="form-text">Mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial.</div>
+                        <span asp-validation-for="Senha" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Papel" class="form-label fw-semibold"></label>
+                        <select asp-for="Papel" asp-items="papeis" class="form-select"></select>
+                        <div class="form-text">
+                            <strong>Master:</strong> acesso a tudo (cursos, e-mail e usuários).<br>
+                            <strong>Editor:</strong> acesso somente à administração de cursos.
+                        </div>
+                        <span asp-validation-for="Papel" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Criar usuário</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

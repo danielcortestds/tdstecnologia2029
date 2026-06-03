@@ -8,7 +8,7 @@ using TdsTecnologia2027.Web.Services;
 namespace TdsTecnologia2027.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Master")]
 public class ConfiguracoesController : Controller
 {
     private readonly ApplicationDbContext _db;

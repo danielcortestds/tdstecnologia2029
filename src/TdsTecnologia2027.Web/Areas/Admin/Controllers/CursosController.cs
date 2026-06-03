@@ -7,7 +7,7 @@ using TdsTecnologia2027.Web.Models;
 namespace TdsTecnologia2027.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Master,Editor")]
 public class CursosController : Controller
 {
     private readonly ApplicationDbContext _context;

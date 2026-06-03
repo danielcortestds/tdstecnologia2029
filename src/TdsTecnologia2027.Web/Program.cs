@@ -40,9 +40,22 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
+// Política de acesso "somente Master".
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SomenteMaster", p => p.RequireRole("Master"));
+});
+
 // MVC com suporte a Areas
 var mvcBuilder = builder.Services.AddControllersWithViews();
-var razorPagesBuilder = builder.Services.AddRazorPages();
+var razorPagesBuilder = builder.Services.AddRazorPages(options =>
+{
+    // Desabilita o auto-cadastro público: a página de registro padrão do Identity
+    // só pode ser acessada por um Master. A criação de usuários é feita em
+    // Admin → Usuários.
+    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Register", "SomenteMaster");
+    options.Conventions.AuthorizeAreaPage("Identity", "/Account/RegisterConfirmation", "SomenteMaster");
+});
 
 // Em desenvolvimento, recompila as views Razor on-the-fly (sem precisar rebuild).
 if (builder.Environment.IsDevelopment())

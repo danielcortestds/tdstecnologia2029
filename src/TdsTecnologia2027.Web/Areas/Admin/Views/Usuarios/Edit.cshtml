@@ -1,0 +1,52 @@
+@model TdsTecnologia2027.Web.Models.EditarUsuarioViewModel
+@{
+    ViewData["Title"] = "Editar usuário";
+    var papeis = ViewBag.Papeis as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-pencil-square me-2"></i>Editar usuário</h3>
+    <p class="text-muted mb-0">@Model.Email</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Email" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">E-mail</label>
+                        <input class="form-control" value="@Model.Email" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Papel" class="form-label fw-semibold"></label>
+                        <select asp-for="Papel" asp-items="papeis" class="form-select"></select>
+                        <div class="form-text">
+                            <strong>Master:</strong> acesso total. <strong>Editor:</strong> somente cursos.
+                        </div>
+                        <span asp-validation-for="Papel" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="NovaSenha" class="form-label fw-semibold"></label>
+                        <input asp-for="NovaSenha" class="form-control" placeholder="Deixe em branco para manter a senha atual" />
+                        <div class="form-text">Preencha apenas se quiser redefinir a senha deste usuário.</div>
+                        <span asp-validation-for="NovaSenha" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

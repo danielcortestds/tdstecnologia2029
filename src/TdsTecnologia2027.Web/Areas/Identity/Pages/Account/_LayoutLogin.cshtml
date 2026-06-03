@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — TDS Tecnologia</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { --tds-teal: #14b8a6; --tds-teal-dark: #0d9488; --tds-navy: #0b1220; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(1200px 600px at 10% -10%, #14223b 0%, var(--tds-navy) 55%);
+            display: flex; align-items: center; justify-content: center; padding: 24px;
+        }
+        .login-card {
+            width: 100%; max-width: 420px;
+            background: #0f172a; border: 1px solid rgba(148,163,184,0.15);
+            border-radius: 18px; padding: 40px 34px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+        }
+        .login-logo { text-align: center; margin-bottom: 8px; }
+        .login-logo img { height: 46px; }
+        .login-sub { text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 28px; }
+        .login-title { color: #f1f5f9; font-weight: 700; font-size: 1.35rem; text-align: center; margin-bottom: 4px; }
+        .form-label { color: #cbd5e1; font-weight: 600; font-size: 0.85rem; }
+        .form-control {
+            background: #0b1220; border: 1px solid rgba(148,163,184,0.25); color: #e2e8f0;
+            padding: 11px 14px; border-radius: 10px;
+        }
+        .form-control:focus {
+            background: #0b1220; color: #e2e8f0; border-color: var(--tds-teal);
+            box-shadow: 0 0 0 0.2rem rgba(20,184,166,0.2);
+        }
+        .form-control::placeholder { color: #64748b; }
+        .form-check-label { color: #94a3b8; font-size: 0.85rem; }
+        .form-check-input:checked { background-color: var(--tds-teal); border-color: var(--tds-teal); }
+        .btn-tds {
+            background: var(--tds-teal); border: none; color: #04201c; font-weight: 700;
+            padding: 12px; border-radius: 999px; width: 100%; letter-spacing: 0.5px;
+            text-transform: uppercase; font-size: 0.9rem; transition: background .15s;
+        }
+        .btn-tds:hover { background: var(--tds-teal-dark); color: #fff; }
+        .login-foot { text-align: center; margin-top: 22px; color: #475569; font-size: 0.78rem; }
+        .login-foot a { color: #64748b; text-decoration: none; }
+        .alert { border-radius: 10px; }
+        .validation-summary-errors ul { margin: 0; padding-left: 18px; }
+        .text-danger { color: #fca5a5 !important; font-size: 0.82rem; }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <div class="login-logo">
+            <img src="~/images/logo-dark.png" alt="TDS Tecnologia" />
+        </div>
+        <div class="login-sub">Painel Administrativo</div>
+        @RenderBody()
+        <div class="login-foot">
+            &copy; @DateTime.Now.Year TDS Tecnologia &middot; <a href="/">Voltar ao site</a>
+        </div>
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

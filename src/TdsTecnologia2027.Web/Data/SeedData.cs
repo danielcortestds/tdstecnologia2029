@@ -12,10 +12,12 @@ public static class SeedData
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-        // 1) Criar role Admin se não existir
-        if (!await roleManager.RoleExistsAsync("Admin"))
+        // 1) Criar os papéis (roles) de acesso ao admin:
+        //    Master = acesso total | Editor = somente cursos
+        foreach (var papel in new[] { "Master", "Editor" })
         {
-            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            if (!await roleManager.RoleExistsAsync(papel))
+                await roleManager.CreateAsync(new IdentityRole(papel));
         }
 
         // 2) Criar usuário admin inicial se não existir
@@ -25,21 +27,37 @@ public static class SeedData
         var adminExistente = await userManager.FindByEmailAsync(adminEmail);
         if (adminExistente == null)
         {
-            var novoAdmin = new IdentityUser
+            adminExistente = new IdentityUser
             {
                 UserName = adminEmail,
                 Email = adminEmail,
                 EmailConfirmed = true
             };
-
-            var resultado = await userManager.CreateAsync(novoAdmin, adminSenha);
-            if (resultado.Succeeded)
-            {
-                await userManager.AddToRoleAsync(novoAdmin, "Admin");
-            }
+            await userManager.CreateAsync(adminExistente, adminSenha);
         }
 
-        // 3) Popular cursos iniciais (apenas se a tabela estiver vazia)
+        // 3) Garante que o admin inicial seja Master (inclusive em instalações
+        //    que vinham do papel antigo "Admin").
+        if (adminExistente != null && !await userManager.IsInRoleAsync(adminExistente, "Master"))
+            await userManager.AddToRoleAsync(adminExistente, "Master");
+
+        // 3.1) Limpeza do papel legado "Admin": migra todos os usuários que ainda
+        //      o possuem para "Master" e remove o papel antigo do sistema.
+        if (await roleManager.RoleExistsAsync("Admin"))
+        {
+            var antigos = await userManager.GetUsersInRoleAsync("Admin");
+            foreach (var u in antigos)
+            {
+                if (!await userManager.IsInRoleAsync(u, "Master"))
+                    await userManager.AddToRoleAsync(u, "Master");
+                await userManager.RemoveFromRoleAsync(u, "Admin");
+            }
+            var roleAdmin = await roleManager.FindByNameAsync("Admin");
+            if (roleAdmin != null)
+                await roleManager.DeleteAsync(roleAdmin);
+        }
+
+        // 4) Popular cursos iniciais (apenas se a tabela estiver vazia)
         if (!await db.Cursos.AnyAsync())
         {
             var cursos = new List<Curso>

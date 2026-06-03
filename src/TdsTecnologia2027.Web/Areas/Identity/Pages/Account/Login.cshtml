@@ -1,0 +1,37 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Entrar";
+    Layout = "/Areas/Identity/Pages/Account/_LayoutLogin.cshtml";
+}
+
+<h1 class="login-title">Bem-vindo de volta</h1>
+<p class="login-sub" style="margin-bottom:24px;">Entre com sua conta para acessar o painel</p>
+
+<form id="account" method="post">
+    <div asp-validation-summary="All" class="alert alert-danger py-2 px-3 mb-3" role="alert"
+         style="@(ViewContext.ModelState.IsValid ? "display:none;" : "")"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label">E-mail</label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="username"
+               placeholder="seu@email.com" autofocus />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label">Senha</label>
+        <input asp-for="Input.Password" class="form-control" autocomplete="current-password"
+               placeholder="••••••••" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-4">
+        <input class="form-check-input" asp-for="Input.RememberMe" />
+        <label class="form-check-label" asp-for="Input.RememberMe">Lembrar de mim</label>
+    </div>
+
+    <button id="login-submit" type="submit" class="btn-tds">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
+    </button>
+</form>

@@ -197,5 +197,49 @@ public static class SeedData
             db.Cursos.AddRange(cursos);
             await db.SaveChangesAsync();
         }
+
+        // 5) Cursos adicionais idempotentes (inseridos uma única vez, por slug),
+        //    mesmo quando a tabela já tem dados.
+        await GarantirCursoAsync(db, new Curso
+        {
+            Slug = "qlik-sense",
+            Titulo = "Qlik Sense Design e Developer",
+            Categoria = "Business Intelligence",
+            Icone = "fa-solid fa-chart-pie",
+            DescricaoCurta = "Formação completa em Qlik Sense, a plataforma de BI que transforma dados em decisões. Da carga de dados (ETL) à criação de dashboards interativos — do básico ao avançado.",
+            Descricao = "O Qlik Sense é uma das principais plataformas de Business Intelligence do mundo, usada para explorar dados e criar dashboards interativos que apoiam a tomada de decisão. Nesta formação você percorre todo o ciclo de desenvolvimento de aplicações de dados: da captação e preparação (ETL) ao design das visualizações. A trilha Design ensina a montar dashboards, gráficos e histórias de dados; a trilha Developer aprofunda em carga avançada, modelagem, performance e funções de script. Pré-requisito: conhecimento básico de SQL e noções de banco de dados. Ideal para profissionais de TI e usuários que querem criar aplicações com o Qlik Sense.",
+            CargaHoraria = 20,
+            Preco = 3000.00m,
+            DataInicio = new DateTime(2026, 7, 14),
+            PillSecundaria = "10x sem juros",
+            IconePillSecundaria = "fa-solid fa-credit-card",
+            Topicos = string.Join('\n', new[]
+            {
+                "Fundamentos de Business Intelligence e da plataforma Qlik Sense",
+                "Conexão e carga de dados (ETL): conectores, scripts e associação de tabelas",
+                "Criação de dashboards: gráficos, tabelas, mapas e indicadores",
+                "Itens mestre, Storytelling e apresentações orientadas à decisão",
+                "Carga avançada de dados: incremental, particionada e arquitetura de dados",
+                "Modelagem e performance: LinkTable, modelos de associação e otimização",
+                "Script avançado e funções essenciais (AGGR, mapping, peek, crosstable...)",
+                "Projeto prático aplicando todo o ciclo — do dado ao dashboard",
+                "Aulas às terças e quintas, das 19h às 22h — presencial ou online ao vivo",
+                "Certificado de conclusão ao final do curso"
+            }),
+            WhatsAppMensagem = "Olá, quero saber mais sobre a Formação Qlik Sense Design e Developer!",
+            Ordem = 6,
+            Ativo = true
+        });
+    }
+
+    /// <summary>Insere um curso apenas se ainda não existir outro com o mesmo Slug.</summary>
+    private static async Task GarantirCursoAsync(ApplicationDbContext db, Curso curso)
+    {
+        if (!await db.Cursos.AnyAsync(c => c.Slug == curso.Slug))
+        {
+            curso.CriadoEm = DateTime.Now;
+            db.Cursos.Add(curso);
+            await db.SaveChangesAsync();
+        }
     }
 }

@@ -230,6 +230,32 @@ public static class SeedData
             Ordem = 6,
             Ativo = true
         });
+
+        // 6) Atualização (uma vez) do conteúdo do curso de Power BI conforme a
+        //    ementa oficial. O marcador "BI de autoatendimento" garante que só
+        //    rode uma vez, preservando edições futuras feitas pelo painel admin.
+        var powerbi = await db.Cursos.FirstOrDefaultAsync(c => c.Slug == "powerbi");
+        if (powerbi != null && !(powerbi.Descricao ?? string.Empty).Contains("BI de autoatendimento"))
+        {
+            powerbi.DescricaoCurta = "Formação oficial Microsoft Power BI: o passo a passo para criar dashboards e relatórios dinâmicos. Do tratamento de dados (ETL/Power Query) ao DAX, modelagem e publicação no Power BI Service.";
+            powerbi.Descricao = "Formação completa em Microsoft Power BI, a ferramenta de Business Intelligence mais usada no mercado. Você aprende o passo a passo para transformar dados em dashboards e relatórios dinâmicos que apoiam decisões. O curso une o módulo oficial Microsoft (Analisando Dados — BI de autoatendimento) aos módulos práticos da TDS: tratamento e modelagem de dados com Power Query (ETL), cálculos e medidas com DAX, criação de visualizações e relatórios interativos, e publicação, compartilhamento e segurança no Power BI Service. Pré-requisito: conhecimentos básicos de Excel e dados. Ideal para quem quer dominar análise e visualização de dados na prática.";
+            powerbi.CargaHoraria = 30;
+            powerbi.Topicos = string.Join('\n', new[]
+            {
+                "Fundamentos de BI de autoatendimento: análise e visualização de dados",
+                "Conexão a fontes de dados: Excel, bancos de dados e o serviço Power BI",
+                "Tratamento de dados com Power Query (ETL): moldar, combinar e padronizar tabelas",
+                "Modelagem de dados e relacionamentos entre tabelas",
+                "Cálculos e medidas com DAX, incluindo funções de data e tabela de datas",
+                "Diferença entre linguagem M e DAX, colunas e medidas calculadas",
+                "Criação de relatórios e visualizações interativas",
+                "Publicação no Power BI Service: painéis, compartilhamento e favoritos",
+                "Segurança em nível de linha, atualização automática e gateway de dados",
+                "Certificado oficial Microsoft ao concluir"
+            });
+            powerbi.AtualizadoEm = DateTime.Now;
+            await db.SaveChangesAsync();
+        }
     }
 
     /// <summary>Insere um curso apenas se ainda não existir outro com o mesmo Slug.</summary>

@@ -256,6 +256,35 @@ public static class SeedData
             powerbi.AtualizadoEm = DateTime.Now;
             await db.SaveChangesAsync();
         }
+
+        // 7) Atualização (uma vez) do curso de Python conforme a ementa "Python
+        //    Developer". Marcador "Kivy" garante execução única.
+        var python = await db.Cursos.FirstOrDefaultAsync(c => c.Slug == "python");
+        if (python != null && !(python.Descricao ?? string.Empty).Contains("Kivy"))
+        {
+            python.Titulo = "Python Developer";
+            python.Categoria = "Programação Python";
+            python.DescricaoCurta = "Formação Python Developer: do zero ao desenvolvimento prático. Fundamentos da linguagem, dados com Pandas/NumPy, apps com Kivy, automação web com Selenium e web scraping.";
+            python.Descricao = "Python é uma das três linguagens mais populares do mundo, presente em desenvolvimento web, ciência de dados, automação e muito mais. Nesta formação Developer você aprende do zero ao prático: fundamentos da linguagem (variáveis, condições, loops e funções), estruturas de dados (listas, dicionários, strings, arquivos e APIs), análise de dados com Pandas, NumPy e gráficos com Matplotlib, criação de aplicativos com Kivy (mobile e desktop), automação web com Selenium (incluindo chatbot e envio de mensagens) e web scraping para extrair dados de páginas. Pré-requisito: lógica de programação e noções básicas de banco de dados. Ideal para quem quer programar em Python de forma versátil e aplicada.";
+            python.CargaHoraria = 36;
+            python.Topicos = string.Join('\n', new[]
+            {
+                "Fundamentos do Python: variáveis, operadores, condições (if/else) e loops",
+                "Funções próprias, módulos, classes e bibliotecas",
+                "Estruturas de dados: listas, dicionários e manipulação de strings",
+                "Leitura de arquivos (txt, csv, xls, pdf), consumo de APIs e tratamento de erros",
+                "Análise de dados com Pandas e NumPy + gráficos com Matplotlib",
+                "Conexão com banco de dados e leitura de tabelas",
+                "Criação de aplicativos com Kivy (mobile e desktop)",
+                "Automação web com Selenium: formulários, chatbot e envio de mensagens",
+                "Web scraping e crawler para extrair dados de páginas",
+                "Automação de tarefas com PyAutoGUI (teclado, mouse e tela)",
+                "Certificado de conclusão ao final do curso"
+            });
+            python.WhatsAppMensagem = "Olá, quero saber mais sobre a Formação Python Developer!";
+            python.AtualizadoEm = DateTime.Now;
+            await db.SaveChangesAsync();
+        }
     }
 
     /// <summary>Insere um curso apenas se ainda não existir outro com o mesmo Slug.</summary>

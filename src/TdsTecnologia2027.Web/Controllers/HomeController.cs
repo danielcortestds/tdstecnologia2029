@@ -22,11 +22,13 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // Carrega apenas cursos ativos, ordenados pelo campo Ordem (depois pelo Id como tiebreaker)
+        // Carrega apenas cursos ativos, ordenados por data de início (mais próxima
+        // primeiro); cursos sem data definida vão ao final.
         var cursos = await _db.Cursos
             .AsNoTracking()
             .Where(c => c.Ativo)
-            .OrderBy(c => c.Ordem)
+            .OrderBy(c => c.DataInicio == null)
+            .ThenBy(c => c.DataInicio)
             .ThenBy(c => c.Id)
             .ToListAsync();
 

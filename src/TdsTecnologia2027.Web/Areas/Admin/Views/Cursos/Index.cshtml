@@ -36,6 +36,7 @@
                     <th>Título</th>
                     <th>Slug</th>
                     <th>Categoria</th>
+                    <th>Data início</th>
                     <th>Carga</th>
                     <th>Preço</th>
                     <th>Status</th>
@@ -46,7 +47,7 @@
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="9" class="text-center py-4 text-muted">Nenhum curso encontrado.</td>
+                        <td colspan="10" class="text-center py-4 text-muted">Nenhum curso encontrado.</td>
                     </tr>
                 }
                 @foreach (var item in Model)
@@ -57,6 +58,7 @@
                         <td class="fw-semibold">@item.Titulo</td>
                         <td><code class="small">@item.Slug</code></td>
                         <td class="small text-muted">@item.Categoria</td>
+                        <td class="small">@(item.DataInicio?.ToString("dd/MM/yyyy") ?? "—")</td>
                         <td>@item.CargaHoraria h</td>
                         <td>R$ @item.Preco.ToString("N2")</td>
                         <td>

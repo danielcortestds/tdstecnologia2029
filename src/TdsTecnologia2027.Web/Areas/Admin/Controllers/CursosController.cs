@@ -30,7 +30,10 @@ public class CursosController : Controller
 
         var total = await query.CountAsync();
         var cursos = await query
-            .OrderByDescending(c => c.CriadoEm)
+            // Ordena por data de início (mais próxima primeiro); cursos sem data vão ao final.
+            .OrderBy(c => c.DataInicio == null)
+            .ThenBy(c => c.DataInicio)
+            .ThenBy(c => c.Id)
             .Skip((pagina - 1) * TamanhoPagina)
             .Take(TamanhoPagina)
             .ToListAsync();

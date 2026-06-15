@@ -19,6 +19,8 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<CursoOnline> CursosOnline { get; set; }
     public DbSet<ModuloCurso> Modulos { get; set; }
     public DbSet<Licao> Licoes { get; set; }
+    public DbSet<Aluno> Alunos { get; set; }
+    public DbSet<MatriculaCurso> Matriculas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -68,6 +70,26 @@ public class ApplicationDbContext : IdentityDbContext
             entity.HasOne(l => l.Modulo)
                   .WithMany(m => m.Licoes)
                   .HasForeignKey(l => l.ModuloId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Aluno>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        builder.Entity<MatriculaCurso>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.AlunoId, e.CursoOnlineId }).IsUnique();
+            entity.HasOne(m => m.Aluno)
+                  .WithMany(a => a.Matriculas)
+                  .HasForeignKey(m => m.AlunoId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(m => m.CursoOnline)
+                  .WithMany()
+                  .HasForeignKey(m => m.CursoOnlineId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

@@ -43,6 +43,12 @@
                 @if (User.IsInRole("Master"))
                 {
                     <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Alunos" ? "active" : "")"
+                           href="/Admin/Alunos">
+                            <i class="bi bi-person-video3 me-2"></i>Alunos
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Usuarios" ? "active" : "")"
                            href="/Admin/Usuarios">
                             <i class="bi bi-people me-2"></i>Usuários

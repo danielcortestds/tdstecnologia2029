@@ -1,0 +1,58 @@
+@model List<TdsTecnologia2027.Web.Models.AlunoListaItem>
+@using TdsTecnologia2027.Web.Models
+@{ ViewData["Title"] = "Alunos"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1"><i class="bi bi-person-video3 me-2"></i>Alunos</h3>
+        <p class="text-muted mb-0">Alunos da Área do Aluno e os cursos online que cada um acessa.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Novo aluno</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Empresa</th>
+                    <th>Cursos</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center py-4 text-muted">Nenhum aluno cadastrado ainda.</td></tr>
+                }
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@a.NomeCompleto</td>
+                        <td class="small text-muted">@a.Email</td>
+                        <td class="small text-muted">@a.Empresa</td>
+                        <td><span class="badge bg-light text-dark">@a.CursosLiberados curso(s)</span></td>
+                        <td>
+                            @switch (a.Status)
+                            {
+                                case StatusAluno.Ativo: <span class="badge bg-success">Ativo</span>; break;
+                                case StatusAluno.Inativo: <span class="badge bg-secondary">Inativo</span>; break;
+                                case StatusAluno.Bloqueado: <span class="badge bg-danger">Bloqueado</span>; break;
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+                            <form asp-action="Delete" asp-route-id="@a.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Excluir o aluno @a.NomeCompleto? O login dele será removido.');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

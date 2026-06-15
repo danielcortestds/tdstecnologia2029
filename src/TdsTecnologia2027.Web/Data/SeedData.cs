@@ -14,7 +14,7 @@ public static class SeedData
 
         // 1) Criar os papéis (roles) de acesso ao admin:
         //    Master = acesso total | Editor = somente cursos
-        foreach (var papel in new[] { "Master", "Editor" })
+        foreach (var papel in new[] { "Master", "Editor", "Aluno" })
         {
             if (!await roleManager.RoleExistsAsync(papel))
                 await roleManager.CreateAsync(new IdentityRole(papel));

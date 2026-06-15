@@ -213,6 +213,52 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Aluno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Cpf")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Empresa")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeCompleto")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Alunos");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ConfiguracaoEmail", b =>
                 {
                     b.Property<int>("Id")
@@ -431,6 +477,40 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("Licoes");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.MatriculaCurso", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CursoOnlineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DataFim")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DataInicio")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CursoOnlineId");
+
+                    b.HasIndex("AlunoId", "CursoOnlineId")
+                        .IsUnique();
+
+                    b.ToTable("Matriculas");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ModuloCurso", b =>
                 {
                     b.Property<int>("Id")
@@ -517,6 +597,25 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Navigation("Modulo");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.MatriculaCurso", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
+                        .WithMany("Matriculas")
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
+                        .WithMany()
+                        .HasForeignKey("CursoOnlineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("CursoOnline");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ModuloCurso", b =>
                 {
                     b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
@@ -526,6 +625,11 @@ namespace TdsTecnologia2027.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("CursoOnline");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Aluno", b =>
+                {
+                    b.Navigation("Matriculas");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.CursoOnline", b =>

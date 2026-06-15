@@ -1,0 +1,94 @@
+@model TdsTecnologia2027.Web.Models.EditarAlunoViewModel
+@using TdsTecnologia2027.Web.Models
+@{ ViewData["Title"] = "Editar aluno"; }
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-person-gear me-2"></i>Editar aluno</h3>
+    <p class="text-muted mb-0">@Model.Email</p>
+</div>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Email" />
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-semibold"><i class="bi bi-person me-1"></i>Dados do aluno</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="NomeCompleto" class="form-label fw-semibold"></label>
+                        <input asp-for="NomeCompleto" class="form-control" />
+                        <span asp-validation-for="NomeCompleto" class="text-danger"></span>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Cpf" class="form-label fw-semibold"></label>
+                            <input asp-for="Cpf" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Telefone" class="form-label fw-semibold"></label>
+                            <input asp-for="Telefone" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Empresa" class="form-label fw-semibold"></label>
+                        <input asp-for="Empresa" class="form-control" />
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<StatusAluno>()"></select>
+                            <div class="form-text">Inativo/Bloqueado impede o login do aluno.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NovaSenha" class="form-label fw-semibold"></label>
+                            <input asp-for="NovaSenha" class="form-control" placeholder="deixe em branco para manter" />
+                            <span asp-validation-for="NovaSenha" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-semibold"><i class="bi bi-unlock me-1"></i>Cursos liberados</div>
+                <div class="card-body">
+                    @if (!Model.Acessos.Any())
+                    {
+                        <p class="text-muted mb-0">Nenhum curso online cadastrado ainda. Crie cursos em "Cursos Online".</p>
+                    }
+                    @for (var i = 0; i < Model.Acessos.Count; i++)
+                    {
+                        <div class="border rounded p-3 mb-2">
+                            <input type="hidden" asp-for="Acessos[i].CursoOnlineId" />
+                            <input type="hidden" asp-for="Acessos[i].CursoNome" />
+                            <div class="form-check form-switch mb-2">
+                                <input asp-for="Acessos[i].Liberado" class="form-check-input" role="switch" />
+                                <label asp-for="Acessos[i].Liberado" class="form-check-label fw-semibold">@Model.Acessos[i].CursoNome</label>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="form-label small mb-0">Início</label>
+                                    <input asp-for="Acessos[i].DataInicio" type="date" class="form-control form-control-sm" />
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small mb-0">Fim</label>
+                                    <input asp-for="Acessos[i].DataFim" type="date" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="form-text">Datas em branco = acesso sem prazo.</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

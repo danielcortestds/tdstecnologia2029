@@ -1,0 +1,59 @@
+@model TdsTecnologia2027.Web.Models.NovoAlunoViewModel
+@using TdsTecnologia2027.Web.Models
+@{ ViewData["Title"] = "Novo aluno"; }
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-person-plus me-2"></i>Novo aluno</h3>
+    <p class="text-muted mb-0">Cria o login do aluno. Depois de salvar, você libera os cursos.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label asp-for="NomeCompleto" class="form-label fw-semibold"></label>
+                            <input asp-for="NomeCompleto" class="form-control" />
+                            <span asp-validation-for="NomeCompleto" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="Cpf" class="form-label fw-semibold"></label>
+                            <input asp-for="Cpf" class="form-control" placeholder="000.000.000-00" />
+                        </div>
+                        <div class="col-md-7">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="Telefone" class="form-label fw-semibold"></label>
+                            <input asp-for="Telefone" class="form-control" />
+                        </div>
+                        <div class="col-md-7">
+                            <label asp-for="Empresa" class="form-label fw-semibold"></label>
+                            <input asp-for="Empresa" class="form-control" />
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<StatusAluno>()"></select>
+                        </div>
+                        <div class="col-md-7">
+                            <label asp-for="Senha" class="form-label fw-semibold"></label>
+                            <input asp-for="Senha" class="form-control" />
+                            <div class="form-text">Mín. 8 caracteres, com maiúscula, minúscula, número e caractere especial.</div>
+                            <span asp-validation-for="Senha" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Criar e liberar cursos</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

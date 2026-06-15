@@ -65,7 +65,7 @@ public class AlunosController : Controller
 
         await _userManager.AddToRoleAsync(user, "Aluno");
 
-        var aluno = new Aluno
+        var aluno = new Models.Aluno
         {
             UserId = user.Id,
             NomeCompleto = model.NomeCompleto,

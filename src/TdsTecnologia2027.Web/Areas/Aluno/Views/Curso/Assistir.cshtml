@@ -1,0 +1,140 @@
+@model TdsTecnologia2027.Web.Models.AssistirViewModel
+@using TdsTecnologia2027.Web.Models
+@{ ViewData["Title"] = Model.Curso.Nome; }
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <a asp-area="Aluno" asp-controller="Home" asp-action="Index" class="text-decoration-none small text-muted-2">
+            <i class="bi bi-arrow-left me-1"></i>Meus Cursos
+        </a>
+        <h4 class="mb-0 mt-1">@Model.Curso.Nome</h4>
+    </div>
+    <div style="min-width:180px;">
+        <div class="small text-muted-2 mb-1">@Model.PercentualConcluido% concluído</div>
+        <div class="progress" style="height:7px;"><div class="progress-bar" style="width:@Model.PercentualConcluido%"></div></div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Player + info -->
+    <div class="col-lg-8">
+        <div class="card-tds overflow-hidden">
+            @if (!string.IsNullOrWhiteSpace(Model.EmbedUrl))
+            {
+                <div style="position:relative; padding-bottom:56.25%; height:0;">
+                    <iframe id="vimeoPlayer" src="@Model.EmbedUrl"
+                            style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+                            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center text-muted-2">
+                    <i class="bi bi-exclamation-triangle" style="font-size:32px;"></i>
+                    <p class="mt-2 mb-0">Vídeo indisponível. Avise a TDS sobre esta aula.</p>
+                </div>
+            }
+            <div class="p-3 p-md-4">
+                <h5 class="mb-2">@Model.LicaoAtual.Titulo</h5>
+                @if (!string.IsNullOrWhiteSpace(Model.LicaoAtual.Descricao))
+                {
+                    <p class="text-muted-2" style="white-space:pre-line;">@Model.LicaoAtual.Descricao</p>
+                }
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+                    <div>
+                        @if (Model.AnteriorLicaoId.HasValue)
+                        {
+                            <a class="btn btn-outline-light btn-sm" asp-action="Assistir" asp-route-id="@Model.Curso.Id" asp-route-licao="@Model.AnteriorLicaoId">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        }
+                        @if (Model.ProximaLicaoId.HasValue)
+                        {
+                            <a class="btn btn-outline-light btn-sm" asp-action="Assistir" asp-route-id="@Model.Curso.Id" asp-route-licao="@Model.ProximaLicaoId">
+                                Próxima <i class="bi bi-chevron-right"></i>
+                            </a>
+                        }
+                    </div>
+                    <form id="formConcluir" asp-action="Concluir" method="post">
+                        <input type="hidden" name="licaoId" value="@Model.LicaoAtual.Id" />
+                        <button type="submit" class="btn btn-tds btn-sm" @(Model.LicaoConcluida ? "disabled" : "")>
+                            <i class="bi bi-check-circle me-1"></i>@(Model.LicaoConcluida ? "Aula concluída" : "Marcar como concluída")
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra lateral: módulos e aulas -->
+    <div class="col-lg-4">
+        <div class="card-tds p-3" style="max-height:80vh; overflow:auto;">
+            <h6 class="text-muted-2 text-uppercase small mb-3">Conteúdo do curso</h6>
+            @foreach (var modulo in Model.Modulos)
+            {
+                <div class="mb-3">
+                    <div class="fw-semibold small mb-2"><i class="bi bi-collection me-1 text-muted-2"></i>@modulo.Titulo</div>
+                    <div class="list-group list-group-flush">
+                        @foreach (var licao in modulo.Licoes)
+                        {
+                            var icone = licao.Status switch
+                            {
+                                StatusLicaoAluno.Assistida => "bi-check-circle-fill text-success",
+                                StatusLicaoAluno.EmAndamento => "bi-play-circle-fill text-warning",
+                                _ => "bi-circle text-muted-2"
+                            };
+                            <a asp-action="Assistir" asp-route-id="@Model.Curso.Id" asp-route-licao="@licao.Id"
+                               class="list-group-item bg-transparent border-0 px-2 py-2 d-flex align-items-center gap-2 @(licao.Atual ? "rounded" : "")"
+                               style="@(licao.Atual ? "background:rgba(20,184,166,0.12)!important;" : "") color:#cbd5e1;">
+                                <i class="bi @icone"></i>
+                                <span class="flex-grow-1 small">@licao.Titulo</span>
+                                <span class="text-muted-2" style="font-size:0.72rem;">@licao.Duracao min</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="https://player.vimeo.com/api/player.js"></script>
+    <script>
+        (function () {
+            var iframe = document.getElementById('vimeoPlayer');
+            if (!iframe || typeof Vimeo === 'undefined') return;
+
+            var licaoId = @Model.LicaoAtual.Id;
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var player = new Vimeo.Player(iframe);
+            var ultimoEnvio = 0;
+
+            function salvarTempo(seg) {
+                fetch('@Url.Action("SalvarTempo", "Curso", new { area = "Aluno" })', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: '__RequestVerificationToken=' + encodeURIComponent(token) +
+                          '&licaoId=' + licaoId + '&segundos=' + Math.floor(seg)
+                });
+            }
+
+            // A cada 15s de reprodução, salva o tempo assistido.
+            player.on('timeupdate', function (data) {
+                if (data.seconds - ultimoEnvio >= 15) {
+                    ultimoEnvio = data.seconds;
+                    salvarTempo(data.seconds);
+                }
+            });
+
+            // Ao terminar o vídeo, marca a aula como concluída.
+            player.on('ended', function () {
+                var form = document.getElementById('formConcluir');
+                if (form) form.submit();
+            });
+        })();
+    </script>
+}

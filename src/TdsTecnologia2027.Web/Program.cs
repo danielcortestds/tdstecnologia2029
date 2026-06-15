@@ -110,7 +110,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Rota da área Admin
+// Área do Aluno: /Aluno cai em Home/Index (dashboard "Meus Cursos").
+app.MapAreaControllerRoute(
+    name: "alunoArea",
+    areaName: "Aluno",
+    pattern: "Aluno/{controller=Home}/{action=Index}/{id?}");
+
+// Rota da área Admin (e demais áreas)
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Cursos}/{action=Index}/{id?}");

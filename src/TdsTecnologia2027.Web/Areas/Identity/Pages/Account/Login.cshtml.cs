@@ -66,6 +66,13 @@ public class LoginModel : PageModel
         if (result.Succeeded)
         {
             _logger.LogInformation("Usuário autenticado.");
+            // Aluno (sem destino específico) vai direto para a Área do Aluno.
+            if (returnUrl == Url.Content("~/"))
+            {
+                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                if (user != null && await _signInManager.UserManager.IsInRoleAsync(user, "Aluno"))
+                    return LocalRedirect("~/Aluno");
+            }
             return LocalRedirect(returnUrl);
         }
 

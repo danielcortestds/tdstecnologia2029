@@ -535,6 +535,37 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("Modulos");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Concluida")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LicaoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TempoAssistidoSegundos")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UltimoAcesso")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LicaoId");
+
+                    b.HasIndex("AlunoId", "LicaoId")
+                        .IsUnique();
+
+                    b.ToTable("ProgressosLicao");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -625,6 +656,25 @@ namespace TdsTecnologia2027.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("CursoOnline");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
+                        .WithMany()
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TdsTecnologia2027.Web.Models.Licao", "Licao")
+                        .WithMany()
+                        .HasForeignKey("LicaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("Licao");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Aluno", b =>

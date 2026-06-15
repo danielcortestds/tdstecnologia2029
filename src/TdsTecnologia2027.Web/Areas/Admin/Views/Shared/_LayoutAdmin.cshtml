@@ -28,6 +28,15 @@
                 <small>Painel Administrativo</small>
             </a>
             <ul class="nav flex-column gap-1">
+                @if (User.IsInRole("Master"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+                           href="/Admin/Dashboard">
+                            <i class="bi bi-speedometer2 me-2"></i>Painel
+                        </a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Cursos" ? "active" : "")"
                        href="/Admin/Cursos">

@@ -1,0 +1,94 @@
+@model TdsTecnologia2027.Web.Models.DashboardLmsViewModel
+@{ ViewData["Title"] = "Painel — Área do Aluno"; }
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-speedometer2 me-2"></i>Painel — Área do Aluno</h3>
+    <p class="text-muted mb-0">Visão geral dos cursos online e alunos.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    @{
+        var cards = new[]
+        {
+            ("Cursos online", Model.TotalCursos.ToString(), $"{Model.CursosPublicados} publicados", "bi-collection-play", "#0d9488"),
+            ("Alunos", Model.TotalAlunos.ToString(), $"{Model.AlunosAtivos} ativos", "bi-person-video3", "#2563eb"),
+            ("Aulas cadastradas", Model.TotalAulas.ToString(), "no total", "bi-play-btn", "#7c3aed"),
+            ("Aulas assistidas", Model.AulasAssistidas.ToString(), "concluídas pelos alunos", "bi-check2-circle", "#16a34a"),
+        };
+    }
+    @foreach (var (titulo, valor, sub, icone, cor) in cards)
+    {
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width:54px; height:54px; background:@(cor)1a; color:@cor;">
+                        <i class="bi @icone" style="font-size:24px;"></i>
+                    </div>
+                    <div>
+                        <div class="h4 mb-0 fw-bold">@valor</div>
+                        <div class="text-muted small">@titulo</div>
+                        <div class="text-muted" style="font-size:0.75rem;">@sub</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-people me-1"></i>Alunos por curso</div>
+            <div class="card-body">
+                @if (!Model.AlunosPorCurso.Any()) { <p class="text-muted mb-0">Sem dados ainda.</p> }
+                @foreach (var item in Model.AlunosPorCurso)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">@item.Nome</span>
+                        <span class="badge bg-light text-dark">@item.Quantidade</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-fire me-1"></i>Cursos mais acessados</div>
+            <div class="card-body">
+                @if (!Model.CursosMaisAcessados.Any()) { <p class="text-muted mb-0">Sem dados ainda.</p> }
+                @foreach (var item in Model.CursosMaisAcessados)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">@item.Nome</span>
+                        <span class="badge bg-light text-dark">@item.Quantidade acessos</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-clock-history me-1"></i>Últimos acessos</div>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0 align-middle">
+                    <thead class="table-light"><tr><th>Aluno</th><th>Curso</th><th>Aula</th><th>Quando</th></tr></thead>
+                    <tbody>
+                        @if (!Model.UltimosAcessos.Any()) { <tr><td colspan="4" class="text-center text-muted py-3">Nenhum acesso registrado ainda.</td></tr> }
+                        @foreach (var a in Model.UltimosAcessos)
+                        {
+                            <tr>
+                                <td class="small">@a.Aluno</td>
+                                <td class="small text-muted">@a.Curso</td>
+                                <td class="small text-muted">@a.Licao</td>
+                                <td class="small text-muted">@a.Quando.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

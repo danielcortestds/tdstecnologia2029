@@ -15,6 +15,11 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Curso> Cursos { get; set; }
     public DbSet<ConfiguracaoEmail> ConfiguracoesEmail { get; set; }
 
+    // LMS / Área do Aluno (cursos online)
+    public DbSet<CursoOnline> CursosOnline { get; set; }
+    public DbSet<ModuloCurso> Modulos { get; set; }
+    public DbSet<Licao> Licoes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -38,6 +43,32 @@ public class ApplicationDbContext : IdentityDbContext
             entity.Property(e => e.Topicos).HasMaxLength(2000);
             entity.Property(e => e.WhatsAppMensagem).HasMaxLength(300);
             entity.Property(e => e.CriadoEm).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+
+        // ── LMS / Área do Aluno ───────────────────────────────────────────
+        builder.Entity<CursoOnline>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Slug).HasMaxLength(80).IsRequired();
+            entity.HasIndex(e => e.Slug).IsUnique();
+        });
+
+        builder.Entity<ModuloCurso>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(m => m.CursoOnline)
+                  .WithMany(c => c.Modulos)
+                  .HasForeignKey(m => m.CursoOnlineId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Licao>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(l => l.Modulo)
+                  .WithMany(m => m.Licoes)
+                  .HasForeignKey(l => l.ModuloId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

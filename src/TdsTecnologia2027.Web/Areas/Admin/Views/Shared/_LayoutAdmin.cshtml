@@ -31,7 +31,13 @@
                 <li class="nav-item">
                     <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Cursos" ? "active" : "")"
                        href="/Admin/Cursos">
-                        <i class="bi bi-mortarboard me-2"></i>Cursos
+                        <i class="bi bi-mortarboard me-2"></i>Cursos presenciais
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "CursosOnline" ? "active" : "")"
+                       href="/Admin/CursosOnline">
+                        <i class="bi bi-collection-play me-2"></i>Cursos Online
                     </a>
                 </li>
                 @if (User.IsInRole("Master"))

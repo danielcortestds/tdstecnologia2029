@@ -1,0 +1,58 @@
+@model TdsTecnologia2027.Web.Models.Licao
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Nova aula" : "Editar aula";
+    var cursoId = (int)(ViewBag.CursoId ?? 0);
+}
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-play-circle me-2"></i>@ViewData["Title"]</h3>
+    <p class="text-muted mb-0">A aula será reproduzida pelo player do Vimeo na Área do Aluno.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form asp-action="Licao" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="ModuloId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Titulo" class="form-label fw-semibold"></label>
+                        <input asp-for="Titulo" class="form-control" />
+                        <span asp-validation-for="Titulo" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UrlVideoVimeo" class="form-label fw-semibold"></label>
+                        <input asp-for="UrlVideoVimeo" class="form-control" placeholder="https://vimeo.com/123456789" />
+                        <div class="form-text">Cole o link do Vimeo (vimeo.com/... ou player.vimeo.com/video/...).</div>
+                        <span asp-validation-for="UrlVideoVimeo" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Ordem" class="form-label fw-semibold"></label>
+                            <input asp-for="Ordem" type="number" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Duracao" class="form-label fw-semibold"></label>
+                            <input asp-for="Duracao" type="number" min="0" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Descricao" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Descricao" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar aula</button>
+                    <a asp-action="Conteudo" asp-route-id="@cursoId" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,60 @@
+@model TdsTecnologia2027.Web.Models.CursoOnline
+@using TdsTecnologia2027.Web.Models
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <label asp-for="Nome" class="form-label fw-semibold"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Slug" class="form-label fw-semibold"></label>
+        <input asp-for="Slug" class="form-control" placeholder="gerado automaticamente" />
+        <div class="form-text">Deixe em branco para gerar pelo nome.</div>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="DescricaoCurta" class="form-label fw-semibold"></label>
+        <input asp-for="DescricaoCurta" class="form-control" />
+    </div>
+
+    <div class="col-12">
+        <label asp-for="DescricaoCompleta" class="form-label fw-semibold"></label>
+        <textarea asp-for="DescricaoCompleta" class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="ImagemCapa" class="form-label fw-semibold"></label>
+        <input asp-for="ImagemCapa" class="form-control" placeholder="https://..." />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Categoria" class="form-label fw-semibold"></label>
+        <input asp-for="Categoria" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Instrutor" class="form-label fw-semibold"></label>
+        <input asp-for="Instrutor" class="form-control" />
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="Status" class="form-label fw-semibold"></label>
+        <select asp-for="Status" class="form-select"
+                asp-items="Html.GetEnumSelectList<StatusCursoOnline>()"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="CargaHoraria" class="form-label fw-semibold"></label>
+        <input asp-for="CargaHoraria" type="number" min="0" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Ordem" class="form-label fw-semibold"></label>
+        <input asp-for="Ordem" type="number" class="form-control" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check form-switch mb-2">
+            <input asp-for="Certificado" class="form-check-input" role="switch" />
+            <label asp-for="Certificado" class="form-check-label"></label>
+        </div>
+    </div>
+</div>

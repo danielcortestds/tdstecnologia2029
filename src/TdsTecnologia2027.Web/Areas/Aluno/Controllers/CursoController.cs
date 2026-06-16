@@ -8,7 +8,12 @@ namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 
 public class CursoController : AlunoBaseController
 {
-    public CursoController(ApplicationDbContext db) : base(db) { }
+    private readonly IWebHostEnvironment _env;
+
+    public CursoController(ApplicationDbContext db, IWebHostEnvironment env) : base(db)
+    {
+        _env = env;
+    }
 
     // GET: /Aluno/Curso/Assistir/{id}?licao={licaoId}
     public async Task<IActionResult> Assistir(int id, int? licao)
@@ -23,6 +28,7 @@ public class CursoController : AlunoBaseController
 
         var curso = await Db.CursosOnline
             .Include(c => c.Modulos.OrderBy(m => m.Ordem)).ThenInclude(m => m.Licoes.OrderBy(l => l.Ordem))
+            .Include(c => c.Materiais.OrderBy(m => m.CriadoEm))
             .FirstOrDefaultAsync(c => c.Id == id);
         if (curso == null || curso.Status != StatusCursoOnline.Publicado) return NotFound();
 
@@ -81,9 +87,28 @@ public class CursoController : AlunoBaseController
             AnteriorLicaoId = idx > 0 ? ordenadas[idx - 1].Id : null,
             ProximaLicaoId = idx < total - 1 ? ordenadas[idx + 1].Id : null,
             PercentualConcluido = total > 0 ? (int)Math.Round(concluidas * 100.0 / total) : 0,
-            LicaoConcluida = prog.Concluida
+            LicaoConcluida = prog.Concluida,
+            Materiais = curso.Materiais.OrderBy(m => m.CriadoEm).ToList()
         };
         return View(vm);
+    }
+
+    // GET: download de material de apoio (somente alunos com acesso ao curso)
+    public async Task<IActionResult> Material(int id)
+    {
+        var aluno = await ObterAlunoAsync();
+        if (aluno == null || aluno.Status != StatusAluno.Ativo) return Forbid();
+
+        var mat = await Db.MateriaisApoio.FindAsync(id);
+        if (mat == null) return NotFound();
+
+        var matricula = await Db.Matriculas.FirstOrDefaultAsync(m => m.AlunoId == aluno.Id && m.CursoOnlineId == mat.CursoOnlineId);
+        if (matricula == null || !matricula.AcessoValido()) return Forbid();
+
+        var caminho = Armazenamento.CaminhoArquivo(_env, mat.ArquivoArmazenado);
+        if (!System.IO.File.Exists(caminho)) return NotFound();
+        var contentType = mat.Tipo == "pdf" ? "application/pdf" : "application/zip";
+        return PhysicalFile(caminho, contentType, mat.NomeArquivo);
     }
 
     // POST: marca aula como concluída (botão ou evento "ended" do player)

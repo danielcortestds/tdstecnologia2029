@@ -20,14 +20,18 @@
     {
         <div class="col-md-6 col-lg-4">
             <div class="card-tds h-100 overflow-hidden d-flex flex-column">
-                <div style="aspect-ratio:16/9; background:#1e293b; overflow:hidden;">
+                @{
+                    var corCapa = string.IsNullOrWhiteSpace(item.Curso.CorCapa) ? "#0d9488" : item.Curso.CorCapa;
+                    var iconeCapa = string.IsNullOrWhiteSpace(item.Curso.IconeCapa) ? "bi-play-circle-fill" : item.Curso.IconeCapa;
+                }
+                <div style="aspect-ratio:16/9; background:@corCapa; overflow:hidden;">
                     @if (!string.IsNullOrWhiteSpace(item.Curso.ImagemCapa))
                     {
                         <img src="@item.Curso.ImagemCapa" alt="@item.Curso.Nome" style="width:100%; height:100%; object-fit:cover;">
                     }
                     else
                     {
-                        <div class="d-flex align-items-center justify-content-center h-100 text-muted-2"><i class="bi bi-play-circle" style="font-size:40px;"></i></div>
+                        <div class="d-flex align-items-center justify-content-center h-100"><i class="bi @iconeCapa" style="font-size:46px; color:#fff;"></i></div>
                     }
                 </div>
                 <div class="p-3 d-flex flex-column flex-grow-1">

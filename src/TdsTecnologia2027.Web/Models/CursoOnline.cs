@@ -36,8 +36,16 @@ public class CursoOnline
     public string? DescricaoCompleta { get; set; }
 
     [StringLength(300)]
-    [Display(Name = "Imagem de capa (URL)")]
+    [Display(Name = "Imagem de capa (URL) — opcional")]
     public string? ImagemCapa { get; set; }
+
+    [StringLength(20)]
+    [Display(Name = "Cor de fundo da capa")]
+    public string? CorCapa { get; set; }
+
+    [StringLength(40)]
+    [Display(Name = "Ícone da capa")]
+    public string? IconeCapa { get; set; }
 
     [StringLength(100)]
     [Display(Name = "Categoria")]
@@ -63,4 +71,5 @@ public class CursoOnline
     public DateTime? AtualizadoEm { get; set; }
 
     public ICollection<ModuloCurso> Modulos { get; set; } = new List<ModuloCurso>();
+    public ICollection<MaterialApoio> Materiais { get; set; } = new List<MaterialApoio>();
 }

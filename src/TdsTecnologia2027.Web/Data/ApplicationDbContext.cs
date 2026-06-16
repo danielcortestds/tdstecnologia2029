@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Aluno> Alunos { get; set; }
     public DbSet<MatriculaCurso> Matriculas { get; set; }
     public DbSet<ProgressoLicao> ProgressosLicao { get; set; }
+    public DbSet<MaterialApoio> MateriaisApoio { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -71,6 +72,15 @@ public class ApplicationDbContext : IdentityDbContext
             entity.HasOne(l => l.Modulo)
                   .WithMany(m => m.Licoes)
                   .HasForeignKey(l => l.ModuloId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<MaterialApoio>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(m => m.CursoOnline)
+                  .WithMany(c => c.Materiais)
+                  .HasForeignKey(m => m.CursoOnlineId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 

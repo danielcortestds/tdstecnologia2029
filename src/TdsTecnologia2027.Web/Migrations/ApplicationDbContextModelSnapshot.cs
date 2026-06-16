@@ -398,6 +398,10 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Property<bool>("Certificado")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CorCapa")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("TEXT");
 
@@ -407,6 +411,10 @@ namespace TdsTecnologia2027.Web.Migrations
 
                     b.Property<string>("DescricaoCurta")
                         .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IconeCapa")
+                        .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagemCapa")
@@ -475,6 +483,48 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.HasIndex("ModuloId");
 
                     b.ToTable("Licoes");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.MaterialApoio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ArquivoArmazenado")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CursoOnlineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("NomeArquivo")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("TamanhoBytes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CursoOnlineId");
+
+                    b.ToTable("MateriaisApoio");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.MatriculaCurso", b =>
@@ -628,6 +678,17 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Navigation("Modulo");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.MaterialApoio", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
+                        .WithMany("Materiais")
+                        .HasForeignKey("CursoOnlineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CursoOnline");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.MatriculaCurso", b =>
                 {
                     b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
@@ -684,6 +745,8 @@ namespace TdsTecnologia2027.Web.Migrations
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.CursoOnline", b =>
                 {
+                    b.Navigation("Materiais");
+
                     b.Navigation("Modulos");
                 });
 

@@ -37,4 +37,5 @@ public class AssistirViewModel
     public int? ProximaLicaoId { get; set; }
     public int PercentualConcluido { get; set; }
     public bool LicaoConcluida { get; set; }
+    public List<MaterialApoio> Materiais { get; set; } = new();
 }

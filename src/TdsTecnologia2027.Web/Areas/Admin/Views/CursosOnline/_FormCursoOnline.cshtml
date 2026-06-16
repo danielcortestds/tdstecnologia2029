@@ -25,9 +25,46 @@
         <textarea asp-for="DescricaoCompleta" class="form-control" rows="4"></textarea>
     </div>
 
+    <div class="col-12">
+        <label class="form-label fw-semibold">Capa do curso (cor + ícone)</label>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div>
+                <span class="d-block small text-muted mb-1">Cor de fundo</span>
+                <input asp-for="CorCapa" type="color" class="form-control form-control-color" value="@(string.IsNullOrWhiteSpace(Model.CorCapa) ? "#0d9488" : Model.CorCapa)" id="corCapa" oninput="atualizarPreviaCapa()" />
+            </div>
+            <div style="min-width:220px;">
+                <span class="d-block small text-muted mb-1">Ícone</span>
+                <select asp-for="IconeCapa" class="form-select" id="iconeCapa" onchange="atualizarPreviaCapa()">
+                    @{
+                        var icones = new (string val, string nome)[]
+                        {
+                            ("bi-play-circle-fill","Vídeo / play"), ("bi-code-slash","Programação"),
+                            ("bi-bar-chart-fill","Dados / BI"), ("bi-robot","IA / Robô"),
+                            ("bi-database-fill","Banco de dados"), ("bi-cloud-fill","Cloud"),
+                            ("bi-shield-lock-fill","Segurança / LGPD"), ("bi-diagram-3-fill","Arquitetura"),
+                            ("bi-lightbulb-fill","Lógica / Ideia"), ("bi-mortarboard-fill","Formação"),
+                            ("bi-graph-up-arrow","Análise"), ("bi-gear-fill","Ferramentas")
+                        };
+                    }
+                    @foreach (var ic in icones)
+                    {
+                        <option value="@ic.val" selected="@(Model.IconeCapa == ic.val)">@ic.nome</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <span class="d-block small text-muted mb-1">Prévia</span>
+                <div id="previaCapa" style="width:88px; height:64px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i id="previaIcone" class="bi" style="font-size:28px; color:#fff;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="form-text">A capa usa cor + ícone (sem precisar de imagem). Imagem é opcional, abaixo.</div>
+    </div>
+
     <div class="col-md-6">
         <label asp-for="ImagemCapa" class="form-label fw-semibold"></label>
-        <input asp-for="ImagemCapa" class="form-control" placeholder="https://..." />
+        <input asp-for="ImagemCapa" class="form-control" placeholder="opcional — deixe em branco para usar a cor + ícone" />
     </div>
     <div class="col-md-3">
         <label asp-for="Categoria" class="form-label fw-semibold"></label>
@@ -58,3 +95,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    function atualizarPreviaCapa() {
+        var cor = document.getElementById('corCapa').value || '#0d9488';
+        var icone = document.getElementById('iconeCapa').value || 'bi-play-circle-fill';
+        document.getElementById('previaCapa').style.background = cor;
+        document.getElementById('previaIcone').className = 'bi ' + icone;
+    }
+    atualizarPreviaCapa();
+</script>

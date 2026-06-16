@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TdsTecnologia2027.Web.Data;
 using TdsTecnologia2027.Web.Models;
+using TdsTecnologia2027.Web.Services;
 
 namespace TdsTecnologia2027.Web.Areas.Admin.Controllers;
 
@@ -14,10 +15,12 @@ namespace TdsTecnologia2027.Web.Areas.Admin.Controllers;
 public class CursosOnlineController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IWebHostEnvironment _env;
 
-    public CursosOnlineController(ApplicationDbContext db)
+    public CursosOnlineController(ApplicationDbContext db, IWebHostEnvironment env)
     {
         _db = db;
+        _env = env;
     }
 
     // ── Cursos ────────────────────────────────────────────────────────────
@@ -71,6 +74,8 @@ public class CursosOnlineController : Controller
         curso.DescricaoCurta = model.DescricaoCurta;
         curso.DescricaoCompleta = model.DescricaoCompleta;
         curso.ImagemCapa = model.ImagemCapa;
+        curso.CorCapa = model.CorCapa;
+        curso.IconeCapa = model.IconeCapa;
         curso.Categoria = model.Categoria;
         curso.Instrutor = model.Instrutor;
         curso.Status = model.Status;
@@ -88,25 +93,113 @@ public class CursosOnlineController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var curso = await _db.CursosOnline.FindAsync(id);
+        var curso = await _db.CursosOnline.Include(c => c.Materiais).FirstOrDefaultAsync(c => c.Id == id);
         if (curso != null)
         {
-            _db.CursosOnline.Remove(curso); // cascata remove módulos e lições
+            // Remove os arquivos físicos dos materiais antes de excluir o curso.
+            foreach (var mat in curso.Materiais)
+                ExcluirArquivoFisico(mat.ArquivoArmazenado);
+
+            _db.CursosOnline.Remove(curso); // cascata remove módulos, lições e materiais
             await _db.SaveChangesAsync();
             TempData["Sucesso"] = "Curso online excluído.";
         }
         return RedirectToAction(nameof(Index));
     }
 
-    // ── Conteúdo: módulos e lições ────────────────────────────────────────
+    // ── Conteúdo: módulos, lições e materiais ─────────────────────────────
     public async Task<IActionResult> Conteudo(int id)
     {
         var curso = await _db.CursosOnline
             .Include(c => c.Modulos.OrderBy(m => m.Ordem))
                 .ThenInclude(m => m.Licoes.OrderBy(l => l.Ordem))
+            .Include(c => c.Materiais.OrderBy(m => m.CriadoEm))
             .FirstOrDefaultAsync(c => c.Id == id);
         if (curso == null) return NotFound();
         return View(curso);
+    }
+
+    // ── Material de apoio (upload/download/exclusão) ──────────────────────
+    private static readonly Dictionary<string, string> ExtensoesPermitidas = new()
+    {
+        [".pdf"] = "pdf",
+        [".zip"] = "zip"
+    };
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(104_857_600)] // 100 MB
+    public async Task<IActionResult> AddMaterial(int cursoId, string? titulo, IFormFile arquivo)
+    {
+        var curso = await _db.CursosOnline.FindAsync(cursoId);
+        if (curso == null) return NotFound();
+
+        if (arquivo == null || arquivo.Length == 0)
+        {
+            TempData["Erro"] = "Selecione um arquivo para enviar.";
+            return RedirectToAction(nameof(Conteudo), new { id = cursoId });
+        }
+
+        var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+        if (!ExtensoesPermitidas.TryGetValue(ext, out var tipo))
+        {
+            TempData["Erro"] = "Formato não permitido. Envie apenas PDF ou ZIP.";
+            return RedirectToAction(nameof(Conteudo), new { id = cursoId });
+        }
+
+        var nomeFisico = $"{Guid.NewGuid():N}{ext}";
+        var caminho = Armazenamento.CaminhoArquivo(_env, nomeFisico);
+        using (var stream = new FileStream(caminho, FileMode.Create))
+            await arquivo.CopyToAsync(stream);
+
+        _db.MateriaisApoio.Add(new MaterialApoio
+        {
+            CursoOnlineId = cursoId,
+            Titulo = string.IsNullOrWhiteSpace(titulo) ? Path.GetFileNameWithoutExtension(arquivo.FileName) : titulo.Trim(),
+            NomeArquivo = Path.GetFileName(arquivo.FileName),
+            ArquivoArmazenado = nomeFisico,
+            Tipo = tipo,
+            TamanhoBytes = arquivo.Length
+        });
+        await _db.SaveChangesAsync();
+        TempData["Sucesso"] = "Material adicionado.";
+        return RedirectToAction(nameof(Conteudo), new { id = cursoId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMaterial(int id)
+    {
+        var mat = await _db.MateriaisApoio.FindAsync(id);
+        var cursoId = mat?.CursoOnlineId ?? 0;
+        if (mat != null)
+        {
+            ExcluirArquivoFisico(mat.ArquivoArmazenado);
+            _db.MateriaisApoio.Remove(mat);
+            await _db.SaveChangesAsync();
+            TempData["Sucesso"] = "Material excluído.";
+        }
+        return RedirectToAction(nameof(Conteudo), new { id = cursoId });
+    }
+
+    public async Task<IActionResult> BaixarMaterial(int id)
+    {
+        var mat = await _db.MateriaisApoio.FindAsync(id);
+        if (mat == null) return NotFound();
+        var caminho = Armazenamento.CaminhoArquivo(_env, mat.ArquivoArmazenado);
+        if (!System.IO.File.Exists(caminho)) return NotFound();
+        var contentType = mat.Tipo == "pdf" ? "application/pdf" : "application/zip";
+        return PhysicalFile(caminho, contentType, mat.NomeArquivo);
+    }
+
+    private void ExcluirArquivoFisico(string nomeFisico)
+    {
+        try
+        {
+            var caminho = Armazenamento.CaminhoArquivo(_env, nomeFisico);
+            if (System.IO.File.Exists(caminho)) System.IO.File.Delete(caminho);
+        }
+        catch { /* arquivo já removido ou inacessível — ignora */ }
     }
 
     [HttpPost]

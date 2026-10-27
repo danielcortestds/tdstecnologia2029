@@ -124,24 +124,27 @@ public class CertificadoService
             container.Page(page =>
             {
                 page.Size(PageSizes.A4.Landscape());
-                page.Margin(1.0f, Unit.Centimetre);
+                // Com arte de fundo, a imagem (moldura + padronagem) preenche a página
+                // inteira — margem 0 para a moldura encostar em toda a margem do PDF.
+                page.Margin(fundo != null ? 0f : 1.0f, Unit.Centimetre);
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x.FontSize(13).FontColor("#334155").FontFamily("Lato"));
 
-                // Moldura sólida (dupla) + marca d'água de padronagem preenchendo o quadro.
-                page.Content()
-                    .Border(5).BorderColor(tema.Primaria)
-                    .Padding(3)
-                    .Border(1.5f).BorderColor(tema.Primaria)
-                    .Layers(layers =>
+                // Com fundo: imagem cobre a página toda (moldura embutida). Sem fundo:
+                // moldura sólida do QuestPDF + SVG (fallback).
+                var quadro = page.Content();
+                if (fundo == null)
+                    quadro = quadro.Border(5).BorderColor(tema.Primaria)
+                                   .Padding(3).Border(1.5f).BorderColor(tema.Primaria);
+
+                quadro.Layers(layers =>
                     {
-                        // Marca d'água: padronagem decorativa (degradê claro) preenchendo o quadro.
                         if (fundo != null)
-                            layers.Layer().Image(fundo).FitArea();
+                            layers.Layer().Image(fundo).FitUnproportionally(); // preenche exatamente (sem letterbox)
                         else
                             layers.Layer().Svg(padrao);
 
-                        layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 36).PaddingHorizontal(fundo == null ? 30 : 40).Column(col =>
+                        layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 40).PaddingHorizontal(fundo == null ? 30 : 48).Column(col =>
                         {
                         // Logos
                         if (logos.Count > 0)
@@ -194,19 +197,21 @@ public class CertificadoService
                         col.Item().PaddingTop(10).AlignCenter().Text($"Emitido em {data}")
                             .FontSize(12).FontColor("#64748b");
 
-                        // Assinatura
-                        col.Item().PaddingTop(12).AlignCenter().Column(sig =>
+                        // Assinatura (maior e apoiada sobre a linha)
+                        col.Item().PaddingTop(10).AlignCenter().Width(270).Height(76).Layers(sl =>
                         {
+                            // Linha da assinatura, próxima da base da caixa.
+                            sl.Layer().AlignBottom().PaddingBottom(14).LineHorizontal(1f).LineColor("#64748b");
+                            // Assinatura (PNG transparente) sobreposta, descendo até a linha.
                             if (assinatura != null)
-                                sig.Item().AlignCenter().Height(52).Image(assinatura).FitHeight();
+                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(4).Height(72).Image(assinatura).FitHeight();
                             else
-                                sig.Item().AlignCenter().PaddingBottom(0).Text("Daniel Côrtes")
-                                    .FontFamily("Great Vibes").FontSize(32).FontColor("#1b3a8f");
-                            sig.Item().Width(240).LineHorizontal(0.75f).LineColor("#94a3b8");
-                            sig.Item().PaddingTop(5).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
-                            sig.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");
-                            sig.Item().AlignCenter().Text("CNPJ 17.970.079/0001-86").FontSize(9).FontColor("#94a3b8");
+                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(6).Text("Daniel Côrtes")
+                                    .FontFamily("Great Vibes").FontSize(42).FontColor("#1b3a8f");
                         });
+                        col.Item().PaddingTop(6).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
+                        col.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");
+                        col.Item().AlignCenter().Text("CNPJ 17.970.079/0001-86").FontSize(9).FontColor("#94a3b8");
 
                         // Rodapé: validação + QR
                         col.Item().PaddingTop(12).Row(row =>

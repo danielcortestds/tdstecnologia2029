@@ -37,14 +37,13 @@ public class CursosOnlineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CursoOnline model, bool logoQlik = false, bool logoMicrosoft = false)
+    public async Task<IActionResult> Create(CursoOnline model)
     {
         model.Slug = await GerarSlugUnicoAsync(model.Slug, model.Nome, null);
         ModelState.Remove(nameof(CursoOnline.Slug)); // gerado automaticamente
         ModelState.Remove(nameof(CursoOnline.LogosCertificado));
         if (!ModelState.IsValid) return View(model);
 
-        model.LogosCertificado = MontarLogos(logoQlik, logoMicrosoft);
         model.CriadoEm = DateTime.Now;
         _db.CursosOnline.Add(model);
         await _db.SaveChangesAsync();
@@ -61,7 +60,7 @@ public class CursosOnlineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CursoOnline model, bool logoQlik = false, bool logoMicrosoft = false)
+    public async Task<IActionResult> Edit(int id, CursoOnline model)
     {
         if (id != model.Id) return NotFound();
         model.Slug = await GerarSlugUnicoAsync(model.Slug, model.Nome, model.Id);
@@ -88,7 +87,7 @@ public class CursosOnlineController : Controller
         curso.Preco = model.Preco;
         curso.PrecoDe = model.PrecoDe;
         curso.AVenda = model.AVenda;
-        curso.LogosCertificado = MontarLogos(logoQlik, logoMicrosoft);
+        curso.Fabricante = model.Fabricante;
         curso.AtualizadoEm = DateTime.Now;
 
         await _db.SaveChangesAsync();
@@ -320,15 +319,6 @@ public class CursosOnlineController : Controller
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
-    /// <summary>Monta o CSV de logos do certificado (TDS sempre; Qlik/Microsoft opcionais).</summary>
-    private static string MontarLogos(bool qlik, bool microsoft)
-    {
-        var chaves = new List<string> { "tds" };
-        if (qlik) chaves.Add("qlik");
-        if (microsoft) chaves.Add("microsoft");
-        return string.Join(",", chaves);
-    }
-
     private async Task<string> GerarSlugUnicoAsync(string? slug, string? nome, int? idAtual)
     {
         var baseSlug = Slugify(!string.IsNullOrWhiteSpace(slug) ? slug : nome ?? "curso");

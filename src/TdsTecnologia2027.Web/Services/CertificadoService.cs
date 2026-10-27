@@ -111,7 +111,10 @@ public class CertificadoService
     // ── Geração do PDF ──────────────────────────────────────────────────────
     public byte[] GerarPdf(Certificado cert, CursoOnline curso)
     {
-        var logos = CarregarLogos(curso.LogosCertificado);
+        var tema = Tema(curso.Fabricante);
+        var logos = CarregarLogosTema(curso.Fabricante);
+        var fundo = CarregarFundo(curso.Fabricante);
+        var assinatura = CarregarImagem("assinatura.png");
         var qr = GerarQrPng(UrlValidacao(cert.CodigoValidacao));
         var data = cert.EmitidoEm.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"));
 
@@ -124,9 +127,15 @@ public class CertificadoService
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x.FontSize(13).FontColor("#334155").FontFamily("Lato"));
 
-                page.Content().Border(1.5f).BorderColor("#0d9488").Padding(6).Column(outer =>
+                // Arte de fundo da marca (opcional) — se existir, usa como fundo de página.
+                if (fundo != null)
+                    page.Background().Image(fundo).FitArea();
+
+                page.Content().Border(1.5f).BorderColor(tema.Primaria).Padding(6).Column(outer =>
                 {
-                    outer.Item().Border(0.75f).BorderColor("#99f6e4").Padding(26).Column(col =>
+                    // Faixa de destaque no tema da marca
+                    outer.Item().Height(8).Background(tema.Primaria);
+                    outer.Item().Border(0.75f).BorderColor(tema.Clara).Padding(26).Column(col =>
                     {
                         // Logos
                         if (logos.Count > 0)
@@ -139,8 +148,8 @@ public class CertificadoService
                             });
                         }
 
-                        col.Item().PaddingTop(18).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
-                            .FontSize(30).Bold().FontColor("#0d9488").LetterSpacing(0.08f);
+                        col.Item().PaddingTop(16).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
+                            .FontSize(29).Bold().FontColor(tema.Primaria).LetterSpacing(0.08f);
 
                         col.Item().PaddingTop(4).AlignCenter().Text("A TDS Tecnologia certifica que")
                             .FontSize(13).FontColor("#64748b");
@@ -180,8 +189,10 @@ public class CertificadoService
                             .FontSize(12).FontColor("#64748b");
 
                         // Assinatura
-                        col.Item().PaddingTop(34).AlignCenter().Column(sig =>
+                        col.Item().PaddingTop(28).AlignCenter().Column(sig =>
                         {
+                            if (assinatura != null)
+                                sig.Item().AlignCenter().Height(42).Image(assinatura).FitHeight();
                             sig.Item().Width(240).LineHorizontal(0.75f).LineColor("#94a3b8");
                             sig.Item().PaddingTop(5).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
                             sig.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");
@@ -207,26 +218,41 @@ public class CertificadoService
         return doc.GeneratePdf();
     }
 
-    private List<byte[]> CarregarLogos(string? csv)
-    {
-        var chaves = (csv ?? "tds")
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(s => s.ToLowerInvariant())
-            .ToList();
-        if (!chaves.Contains("tds")) chaves.Insert(0, "tds"); // TDS sempre
-        chaves = chaves.Distinct().ToList();
+    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo);
 
-        var pasta = Path.Combine(_env.WebRootPath, "images", "certificados");
+    /// <summary>Cores e logo de parceiro por fabricante. Todos emitidos pela TDS.</summary>
+    private static TemaCertificado Tema(FabricanteCertificado fab) => fab switch
+    {
+        FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png"),
+        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png"),
+        _ => new TemaCertificado("#1d4ed8", "#c7d2fe", null) // TDS (azul)
+    };
+
+    /// <summary>Logos do certificado: TDS sempre; logo de parceiro conforme o fabricante (se o arquivo existir).</summary>
+    private List<byte[]> CarregarLogosTema(FabricanteCertificado fab)
+    {
         var imagens = new List<byte[]>();
-        foreach (var chave in chaves)
+        var tds = CarregarImagem("tds.png");
+        if (tds != null) imagens.Add(tds);
+
+        var parceiro = Tema(fab).ParceiroArquivo;
+        if (parceiro != null)
         {
-            var caminho = Path.Combine(pasta, chave + ".png");
-            if (File.Exists(caminho))
-            {
-                try { imagens.Add(File.ReadAllBytes(caminho)); } catch { /* ignora logo inválido */ }
-            }
+            var img = CarregarImagem(parceiro);
+            if (img != null) imagens.Add(img);
         }
         return imagens;
+    }
+
+    /// <summary>Arte de fundo opcional por fabricante (fundo-tds.png / fundo-qlik.png / fundo-microsoft.png).</summary>
+    private byte[]? CarregarFundo(FabricanteCertificado fab)
+        => CarregarImagem("fundo-" + fab.ToString().ToLowerInvariant() + ".png");
+
+    private byte[]? CarregarImagem(string arquivo)
+    {
+        var caminho = Path.Combine(_env.WebRootPath, "images", "certificados", arquivo);
+        if (!File.Exists(caminho)) return null;
+        try { return File.ReadAllBytes(caminho); } catch { return null; }
     }
 
     private static byte[] GerarQrPng(string texto)

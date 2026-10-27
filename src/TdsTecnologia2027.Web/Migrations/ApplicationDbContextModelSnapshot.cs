@@ -491,6 +491,9 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Fabricante")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("IconeCapa")
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");

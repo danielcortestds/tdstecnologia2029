@@ -125,26 +125,13 @@
 
     <div class="col-12 mt-2">
         <hr class="my-1" />
-        <h6 class="fw-semibold text-muted mb-0"><i class="bi bi-patch-check me-1"></i>Logos no certificado</h6>
+        <h6 class="fw-semibold text-muted mb-0"><i class="bi bi-patch-check me-1"></i>Certificado</h6>
     </div>
-    <div class="col-12">
-        <div class="d-flex flex-wrap gap-4">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" checked disabled />
-                <label class="form-check-label">TDS Tecnologia <span class="text-muted small">(sempre)</span></label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="logoQlik" value="true" id="logoQlik"
-                       checked="@((Model.LogosCertificado ?? "").Contains("qlik"))" />
-                <label class="form-check-label" for="logoQlik">Qlik</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="logoMicrosoft" value="true" id="logoMicrosoft"
-                       checked="@((Model.LogosCertificado ?? "").Contains("microsoft"))" />
-                <label class="form-check-label" for="logoMicrosoft">Microsoft</label>
-            </div>
-        </div>
-        <div class="form-text">Marque os logos de parceiros que aparecem no certificado deste curso.</div>
+    <div class="col-md-5">
+        <label asp-for="Fabricante" class="form-label fw-semibold"></label>
+        <select asp-for="Fabricante" class="form-select"
+                asp-items="Html.GetEnumSelectList<FabricanteCertificado>()"></select>
+        <div class="form-text">Define o tema do certificado: TDS (azul), Qlik (verde) ou Microsoft (teal). Emitido sempre pela TDS.</div>
     </div>
 </div>
 

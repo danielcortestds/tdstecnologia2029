@@ -11,6 +11,17 @@ public enum StatusCursoOnline
     Oculto = 2
 }
 
+/// <summary>Define o tema (cores/logo de parceiro) do certificado do curso.</summary>
+public enum FabricanteCertificado
+{
+    [Display(Name = "TDS")]
+    Tds = 0,
+    [Display(Name = "Qlik")]
+    Qlik = 1,
+    [Display(Name = "Microsoft")]
+    Microsoft = 2
+}
+
 /// <summary>
 /// Curso online (LMS / Área do Aluno) — separado dos cursos presenciais (Curso).
 /// </summary>
@@ -72,6 +83,10 @@ public class CursoOnline
     [StringLength(100)]
     [Display(Name = "Logos do certificado")]
     public string? LogosCertificado { get; set; } = "tds";
+
+    /// <summary>Tema do certificado (TDS/Qlik/Microsoft) — cores e logo de parceiro.</summary>
+    [Display(Name = "Fabricante do certificado")]
+    public FabricanteCertificado Fabricante { get; set; } = FabricanteCertificado.Tds;
 
     // ── Venda (loja de cursos online) ──────────────────────────────────────
     [Range(0, 999999, ErrorMessage = "Informe um preço válido.")]

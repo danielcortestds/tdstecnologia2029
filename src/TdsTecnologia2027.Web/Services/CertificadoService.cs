@@ -197,17 +197,17 @@ public class CertificadoService
                         col.Item().PaddingTop(10).AlignCenter().Text($"Emitido em {data}")
                             .FontSize(12).FontColor("#64748b");
 
-                        // Assinatura (maior e apoiada sobre a linha)
-                        col.Item().PaddingTop(10).AlignCenter().Width(270).Height(76).Layers(sl =>
+                        // Assinatura (bem maior e apoiada sobre a linha)
+                        col.Item().PaddingTop(8).AlignCenter().Width(320).Height(104).Layers(sl =>
                         {
                             // Linha da assinatura, próxima da base da caixa.
-                            sl.Layer().AlignBottom().PaddingBottom(14).LineHorizontal(1f).LineColor("#64748b");
+                            sl.Layer().AlignBottom().PaddingBottom(16).LineHorizontal(1f).LineColor("#64748b");
                             // Assinatura (PNG transparente) sobreposta, descendo até a linha.
                             if (assinatura != null)
-                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(4).Height(72).Image(assinatura).FitHeight();
+                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(4).Height(100).Image(assinatura).FitHeight();
                             else
                                 sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(6).Text("Daniel Côrtes")
-                                    .FontFamily("Great Vibes").FontSize(42).FontColor("#1b3a8f");
+                                    .FontFamily("Great Vibes").FontSize(54).FontColor("#1b3a8f");
                         });
                         col.Item().PaddingTop(6).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
                         col.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");

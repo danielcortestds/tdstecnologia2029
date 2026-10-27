@@ -385,6 +385,9 @@ namespace TdsTecnologia2027.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("AVenda")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime?>("AtualizadoEm")
                         .HasColumnType("TEXT");
 
@@ -432,6 +435,12 @@ namespace TdsTecnologia2027.Web.Migrations
 
                     b.Property<int>("Ordem")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Preco")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("PrecoDe")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Slug")
                         .IsRequired()

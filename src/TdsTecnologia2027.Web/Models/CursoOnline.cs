@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TdsTecnologia2027.Web.Models;
 
@@ -66,6 +67,22 @@ public class CursoOnline
 
     [Display(Name = "Emite certificado")]
     public bool Certificado { get; set; }
+
+    // ── Venda (loja de cursos online) ──────────────────────────────────────
+    [Range(0, 999999, ErrorMessage = "Informe um preço válido.")]
+    [Column(TypeName = "decimal(10,2)")]
+    [Display(Name = "Preço (R$)")]
+    public decimal Preco { get; set; }
+
+    /// <summary>Preço "de" (riscado). Mostrado como desconto só quando preenchido e maior que Preco.</summary>
+    [Range(0, 999999, ErrorMessage = "Informe um preço válido.")]
+    [Column(TypeName = "decimal(10,2)")]
+    [Display(Name = "Preço original (de) — opcional")]
+    public decimal? PrecoDe { get; set; }
+
+    /// <summary>Marca o curso como disponível para compra no site público.</summary>
+    [Display(Name = "Colocar à venda no site")]
+    public bool AVenda { get; set; }
 
     public DateTime CriadoEm { get; set; } = DateTime.Now;
     public DateTime? AtualizadoEm { get; set; }

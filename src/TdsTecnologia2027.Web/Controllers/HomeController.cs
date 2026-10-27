@@ -22,9 +22,9 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // Carrega apenas cursos ativos, ordenados por data de início (mais próxima
+        // Cursos presenciais ativos, ordenados por data de início (mais próxima
         // primeiro); cursos sem data definida vão ao final.
-        var cursos = await _db.Cursos
+        var presenciais = await _db.Cursos
             .AsNoTracking()
             .Where(c => c.Ativo)
             .OrderBy(c => c.DataInicio == null)
@@ -32,7 +32,17 @@ public class HomeController : Controller
             .ThenBy(c => c.Id)
             .ToListAsync();
 
-        return View(cursos);
+        // Cursos online publicados e à venda, com módulos/aulas (para o modal).
+        var online = await _db.CursosOnline
+            .AsNoTracking()
+            .Where(c => c.AVenda && c.Status == StatusCursoOnline.Publicado)
+            .Include(c => c.Modulos.OrderBy(m => m.Ordem))
+                .ThenInclude(m => m.Licoes.OrderBy(l => l.Ordem))
+            .OrderBy(c => c.Ordem)
+            .ThenBy(c => c.Nome)
+            .ToListAsync();
+
+        return View(new HomeViewModel { CursosOnline = online, CursosPresenciais = presenciais });
     }
 
     [HttpPost]

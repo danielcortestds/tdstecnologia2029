@@ -82,6 +82,9 @@ public class CursosOnlineController : Controller
         curso.Ordem = model.Ordem;
         curso.CargaHoraria = model.CargaHoraria;
         curso.Certificado = model.Certificado;
+        curso.Preco = model.Preco;
+        curso.PrecoDe = model.PrecoDe;
+        curso.AVenda = model.AVenda;
         curso.AtualizadoEm = DateTime.Now;
 
         await _db.SaveChangesAsync();

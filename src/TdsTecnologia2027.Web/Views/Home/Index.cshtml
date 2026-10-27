@@ -1,4 +1,4 @@
-@model IEnumerable<TdsTecnologia2027.Web.Models.Curso>
+@model TdsTecnologia2027.Web.Models.HomeViewModel
 @using System.Globalization
 @{
     Layout = null;
@@ -21,6 +21,8 @@
         // Ex: "21/Mai"
         return data.Value.ToString("dd/MMM", pt).TrimEnd('.');
     }
+
+    string Moeda(decimal valor) => valor.ToString("C", new CultureInfo("pt-BR"));
 
     IEnumerable<string> Bullets(string? raw)
     {
@@ -143,8 +145,53 @@
 		border-color: rgba(13,148,136,0.35);
 		color: rgba(255,255,255,0.8);
 	}
+
+	/* ===================== Loja de cursos online ===================== */
+	.loja-preco { display:flex; align-items:baseline; gap:10px; }
+	.loja-preco-de { color:#94a3b8; text-decoration:line-through; font-size:0.9rem; }
+	.loja-preco-atual { color:#0f172a; font-weight:800; font-size:1.5rem; font-family:'Plus Jakarta Sans',sans-serif; }
+	.loja-add { border:none; cursor:pointer; }
+	.loja-cart-btn { position:relative; background:transparent; border:none; color:#fff; font-size:1.35rem; cursor:pointer; margin-right:14px; line-height:1; padding:6px; }
+	.loja-cart-btn:hover { color:#5eead4; }
+	.loja-cart-count { position:absolute; top:-4px; right:-6px; background:#14b8a6; color:#04201c; font-size:0.65rem; font-weight:800; min-width:17px; height:17px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+	.loja-cart-count.vazio { display:none; }
+	.loja-drawer-overlay { position:fixed; inset:0; background:rgba(2,6,23,0.55); z-index:10000; opacity:0; pointer-events:none; transition:opacity .25s; }
+	.loja-drawer-overlay.is-open { opacity:1; pointer-events:auto; }
+	.loja-drawer { position:fixed; top:0; right:0; width:380px; max-width:90vw; height:100%; background:#fff; z-index:10001; display:flex; flex-direction:column; transform:translateX(100%); transition:transform .28s ease; box-shadow:-12px 0 40px rgba(0,0,0,.25); }
+	.loja-drawer.is-open { transform:translateX(0); }
+	.loja-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:20px 22px; border-bottom:1px solid #e2e8f0; }
+	.loja-drawer-head h4 { margin:0; font-size:1.1rem; color:#0f172a; font-weight:700; }
+	.loja-drawer-close { background:none; border:none; font-size:1.6rem; line-height:1; color:#64748b; cursor:pointer; }
+	.loja-drawer-body { flex:1; overflow-y:auto; padding:14px 22px; }
+	.loja-drawer-empty { color:#94a3b8; text-align:center; padding:48px 10px; font-size:0.95rem; }
+	.loja-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f1f5f9; }
+	.loja-item-ic { flex:0 0 42px; width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.1rem; }
+	.loja-item-info { flex:1; min-width:0; }
+	.loja-item-nome { font-size:0.9rem; font-weight:600; color:#0f172a; margin:0; line-height:1.25; }
+	.loja-item-preco { font-size:0.85rem; color:#0d9488; font-weight:700; }
+	.loja-item-rm { background:none; border:none; color:#cbd5e1; font-size:1.2rem; cursor:pointer; line-height:1; }
+	.loja-item-rm:hover { color:#ef4444; }
+	.loja-drawer-foot { border-top:1px solid #e2e8f0; padding:18px 22px; }
+	.loja-drawer-total { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+	.loja-drawer-total span { color:#64748b; }
+	.loja-drawer-total strong { font-size:1.3rem; color:#0f172a; font-family:'Plus Jakarta Sans',sans-serif; }
+	.loja-checkout-btn { width:100%; justify-content:center; border:none; cursor:pointer; }
+	.loja-toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; padding:13px 22px; border-radius:999px; font-size:0.9rem; z-index:10002; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+	.loja-toast.is-open { opacity:1; transform:translateX(-50%) translateY(0); }
+	.loja-toast i { color:#5eead4; margin-right:6px; }
+	.loja-modal-meta { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 18px; }
+	.loja-modulo { margin-bottom:14px; }
+	.loja-modulo h5 { font-size:0.95rem; color:#0d9488; font-weight:700; margin:0 0 6px; }
+	.loja-modulo ul { list-style:none; padding:0; margin:0; }
+	.loja-modulo li { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:#475569; padding:4px 0; }
+	.loja-modulo li i { color:#94a3b8; font-size:0.8rem; }
+	.loja-modal-preco { display:flex; align-items:baseline; gap:10px; margin:18px 0; }
+	.loja-presencial-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:22px; height:100%; }
+	.loja-presencial-card h5 { font-size:1rem; color:#0f172a; font-weight:700; margin:0 0 6px; }
+	.loja-presencial-card p { font-size:0.86rem; color:#64748b; margin:0 0 14px; line-height:1.5; }
 	</style>
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<title>TDS Tecnologia &mdash; Cursos de TI, Dados, Cloud e IA | Certificação Microsoft</title>
 
 </head>
@@ -165,7 +212,11 @@
 							</a>
 						</div>
 
-						<div class="header-misc">
+						<div class="header-misc d-flex align-items-center">
+							<button type="button" class="loja-cart-btn" onclick="lojaAbrirCarrinho()" aria-label="Abrir carrinho">
+								<i class="bi bi-cart3"></i>
+								<span class="loja-cart-count vazio" id="lojaCartCount">0</span>
+							</button>
 							<a href="https://wa.me/5565993541604?text=Ol%C3%A1%2C+quero+saber+mais+sobre+os+cursos+da+TDS+Tecnologia!" class="btn-bd-header" target="_blank" rel="noopener">Falar com Consultor <i class="fa-brands fa-whatsapp" style="font-size:0.85rem;"></i></a>
 						</div>
 
@@ -267,46 +318,111 @@
 
 						<div class="row text-center mb-5">
 							<div class="col-12">
-								<span class="bd-section-label">NOSSOS CURSOS</span>
-								<h2 class="bd-section-h2 mt-1 mb-3">Formações práticas com certificação Microsoft oficial.</h2>
-								<p style="font-family:'Inter',sans-serif; color:#64748b; font-size:1rem; max-width:560px; margin:0 auto; line-height:1.7;">Presencial e Online ao Vivo. Com instrutores especialistas e projetos baseados em casos reais do mercado.</p>
+								<span class="bd-section-label">CURSOS ONLINE</span>
+								<h2 class="bd-section-h2 mt-1 mb-3">Aprenda no seu ritmo, com acesso vitalício.</h2>
+								<p style="font-family:'Inter',sans-serif; color:#64748b; font-size:1rem; max-width:560px; margin:0 auto; line-height:1.7;">Cursos 100% online, gravados, com certificado. Compre, assista quando quiser e tenha acesso para sempre.</p>
 							</div>
 						</div>
 
 						@* ===========================================================
-						   Cards de cursos — alimentados do banco de dados.
-						   Mantém exatamente as mesmas classes/estrutura do Canvas.
+						   Cursos ONLINE à venda — vitrine com preço e carrinho.
 						   =========================================================== *@
-						<div class="row g-4 justify-content-center">
-							@foreach (var curso in Model)
-							{
-								var iconeCurso = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
-								var iconePill2 = string.IsNullOrWhiteSpace(curso.IconePillSecundaria) ? "fa-solid fa-circle-info" : curso.IconePillSecundaria;
-								var dataFormatada = FormatarData(curso.DataInicio);
+						@if (Model.CursosOnline.Any())
+						{
+							<div class="row g-4 justify-content-center">
+								@foreach (var curso in Model.CursosOnline)
+								{
+									var corCapa = string.IsNullOrWhiteSpace(curso.CorCapa) ? "#0d9488" : curso.CorCapa;
+									var iconeCapa = string.IsNullOrWhiteSpace(curso.IconeCapa) ? "bi-play-circle-fill" : curso.IconeCapa;
+									var nAulas = curso.Modulos.Sum(m => m.Licoes.Count);
+									var temDesconto = curso.PrecoDe.HasValue && curso.PrecoDe.Value > curso.Preco;
 
-								<div class="col-lg-4 col-md-6">
-									<div class="bd-feature-card h-100">
-										<div class="bd-feature-icon"><i class="@iconeCurso"></i></div>
-										<h4>@curso.Titulo</h4>
-										<p>@curso.DescricaoCurta</p>
-										<div class="d-flex flex-wrap gap-2 mt-3 mb-3">
-											@if (!string.IsNullOrEmpty(dataFormatada))
-											{
-												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="fa-solid fa-calendar-day" style="margin-right:4px;"></i>@dataFormatada</div>
-											}
-											@if (!string.IsNullOrWhiteSpace(curso.PillSecundaria))
-											{
-												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="@iconePill2" style="margin-right:4px;"></i>@curso.PillSecundaria</div>
-											}
-										</div>
-										<div class="d-flex align-items-center gap-3">
-											<a href="#" onclick="teOpenModal('modal-@curso.Slug');return false;" class="btn-bd-primary" style="font-size:0.8rem; padding:8px 18px;">Ver detalhes &rarr;</a>
-											<a href="@LinkWhats(curso.WhatsAppMensagem)" target="_blank" rel="noopener" style="font-size:0.82rem; font-weight:600; color:#0d9488; text-decoration:none; display:flex; align-items:center; gap:5px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+									<div class="col-lg-4 col-md-6">
+										<div class="bd-feature-card h-100 d-flex flex-column">
+											<div class="bd-feature-icon" style="background:@corCapa;"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
+											<h4>@curso.Nome</h4>
+											<p>@curso.DescricaoCurta</p>
+											<div class="d-flex flex-wrap gap-2 mt-3 mb-3">
+												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-clock" style="margin-right:4px;"></i>@curso.CargaHoraria h</div>
+												@if (nAulas > 0)
+												{
+													<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-collection-play" style="margin-right:4px;"></i>@nAulas aulas</div>
+												}
+												@if (curso.Certificado)
+												{
+													<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-patch-check" style="margin-right:4px;"></i>Certificado</div>
+												}
+											</div>
+											<div class="loja-preco mb-3 mt-auto">
+												@if (temDesconto)
+												{
+													<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
+												}
+												<span class="loja-preco-atual">@Moeda(curso.Preco)</span>
+											</div>
+											<div class="d-flex align-items-center gap-2">
+												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px;">Ver módulos</button>
+												<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="font-size:0.8rem; padding:8px 18px;"><i class="bi bi-cart-plus" style="margin-right:5px;"></i>Adicionar</button>
+											</div>
 										</div>
 									</div>
+								}
+							</div>
+						}
+						else
+						{
+							<div class="row justify-content-center">
+								<div class="col-lg-7 text-center">
+									<p style="color:#94a3b8;">Novos cursos online em breve. <a href="@LinkWhats(null)" target="_blank" rel="noopener" style="color:#0d9488; font-weight:600;">Fale com um consultor</a>.</p>
 								</div>
-							}
-						</div>
+							</div>
+						}
+
+						@* ===========================================================
+						   Cursos PRESENCIAIS — bloco secundário (turmas fechadas).
+						   =========================================================== *@
+						@if (Model.CursosPresenciais.Any())
+						{
+							<div class="row text-center mt-5 pt-5 mb-4" style="border-top:1px solid #e2e8f0;">
+								<div class="col-12">
+									<span class="bd-section-label">TURMAS PRESENCIAIS E FECHADAS</span>
+									<h3 class="bd-section-h2 mt-1 mb-3" style="font-size:1.6rem;">Treinamentos presenciais e in company</h3>
+									<p style="font-family:'Inter',sans-serif; color:#64748b; font-size:0.95rem; max-width:540px; margin:0 auto; line-height:1.7;">Turmas presenciais em Mato Grosso e fechadas para empresas, sob demanda. Fale com um consultor para datas e condições.</p>
+								</div>
+							</div>
+
+							<div class="row g-3 justify-content-center">
+								@foreach (var curso in Model.CursosPresenciais)
+								{
+									var iconeCurso = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
+									var dataFormatada = FormatarData(curso.DataInicio);
+
+									<div class="col-lg-4 col-md-6">
+										<div class="loja-presencial-card d-flex flex-column">
+											<div class="d-flex align-items-center gap-2 mb-2">
+												<i class="@iconeCurso" style="color:#0d9488; font-size:1.1rem;"></i>
+												<h5 class="mb-0">@curso.Titulo</h5>
+											</div>
+											<p>@curso.DescricaoCurta</p>
+											<div class="d-flex flex-wrap gap-2 mb-3">
+												@if (!string.IsNullOrEmpty(dataFormatada))
+												{
+													<div class="bd-integration-pill" style="font-size:0.7rem;"><i class="fa-solid fa-calendar-day" style="margin-right:4px;"></i>@dataFormatada</div>
+												}
+												@if (!string.IsNullOrWhiteSpace(curso.PillSecundaria))
+												{
+													<div class="bd-integration-pill" style="font-size:0.7rem;">@curso.PillSecundaria</div>
+												}
+											</div>
+											<div class="mt-auto d-flex align-items-center gap-3">
+												<a href="#" onclick="teOpenModal('modal-@curso.Slug');return false;" style="font-size:0.8rem; font-weight:600; color:#0f172a; text-decoration:none;">Ver detalhes &rarr;</a>
+												<a href="@LinkWhats(curso.WhatsAppMensagem)" target="_blank" rel="noopener" style="font-size:0.8rem; font-weight:600; color:#0d9488; text-decoration:none; display:flex; align-items:center; gap:5px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+											</div>
+										</div>
+									</div>
+								}
+							</div>
+						}
 
 					</div>
 				</section>
@@ -668,7 +784,7 @@
 	   Modais dos Cursos — alimentados do banco de dados.
 	   Renderiza um modal por curso ativo, na mesma ordem dos cards.
 	   =========================================================== *@
-	@foreach (var curso in Model)
+	@foreach (var curso in Model.CursosPresenciais)
 	{
 		<div class="te-modal-overlay" id="modal-@curso.Slug">
 			<div class="te-modal">
@@ -699,6 +815,78 @@
 		</div>
 	}
 
+	@* ===========================================================
+	   Modais dos cursos ONLINE — módulos, aulas e compra.
+	   =========================================================== *@
+	@foreach (var curso in Model.CursosOnline)
+	{
+		var nAulasModal = curso.Modulos.Sum(m => m.Licoes.Count);
+		var temDescontoModal = curso.PrecoDe.HasValue && curso.PrecoDe.Value > curso.Preco;
+		<div class="te-modal-overlay" id="modal-online-@curso.Id">
+			<div class="te-modal">
+				<button class="te-modal-close" onclick="teCloseModals()">&times;</button>
+				@if (!string.IsNullOrWhiteSpace(curso.Categoria))
+				{
+					<span class="te-modal-tag">@curso.Categoria</span>
+				}
+				<h2 class="te-modal-title">@curso.Nome</h2>
+				<p class="te-modal-desc">@(string.IsNullOrWhiteSpace(curso.DescricaoCompleta) ? curso.DescricaoCurta : curso.DescricaoCompleta)</p>
+				<div class="loja-modal-meta">
+					<div class="bd-integration-pill"><i class="bi bi-clock" style="margin-right:4px;"></i>@curso.CargaHoraria h</div>
+					@if (nAulasModal > 0)
+					{
+						<div class="bd-integration-pill"><i class="bi bi-collection-play" style="margin-right:4px;"></i>@curso.Modulos.Count módulos &middot; @nAulasModal aulas</div>
+					}
+					@if (curso.Certificado)
+					{
+						<div class="bd-integration-pill"><i class="bi bi-patch-check" style="margin-right:4px;"></i>Certificado</div>
+					}
+				</div>
+				@foreach (var modulo in curso.Modulos)
+				{
+					<div class="loja-modulo">
+						<h5>@modulo.Titulo</h5>
+						@if (modulo.Licoes.Any())
+						{
+							<ul>
+								@foreach (var licao in modulo.Licoes)
+								{
+									<li><i class="bi bi-play-circle"></i>@licao.Titulo@(licao.Duracao > 0 ? $" · {licao.Duracao} min" : "")</li>
+								}
+							</ul>
+						}
+					</div>
+				}
+				<div class="loja-modal-preco">
+					@if (temDescontoModal)
+					{
+						<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
+					}
+					<span class="loja-preco-atual">@Moeda(curso.Preco)</span>
+				</div>
+				<div class="te-modal-actions">
+					<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="flex:1; justify-content:center;"><i class="bi bi-cart-plus"></i> &nbsp;Adicionar ao carrinho</button>
+					<button onclick="teCloseModals()" class="btn-bd-outline" style="background:#fff; color:#0f172a;">Fechar</button>
+				</div>
+			</div>
+		</div>
+	}
+
+	@* ===================== Carrinho (drawer lateral) ===================== *@
+	<div class="loja-drawer-overlay" id="lojaDrawerOverlay" onclick="lojaFecharCarrinho()"></div>
+	<aside class="loja-drawer" id="lojaDrawer" aria-label="Carrinho de compras">
+		<div class="loja-drawer-head">
+			<h4><i class="bi bi-cart3" style="margin-right:6px; color:#0d9488;"></i>Seu carrinho</h4>
+			<button class="loja-drawer-close" onclick="lojaFecharCarrinho()" aria-label="Fechar">&times;</button>
+		</div>
+		<div class="loja-drawer-body" id="lojaDrawerBody"></div>
+		<div class="loja-drawer-foot">
+			<div class="loja-drawer-total"><span>Total</span><strong id="lojaDrawerTotal">R$ 0,00</strong></div>
+			<button type="button" class="btn-bd-primary loja-checkout-btn" id="lojaCheckoutBtn" onclick="lojaFinalizar()">Finalizar compra</button>
+		</div>
+	</aside>
+	<div class="loja-toast" id="lojaToast"></div>
+
 	<button id="te-back-top" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
 		<i class="fa-solid fa-chevron-up"></i>
 	</button>
@@ -718,6 +906,45 @@
 	});
 	var _btt = document.getElementById('te-back-top');
 	window.addEventListener('scroll', function(){ _btt.classList.toggle('te-visible', window.scrollY > 450); });
+
+	// ===================== Loja / carrinho =====================
+	function lojaAbrirCarrinho(){ document.getElementById('lojaDrawer').classList.add('is-open'); document.getElementById('lojaDrawerOverlay').classList.add('is-open'); document.body.style.overflow='hidden'; }
+	function lojaFecharCarrinho(){ document.getElementById('lojaDrawer').classList.remove('is-open'); document.getElementById('lojaDrawerOverlay').classList.remove('is-open'); document.body.style.overflow=''; }
+	function lojaToast(msg){ var t=document.getElementById('lojaToast'); t.innerHTML='<i class="bi bi-check-circle-fill"></i>'+msg; t.classList.add('is-open'); clearTimeout(window._lojaToastT); window._lojaToastT=setTimeout(function(){t.classList.remove('is-open');},2800); }
+	function lojaRender(data){
+		var count=document.getElementById('lojaCartCount');
+		count.textContent=data.quantidade;
+		count.classList.toggle('vazio', data.quantidade===0);
+		document.getElementById('lojaDrawerTotal').textContent=data.totalFormatado;
+		var body=document.getElementById('lojaDrawerBody');
+		var btn=document.getElementById('lojaCheckoutBtn');
+		if(!data.itens || data.itens.length===0){
+			body.innerHTML='<div class="loja-drawer-empty"><i class="bi bi-cart-x" style="font-size:2rem; display:block; margin-bottom:10px;"></i>Seu carrinho está vazio.</div>';
+			btn.style.display='none';
+			return;
+		}
+		btn.style.display='';
+		var html='';
+		data.itens.forEach(function(it){
+			html+='<div class="loja-item">'
+				+'<div class="loja-item-ic" style="background:'+it.cor+'"><i class="bi '+it.icone+'"></i></div>'
+				+'<div class="loja-item-info"><p class="loja-item-nome">'+it.nome+'</p><span class="loja-item-preco">'+it.precoFormatado+'</span></div>'
+				+'<button class="loja-item-rm" title="Remover" onclick="lojaRemover('+it.id+')">&times;</button>'
+				+'</div>';
+		});
+		body.innerHTML=html;
+	}
+	function lojaPost(url, id, cb){
+		var body = (id!=null) ? ('id='+encodeURIComponent(id)) : '';
+		fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest'},body:body})
+			.then(function(r){return r.json();}).then(function(d){ lojaRender(d); if(cb) cb(d); })
+			.catch(function(){ lojaToast('Erro ao atualizar o carrinho.'); });
+	}
+	function lojaAdicionar(id){ lojaPost('/Loja/Adicionar', id, function(d){ if(d.ok){ lojaToast('Curso adicionado ao carrinho!'); lojaAbrirCarrinho(); } else { lojaToast(d.mensagem||'Curso indisponível.'); } }); }
+	function lojaRemover(id){ lojaPost('/Loja/Remover', id); }
+	function lojaFinalizar(){ lojaToast('💳 O pagamento online entra na próxima etapa — seu carrinho está salvo!'); }
+	document.querySelectorAll('.loja-add').forEach(function(b){ b.addEventListener('click', function(){ lojaAdicionar(parseInt(this.getAttribute('data-id'),10)); }); });
+	fetch('/Loja/Mini',{headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(lojaRender).catch(function(){});
 	</script>
 
 	<script src="~/js/plugins.min.js"></script>

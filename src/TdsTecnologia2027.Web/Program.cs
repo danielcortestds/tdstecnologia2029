@@ -19,6 +19,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<TdsTecnologia2027.Web.Services.IEmailSender,
     TdsTecnologia2027.Web.Services.EmailSender>();
 
+// Carrinho de compras (loja de cursos online) — guardado na sessão do visitante.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<TdsTecnologia2027.Web.Services.CarrinhoService>();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(7);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true; // carrinho é essencial, não exige consentimento de cookie
+    options.Cookie.Name = "tds_carrinho";
+});
+
 // ASP.NET Core Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
@@ -107,6 +118,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -145,6 +145,11 @@ public class LojaController : Controller
             return View(model);
         }
 
+        // Guarda o slug da fatura (último segmento da URL do checkout) — é o
+        // identificador mais confiável para casar o pedido no retorno/webhook.
+        pedido.InvoiceSlug = ExtrairSlug(url);
+        await _db.SaveChangesAsync();
+
         _carrinho.Limpar();
         return Redirect(url);
     }
@@ -153,9 +158,7 @@ public class LojaController : Controller
     [HttpGet]
     public async Task<IActionResult> Retorno(string? order_nsu, string? slug, string? transaction_nsu)
     {
-        var pedido = string.IsNullOrWhiteSpace(order_nsu)
-            ? null
-            : await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.OrderNsu == order_nsu);
+        var pedido = await LocalizarPedidoAsync(order_nsu, slug);
 
         if (pedido == null)
         {
@@ -186,7 +189,8 @@ public class LojaController : Controller
         using (var reader = new StreamReader(Request.Body))
             body = await reader.ReadToEndAsync();
 
-        string? orderNsu = null, transactionNsu = null, slug = null;
+        string? orderNsu = null, transactionNsu = null, slug = null, metodo = null;
+        long valorCentavos = 0;
         try
         {
             using var doc = System.Text.Json.JsonDocument.Parse(body);
@@ -194,6 +198,10 @@ public class LojaController : Controller
             if (root.TryGetProperty("order_nsu", out var o)) orderNsu = o.GetString();
             if (root.TryGetProperty("transaction_nsu", out var t)) transactionNsu = t.GetString();
             if (root.TryGetProperty("invoice_slug", out var s)) slug = s.GetString();
+            if (root.TryGetProperty("capture_method", out var cm)) metodo = cm.GetString();
+            // Valor pago: prioriza paid_amount, cai para amount.
+            if (root.TryGetProperty("paid_amount", out var pa) && pa.TryGetInt64(out var v1)) valorCentavos = v1;
+            else if (root.TryGetProperty("amount", out var am) && am.TryGetInt64(out var v2)) valorCentavos = v2;
         }
         catch
         {
@@ -201,19 +209,48 @@ public class LojaController : Controller
             return Ok(); // não pedir reenvio de algo que não dá para processar
         }
 
-        if (string.IsNullOrWhiteSpace(orderNsu)) return Ok();
-
-        var pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.OrderNsu == orderNsu);
+        var pedido = await LocalizarPedidoAsync(orderNsu, slug);
         if (pedido == null || pedido.Status == StatusPedido.Pago) return Ok(); // desconhecido ou já processado
 
-        // Sem assinatura no webhook → confirmamos SEMPRE consultando o InfinitePay.
-        var v = await _infinite.VerificarAsync(orderNsu, transactionNsu, slug);
-        if (v.Pago && v.ValorCentavos >= pedido.TotalCentavos)
-            await ConfirmarPedidoAsync(pedido, transactionNsu, slug, v.MetodoPagamento);
+        // O webhook só é enviado quando o pagamento é aprovado, e casamos o pedido
+        // pelo slug (não adivinhável). Confirmamos conferindo o valor do próprio aviso;
+        // se o valor não vier, tentamos o payment_check como reforço.
+        if (valorCentavos >= pedido.TotalCentavos && valorCentavos > 0)
+        {
+            await ConfirmarPedidoAsync(pedido, transactionNsu, slug, metodo);
+        }
         else
-            _logger.LogWarning("[TDS] Webhook: pagamento não confirmado para pedido {Nsu}.", orderNsu);
+        {
+            var v = await _infinite.VerificarAsync(pedido.OrderNsu, transactionNsu, slug);
+            if (v.Pago && v.ValorCentavos >= pedido.TotalCentavos)
+                await ConfirmarPedidoAsync(pedido, transactionNsu, slug, v.MetodoPagamento ?? metodo);
+            else
+                _logger.LogWarning("[TDS] Webhook: pagamento não confirmado para pedido {Id} (slug {Slug}).", pedido.Id, slug);
+        }
 
         return Ok();
+    }
+
+    /// <summary>Localiza o pedido por order_nsu ou, se não achar, pelo slug da fatura.</summary>
+    private async Task<Pedido?> LocalizarPedidoAsync(string? orderNsu, string? slug)
+    {
+        Pedido? pedido = null;
+        if (!string.IsNullOrWhiteSpace(orderNsu))
+            pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.OrderNsu == orderNsu);
+        if (pedido == null && !string.IsNullOrWhiteSpace(slug))
+            pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.InvoiceSlug == slug);
+        return pedido;
+    }
+
+    /// <summary>Extrai o slug (último segmento) da URL do checkout do InfinitePay.</summary>
+    private static string? ExtrairSlug(string url)
+    {
+        try
+        {
+            var segs = new Uri(url).Segments;
+            return segs.Length > 0 ? segs[^1].Trim('/') : null;
+        }
+        catch { return null; }
     }
 
     /// <summary>Marca o pedido como pago e libera o acesso (idempotente).</summary>

@@ -65,7 +65,7 @@
                     <thead>
                         <tr>
                             <th>Data</th><th>Cliente</th><th>Cursos</th>
-                            <th class="text-end">Total</th><th>Pagamento</th><th>Status</th>
+                            <th class="text-end">Total</th><th>Pagamento</th><th>Status</th><th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,6 +92,17 @@
                                         default:
                                             <span class="badge badge-inativo">Cancelado</span>
                                             break;
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (p.Status == StatusPedido.Pendente)
+                                    {
+                                        <form asp-action="ConfirmarManual" asp-route-id="@p.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Confirmar este pagamento e liberar o acesso ao aluno?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <i class="bi bi-check-lg me-1"></i>Confirmar e liberar
+                                            </button>
+                                        </form>
                                     }
                                 </td>
                             </tr>

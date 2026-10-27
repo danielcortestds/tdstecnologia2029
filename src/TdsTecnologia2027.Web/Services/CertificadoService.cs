@@ -112,7 +112,8 @@ public class CertificadoService
     public byte[] GerarPdf(Certificado cert, CursoOnline curso)
     {
         var tema = Tema(curso.Fabricante);
-        var logos = CarregarLogosTema(curso.Fabricante);
+        var tdsLogo = CarregarImagem("tds.png");
+        var partnerLogo = tema.ParceiroArquivo != null ? CarregarImagem(tema.ParceiroArquivo) : null;
         var fundo = CarregarFundo(curso.Fabricante);
         var padrao = GerarPadraoSvg(tema);
         var assinatura = CarregarImagem("assinatura.png");
@@ -146,14 +147,17 @@ public class CertificadoService
 
                         layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 40).PaddingHorizontal(fundo == null ? 30 : 48).Column(col =>
                         {
-                        // Logos
-                        if (logos.Count > 0)
+                        // Logos: parceiro à esquerda, TDS à direita. TDS um pouco maior,
+                        // alinhadas pela base, para equilibrar os tamanhos.
+                        if (partnerLogo != null || tdsLogo != null)
                         {
-                            col.Item().AlignCenter().Height(72).Row(row =>
+                            col.Item().AlignCenter().Row(row =>
                             {
-                                row.Spacing(34);
-                                foreach (var img in logos)
-                                    row.AutoItem().Height(66).Image(img).FitHeight();
+                                row.Spacing(50);
+                                if (partnerLogo != null)
+                                    row.AutoItem().AlignBottom().Height(tema.ParceiroAltura).Image(partnerLogo).FitHeight();
+                                if (tdsLogo != null)
+                                    row.AutoItem().AlignBottom().Height(82).Image(tdsLogo).FitHeight();
                             });
                         }
 
@@ -197,17 +201,17 @@ public class CertificadoService
                         col.Item().PaddingTop(10).AlignCenter().Text($"Emitido em {data}")
                             .FontSize(12).FontColor("#64748b");
 
-                        // Assinatura (bem maior e apoiada sobre a linha)
-                        col.Item().PaddingTop(8).AlignCenter().Width(320).Height(104).Layers(sl =>
+                        // Assinatura (grande e praticamente encostando na linha)
+                        col.Item().PaddingTop(10).AlignCenter().Width(300).Height(72).Layers(sl =>
                         {
-                            // Linha da assinatura, próxima da base da caixa.
-                            sl.Layer().AlignBottom().PaddingBottom(16).LineHorizontal(1f).LineColor("#64748b");
-                            // Assinatura (PNG transparente) sobreposta, descendo até a linha.
+                            // Linha da assinatura, bem rente à base.
+                            sl.Layer().AlignBottom().PaddingBottom(5).LineHorizontal(1f).LineColor("#64748b");
+                            // Assinatura (PNG recortado na tinta) quase tocando a linha.
                             if (assinatura != null)
-                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(4).Height(100).Image(assinatura).FitHeight();
+                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(2).Height(60).Image(assinatura).FitHeight();
                             else
-                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(6).Text("Daniel Côrtes")
-                                    .FontFamily("Great Vibes").FontSize(54).FontColor("#1b3a8f");
+                                sl.PrimaryLayer().AlignBottom().AlignCenter().PaddingBottom(2).Text("Daniel Côrtes")
+                                    .FontFamily("Great Vibes").FontSize(46).FontColor("#1b3a8f");
                         });
                         col.Item().PaddingTop(6).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
                         col.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");
@@ -232,13 +236,15 @@ public class CertificadoService
         return doc.GeneratePdf();
     }
 
-    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo);
+    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo, float ParceiroAltura = 66f);
 
     /// <summary>Cores e logo de parceiro por fabricante. Todos emitidos pela TDS.</summary>
     private static TemaCertificado Tema(FabricanteCertificado fab) => fab switch
     {
-        FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png"),
-        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png"),
+        // ParceiroAltura ajusta o tamanho visual da logo do parceiro (o selo Qlik é
+        // alto; a faixa "Microsoft Partner" é larga, então vai um pouco menor).
+        FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png", 74f),
+        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png", 52f),
         _ => new TemaCertificado("#15356a", "#c7d2fe", null) // TDS (azul-marinho da logo)
     };
 
@@ -293,22 +299,6 @@ public class CertificadoService
               <rect x="1336" y="0" width="78" height="1000" fill="url(#patB)"/>
             </svg>
             """;
-    }
-
-    /// <summary>Logos do certificado: TDS sempre; logo de parceiro conforme o fabricante (se o arquivo existir).</summary>
-    private List<byte[]> CarregarLogosTema(FabricanteCertificado fab)
-    {
-        var imagens = new List<byte[]>();
-        var tds = CarregarImagem("tds.png");
-        if (tds != null) imagens.Add(tds);
-
-        var parceiro = Tema(fab).ParceiroArquivo;
-        if (parceiro != null)
-        {
-            var img = CarregarImagem(parceiro);
-            if (img != null) imagens.Add(img);
-        }
-        return imagens;
     }
 
     /// <summary>Arte de fundo opcional por fabricante (fundo-tds.png / fundo-qlik.png / fundo-microsoft.png).</summary>

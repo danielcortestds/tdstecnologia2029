@@ -68,6 +68,11 @@ public class CursoOnline
     [Display(Name = "Emite certificado")]
     public bool Certificado { get; set; }
 
+    /// <summary>Logos exibidos no certificado (CSV de chaves: tds,qlik,microsoft). TDS sempre entra.</summary>
+    [StringLength(100)]
+    [Display(Name = "Logos do certificado")]
+    public string? LogosCertificado { get; set; } = "tds";
+
     // ── Venda (loja de cursos online) ──────────────────────────────────────
     [Range(0, 999999, ErrorMessage = "Informe um preço válido.")]
     [Column(TypeName = "decimal(10,2)")]

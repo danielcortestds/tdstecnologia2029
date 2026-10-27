@@ -31,6 +31,8 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Voucher> Vouchers { get; set; }
     public DbSet<VoucherResgate> VouchersResgates { get; set; }
 
+    public DbSet<Certificado> Certificados { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -154,6 +156,15 @@ public class ApplicationDbContext : IdentityDbContext
                   .WithOne(r => r.Voucher)
                   .HasForeignKey(r => r.VoucherId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Certificado>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CodigoValidacao).IsUnique();
+            entity.HasIndex(e => new { e.AlunoId, e.CursoOnlineId }).IsUnique();
+            entity.HasOne(c => c.Aluno).WithMany().HasForeignKey(c => c.AlunoId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(c => c.CursoOnline).WithMany().HasForeignKey(c => c.CursoOnlineId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

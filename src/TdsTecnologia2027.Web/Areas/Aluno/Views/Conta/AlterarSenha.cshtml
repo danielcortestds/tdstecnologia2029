@@ -1,0 +1,42 @@
+@model TdsTecnologia2027.Web.Models.AlterarSenhaViewModel
+@{
+    ViewData["Title"] = "Alterar senha";
+    Layout = "_LayoutAluno";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <h3 class="mb-4"><i class="bi bi-shield-lock me-2"></i>Alterar senha</h3>
+
+        @if (TempData["Sucesso"] != null)
+        {
+            <div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>@TempData["Sucesso"]</div>
+        }
+
+        <div class="card-tds p-4">
+            <form asp-area="Aluno" asp-controller="Conta" asp-action="AlterarSenha" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div class="mb-3">
+                    <label asp-for="SenhaAtual" class="form-label"></label>
+                    <input asp-for="SenhaAtual" class="form-control" />
+                    <span asp-validation-for="SenhaAtual" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NovaSenha" class="form-label"></label>
+                    <input asp-for="NovaSenha" class="form-control" />
+                    <span asp-validation-for="NovaSenha" class="text-danger small"></span>
+                    <div class="text-muted-2 small mt-1">Mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo.</div>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="ConfirmarSenha" class="form-label"></label>
+                    <input asp-for="ConfirmarSenha" class="form-control" />
+                    <span asp-validation-for="ConfirmarSenha" class="text-danger small"></span>
+                </div>
+                <button type="submit" class="btn btn-tds"><i class="bi bi-check-lg me-1"></i>Salvar nova senha</button>
+                <a asp-area="Aluno" asp-controller="Home" asp-action="Index" class="btn btn-outline-light ms-2">Voltar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

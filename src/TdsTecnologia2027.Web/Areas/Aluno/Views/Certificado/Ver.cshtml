@@ -1,0 +1,43 @@
+@model TdsTecnologia2027.Web.Models.Certificado
+@{
+    ViewData["Title"] = "Certificado";
+    Layout = "_LayoutAluno";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="card-tds p-4 text-center">
+            <div style="font-size:2.6rem; color:var(--tds-teal);"><i class="bi bi-patch-check-fill"></i></div>
+            <h3 class="mt-2 mb-1">Certificado de conclusão</h3>
+            <p class="text-muted-2 mb-4">@Model.CursoNome</p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-4">
+                <a asp-area="Aluno" asp-controller="Certificado" asp-action="Baixar" asp-route-id="@Model.CursoOnlineId"
+                   class="btn btn-tds"><i class="bi bi-file-earmark-pdf me-1"></i>Baixar PDF</a>
+                <a href="@ViewBag.UrlLinkedIn" target="_blank" rel="noopener"
+                   class="btn" style="background:#0a66c2; color:#fff;"><i class="bi bi-linkedin me-1"></i>Adicionar ao LinkedIn</a>
+            </div>
+
+            <div class="text-start small" style="border-top:1px solid rgba(148,163,184,0.15); padding-top:16px;">
+                <div class="d-flex justify-content-between py-1"><span class="text-muted-2">Aluno</span><span>@Model.NomeAluno</span></div>
+                @if (Model.CargaHoraria > 0)
+                {
+                    <div class="d-flex justify-content-between py-1"><span class="text-muted-2">Carga horária</span><span>@Model.CargaHoraria horas</span></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.PeriodoExecucao))
+                {
+                    <div class="d-flex justify-content-between py-1"><span class="text-muted-2">Período</span><span>@Model.PeriodoExecucao</span></div>
+                }
+                <div class="d-flex justify-content-between py-1"><span class="text-muted-2">Emitido em</span><span>@Model.EmitidoEm.ToString("dd/MM/yyyy")</span></div>
+                <div class="d-flex justify-content-between py-1"><span class="text-muted-2">Código</span><span><code style="color:#5eead4;">@Model.CodigoValidacao</code></span></div>
+                <div class="d-flex justify-content-between py-1">
+                    <span class="text-muted-2">Validação</span>
+                    <a href="@ViewBag.UrlValidacao" target="_blank" rel="noopener">verificar online</a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a asp-area="Aluno" asp-controller="Home" asp-action="Index" class="text-muted-2 small">&larr; Voltar aos meus cursos</a>
+        </div>
+    </div>
+</div>

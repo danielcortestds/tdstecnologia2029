@@ -259,6 +259,59 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("Alunos");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Certificado", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CargaHoraria")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CodigoValidacao")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CursoNome")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CursoOnlineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EmitidoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeAluno")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PercentualNaEmissao")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PeriodoExecucao")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CodigoValidacao")
+                        .IsUnique();
+
+                    b.HasIndex("CursoOnlineId");
+
+                    b.HasIndex("AlunoId", "CursoOnlineId")
+                        .IsUnique();
+
+                    b.ToTable("Certificados");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ConfiguracaoEmail", b =>
                 {
                     b.Property<int>("Id")
@@ -448,6 +501,10 @@ namespace TdsTecnologia2027.Web.Migrations
 
                     b.Property<string>("Instrutor")
                         .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LogosCertificado")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
@@ -858,6 +915,25 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Certificado", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
+                        .WithMany()
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
+                        .WithMany()
+                        .HasForeignKey("CursoOnlineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("CursoOnline");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Licao", b =>

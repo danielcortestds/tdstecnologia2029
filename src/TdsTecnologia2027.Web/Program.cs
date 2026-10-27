@@ -27,6 +27,10 @@ builder.Services.AddScoped<TdsTecnologia2027.Web.Services.CarrinhoService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<TdsTecnologia2027.Web.Services.InfinitePayService>();
 builder.Services.AddScoped<TdsTecnologia2027.Web.Services.MatriculaService>();
+
+// Certificados (PDF via QuestPDF — licença Community, gratuita).
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+builder.Services.AddScoped<TdsTecnologia2027.Web.Services.CertificadoService>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromDays(7);

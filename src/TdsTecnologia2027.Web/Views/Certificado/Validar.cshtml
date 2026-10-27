@@ -1,0 +1,36 @@
+@model TdsTecnologia2027.Web.Models.Certificado
+@{
+    Layout = "_LayoutLoja";
+    ViewData["Title"] = "Validação de certificado";
+}
+
+@if (Model != null)
+{
+    <div style="text-align:center;">
+        <div style="font-size:3rem; color:var(--tds-teal);"><i class="bi bi-patch-check-fill"></i></div>
+        <h1 style="font-size:1.5rem; margin:10px 0;">Certificado válido ✓</h1>
+        <p class="text-muted-2">Este certificado foi emitido pela TDS Tecnologia.</p>
+    </div>
+    <div style="background:#0b1220; border:1px solid rgba(148,163,184,0.15); border-radius:12px; padding:18px 20px; margin-top:18px;">
+        <div class="loja-resumo-item"><span class="text-muted-2">Aluno</span><strong>@Model.NomeAluno</strong></div>
+        <div class="loja-resumo-item"><span class="text-muted-2">Curso</span><strong>@Model.CursoNome</strong></div>
+        @if (Model.CargaHoraria > 0)
+        {
+            <div class="loja-resumo-item"><span class="text-muted-2">Carga horária</span><strong>@Model.CargaHoraria horas</strong></div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.PeriodoExecucao))
+        {
+            <div class="loja-resumo-item"><span class="text-muted-2">Período</span><strong>@Model.PeriodoExecucao</strong></div>
+        }
+        <div class="loja-resumo-item"><span class="text-muted-2">Emitido em</span><strong>@Model.EmitidoEm.ToString("dd/MM/yyyy")</strong></div>
+        <div class="loja-resumo-item" style="border-bottom:none;"><span class="text-muted-2">Código</span><strong style="color:var(--tds-teal);">@Model.CodigoValidacao</strong></div>
+    </div>
+}
+else
+{
+    <div style="text-align:center;">
+        <div style="font-size:3rem; color:#f87171;"><i class="bi bi-x-circle"></i></div>
+        <h1 style="font-size:1.4rem; margin:10px 0;">Certificado não encontrado</h1>
+        <p class="text-muted-2">Não localizamos um certificado com o código <strong style="color:#e2e8f0;">@ViewBag.Codigo</strong>. Confira o código informado.</p>
+    </div>
+}

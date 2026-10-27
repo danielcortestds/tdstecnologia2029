@@ -52,6 +52,12 @@
                            asp-route-id="@item.Curso.Id" asp-route-licao="@item.ContinuarLicaoId">
                             <i class="bi bi-play-fill me-1"></i>@(item.PercentualConcluido > 0 ? "Continuar" : "Começar")
                         </a>
+                        @if (item.PercentualConcluido >= TdsTecnologia2027.Web.Models.Certificado.PercentualMinimo)
+                        {
+                            <form asp-area="Aluno" asp-controller="Certificado" asp-action="Emitir" asp-route-id="@item.Curso.Id" method="post" class="mt-2">
+                                <button type="submit" class="btn btn-outline-light w-100 btn-sm"><i class="bi bi-patch-check me-1"></i>Certificado</button>
+                            </form>
+                        }
                     </div>
                 </div>
             </div>

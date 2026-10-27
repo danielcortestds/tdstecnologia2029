@@ -114,7 +114,7 @@ public class CertificadoService
         var tema = Tema(curso.Fabricante);
         var logos = CarregarLogosTema(curso.Fabricante);
         var fundo = CarregarFundo(curso.Fabricante);
-        var marca = CarregarImagem($"marca-dagua-{curso.Fabricante.ToString().ToLowerInvariant()}.png");
+        var padrao = GerarPadraoSvg(tema);
         var assinatura = CarregarImagem("assinatura.png");
         var qr = GerarQrPng(UrlValidacao(cert.CodigoValidacao));
         var data = cert.EmitidoEm.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"));
@@ -128,22 +128,20 @@ public class CertificadoService
                 page.PageColor(Colors.White);
                 page.DefaultTextStyle(x => x.FontSize(13).FontColor("#334155").FontFamily("Lato"));
 
-                // Arte de fundo da marca (opcional) — se existir, usa como fundo de página.
-                if (fundo != null)
-                    page.Background().Image(fundo).FitArea();
-
+                // Moldura sólida (dupla) + marca d'água de padronagem preenchendo o quadro.
                 page.Content()
-                    .Border(3).BorderColor(tema.Primaria)
-                    .Padding(4)
-                    .Border(1).BorderColor(tema.Primaria)
-                    .Padding(fundo == null ? 24 : 40)
+                    .Border(5).BorderColor(tema.Primaria)
+                    .Padding(3)
+                    .Border(1.5f).BorderColor(tema.Primaria)
                     .Layers(layers =>
                     {
-                        // Marca d'água discreta (logo bem clara no centro)
-                        if (marca != null)
-                            layers.Layer().AlignCenter().AlignMiddle().Width(240).Image(marca).FitWidth();
+                        // Marca d'água: padronagem decorativa (degradê claro) preenchendo o quadro.
+                        if (fundo != null)
+                            layers.Layer().Image(fundo).FitArea();
+                        else
+                            layers.Layer().Svg(padrao);
 
-                        layers.PrimaryLayer().Column(col =>
+                        layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 36).PaddingHorizontal(fundo == null ? 30 : 40).Column(col =>
                         {
                         // Logos
                         if (logos.Count > 0)
@@ -238,6 +236,51 @@ public class CertificadoService
         FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png"),
         _ => new TemaCertificado("#15356a", "#c7d2fe", null) // TDS (azul-marinho da logo)
     };
+
+    private static (int r, int g, int b) HexToRgb(string hex)
+    {
+        hex = hex.TrimStart('#');
+        return (Convert.ToInt32(hex.Substring(0, 2), 16),
+                Convert.ToInt32(hex.Substring(2, 2), 16),
+                Convert.ToInt32(hex.Substring(4, 2), 16));
+    }
+
+    /// <summary>Padronagem decorativa (guilloché) em degradê bem claro, tingida na cor do tema.</summary>
+    private static string GerarPadraoSvg(TemaCertificado tema)
+    {
+        var (r, g, b) = HexToRgb(tema.Primaria);
+        // Clareia a cor misturando com branco (f = 0 cor cheia, 1 = branco).
+        string Clarear(double f) =>
+            $"#{(int)(r + (255 - r) * f):X2}{(int)(g + (255 - g) * f):X2}{(int)(b + (255 - b) * f):X2}";
+        var tint = Clarear(0.80);
+
+        return $$"""
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1414 1000" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="{{tint}}" stop-opacity="0.85"/>
+                  <stop offset="0.55" stop-color="{{Clarear(0.92)}}" stop-opacity="0.5"/>
+                  <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+                </linearGradient>
+                <pattern id="pat" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+                  <g stroke="{{tema.Primaria}}" stroke-width="1.1" fill="none" opacity="0.06">
+                    <circle cx="38" cy="38" r="28"/>
+                    <circle cx="38" cy="38" r="15"/>
+                    <circle cx="113" cy="113" r="28"/>
+                    <circle cx="113" cy="113" r="15"/>
+                    <circle cx="113" cy="38" r="7"/>
+                    <circle cx="38" cy="113" r="7"/>
+                    <path d="M0 75 Q 75 42 150 75"/>
+                    <path d="M75 0 Q 42 75 75 150"/>
+                  </g>
+                </pattern>
+              </defs>
+              <rect width="1414" height="1000" fill="#ffffff"/>
+              <rect width="1414" height="1000" fill="url(#grad)"/>
+              <rect width="1414" height="1000" fill="url(#pat)"/>
+            </svg>
+            """;
+    }
 
     /// <summary>Logos do certificado: TDS sempre; logo de parceiro conforme o fabricante (se o arquivo existir).</summary>
     private List<byte[]> CarregarLogosTema(FabricanteCertificado fab)

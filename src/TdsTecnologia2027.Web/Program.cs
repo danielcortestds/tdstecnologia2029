@@ -22,6 +22,11 @@ builder.Services.AddScoped<TdsTecnologia2027.Web.Services.IEmailSender,
 // Carrinho de compras (loja de cursos online) — guardado na sessão do visitante.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TdsTecnologia2027.Web.Services.CarrinhoService>();
+
+// Loja / pagamento (InfinitePay) e liberação de acesso (compra e vouchers).
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<TdsTecnologia2027.Web.Services.InfinitePayService>();
+builder.Services.AddScoped<TdsTecnologia2027.Web.Services.MatriculaService>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromDays(7);

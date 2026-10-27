@@ -1,0 +1,104 @@
+@model TdsTecnologia2027.Web.Models.ConfiguracaoLoja
+@using TdsTecnologia2027.Web.Models
+@using System.Globalization
+@{
+    ViewData["Title"] = "Loja e Pagamentos";
+    var pedidos = ViewBag.Pedidos as List<Pedido> ?? new List<Pedido>();
+    var pt = new CultureInfo("pt-BR");
+}
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-credit-card me-2"></i>Loja e Pagamentos</h3>
+    <p class="text-muted mb-0">Configure o recebimento via InfinitePay e acompanhe os pedidos.</p>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <h5 class="mb-3">Configuração do InfinitePay</h5>
+        <form asp-action="Salvar" method="post">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label asp-for="Handle" class="form-label fw-semibold"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Handle" class="form-control" placeholder="suaInfiniteTag" />
+                    </div>
+                    <div class="form-text">Sua InfiniteTag no app InfinitePay, sem o "$".</div>
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="ApiKey" class="form-label fw-semibold"></label>
+                    <input asp-for="ApiKey" type="password" class="form-control" placeholder="@(string.IsNullOrEmpty(Model.ApiKey) ? "cole a API Key do Checkout" : "•••••••• (deixe em branco para manter)")" />
+                    <div class="form-text">App InfinitePay → Vendas → Checkout → Configurações.</div>
+                </div>
+                <div class="col-md-2 d-flex align-items-start pt-4">
+                    <div class="form-check form-switch mt-1">
+                        <input asp-for="Ativo" class="form-check-input" role="switch" />
+                        <label asp-for="Ativo" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3" />
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar configuração</button>
+            @if (!Model.EstaConfigurado)
+            {
+                <span class="text-warning ms-3"><i class="bi bi-exclamation-triangle me-1"></i>Pagamento online ainda não está ativo.</span>
+            }
+            else
+            {
+                <span class="text-success ms-3"><i class="bi bi-check-circle me-1"></i>Pronto para receber pagamentos.</span>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="mb-3">Pedidos recentes</h5>
+        @if (pedidos.Count == 0)
+        {
+            <p class="text-muted mb-0">Nenhum pedido ainda.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Data</th><th>Cliente</th><th>Cursos</th>
+                            <th class="text-end">Total</th><th>Pagamento</th><th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in pedidos)
+                        {
+                            <tr>
+                                <td class="text-nowrap">@p.CriadoEm.ToString("dd/MM/yy HH:mm")</td>
+                                <td>
+                                    <div>@p.NomeCliente</div>
+                                    <div class="text-muted small">@p.EmailCliente</div>
+                                </td>
+                                <td class="small">@string.Join(", ", p.Itens.Select(i => i.Descricao))</td>
+                                <td class="text-end text-nowrap">@p.Total.ToString("C", pt)</td>
+                                <td class="small text-muted">@(p.MetodoPagamento ?? "—")</td>
+                                <td>
+                                    @switch (p.Status)
+                                    {
+                                        case StatusPedido.Pago:
+                                            <span class="badge badge-ativo">Pago</span>
+                                            break;
+                                        case StatusPedido.Pendente:
+                                            <span class="badge bg-warning text-dark">Pendente</span>
+                                            break;
+                                        default:
+                                            <span class="badge badge-inativo">Cancelado</span>
+                                            break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

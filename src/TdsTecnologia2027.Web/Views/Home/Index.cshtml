@@ -763,6 +763,8 @@
 								Direitos Reservados &copy; 2026 TDS Tecnologia.
 								<span class="mx-2 d-none d-md-inline" style="color:#334155;">|</span>
 								<a href="/Aluno" style="color:#14b8a6; text-decoration:none;"><i class="fa-solid fa-user-graduate me-1"></i>Área do Aluno</a>
+								<span class="mx-2 d-none d-md-inline" style="color:#334155;">|</span>
+								<a href="/Voucher/Resgatar" style="color:#14b8a6; text-decoration:none;"><i class="fa-solid fa-ticket me-1"></i>Resgatar voucher</a>
 							</div>
 							<div class="col-md-6 text-center text-md-end">
 								<div class="d-flex justify-content-center justify-content-md-end">
@@ -942,7 +944,7 @@
 	}
 	function lojaAdicionar(id){ lojaPost('/Loja/Adicionar', id, function(d){ if(d.ok){ lojaToast('Curso adicionado ao carrinho!'); lojaAbrirCarrinho(); } else { lojaToast(d.mensagem||'Curso indisponível.'); } }); }
 	function lojaRemover(id){ lojaPost('/Loja/Remover', id); }
-	function lojaFinalizar(){ lojaToast('💳 O pagamento online entra na próxima etapa — seu carrinho está salvo!'); }
+	function lojaFinalizar(){ window.location.href = '/Loja/Checkout'; }
 	document.querySelectorAll('.loja-add').forEach(function(b){ b.addEventListener('click', function(){ lojaAdicionar(parseInt(this.getAttribute('data-id'),10)); }); });
 	fetch('/Loja/Mini',{headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(lojaRender).catch(function(){});
 	</script>

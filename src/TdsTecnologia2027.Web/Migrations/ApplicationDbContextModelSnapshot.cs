@@ -293,6 +293,28 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("ConfiguracoesEmail");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.ConfiguracaoLoja", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ApiKey")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Handle")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfiguracoesLoja");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Curso", b =>
                 {
                     b.Property<int>("Id")
@@ -594,6 +616,94 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("Modulos");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Pedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EmailCliente")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InvoiceSlug")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MetodoPagamento")
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomeCliente")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OrderNsu")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PagoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TelefoneCliente")
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Total")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("TransactionNsu")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderNsu")
+                        .IsUnique();
+
+                    b.ToTable("Pedidos");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.PedidoItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CursoOnlineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Preco")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CursoOnlineId");
+
+                    b.HasIndex("PedidoId");
+
+                    b.ToTable("PedidosItens");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
                 {
                     b.Property<int>("Id")
@@ -623,6 +733,80 @@ namespace TdsTecnologia2027.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("ProgressosLicao");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Voucher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CursoOnlineId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsosFeitos")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsosMaximos")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Validade")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("CursoOnlineId");
+
+                    b.ToTable("Vouchers");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.VoucherResgate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ResgatadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VoucherId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VoucherId");
+
+                    b.ToTable("VouchersResgates");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -728,6 +912,25 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Navigation("CursoOnline");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.PedidoItem", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
+                        .WithMany()
+                        .HasForeignKey("CursoOnlineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TdsTecnologia2027.Web.Models.Pedido", "Pedido")
+                        .WithMany("Itens")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CursoOnline");
+
+                    b.Navigation("Pedido");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
                 {
                     b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
@@ -747,6 +950,28 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Navigation("Licao");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Voucher", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
+                        .WithMany()
+                        .HasForeignKey("CursoOnlineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CursoOnline");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.VoucherResgate", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.Voucher", "Voucher")
+                        .WithMany("Resgates")
+                        .HasForeignKey("VoucherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Voucher");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Aluno", b =>
                 {
                     b.Navigation("Matriculas");
@@ -762,6 +987,16 @@ namespace TdsTecnologia2027.Web.Migrations
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ModuloCurso", b =>
                 {
                     b.Navigation("Licoes");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Pedido", b =>
+                {
+                    b.Navigation("Itens");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Voucher", b =>
+                {
+                    b.Navigation("Resgates");
                 });
 #pragma warning restore 612, 618
         }

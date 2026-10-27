@@ -1,0 +1,70 @@
+@model List<TdsTecnologia2027.Web.Models.Voucher>
+@{
+    ViewData["Title"] = "Vouchers";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h3 class="mb-1"><i class="bi bi-ticket-perforated me-2"></i>Vouchers</h3>
+        <p class="text-muted mb-0">Gere códigos para liberar cursos sem venda pelo site. O aluno resgata em <code>/Voucher/Resgatar</code>.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Gerar vouchers</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm"><div class="card-body text-center text-muted py-5">
+        <i class="bi bi-ticket-perforated" style="font-size:2rem;"></i>
+        <p class="mt-2 mb-0">Nenhum voucher ainda. Clique em "Gerar vouchers".</p>
+    </div></div>
+}
+else
+{
+    <div class="card border-0 shadow-sm"><div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr><th>Código</th><th>Curso</th><th class="text-center">Usos</th><th>Validade</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model)
+                    {
+                        var esgotado = v.UsosFeitos >= v.UsosMaximos;
+                        var expirado = v.Validade.HasValue && DateTime.Today > v.Validade.Value.Date;
+                        <tr>
+                            <td><code style="font-size:0.95rem; font-weight:600;">@v.Codigo</code></td>
+                            <td>@(v.CursoOnline?.Nome ?? "—")</td>
+                            <td class="text-center">@v.UsosFeitos / @v.UsosMaximos</td>
+                            <td>@(v.Validade?.ToString("dd/MM/yyyy") ?? "—")</td>
+                            <td>
+                                @if (!v.Ativo)
+                                {
+                                    <span class="badge badge-inativo">Desativado</span>
+                                }
+                                else if (esgotado)
+                                {
+                                    <span class="badge bg-secondary">Esgotado</span>
+                                }
+                                else if (expirado)
+                                {
+                                    <span class="badge bg-secondary">Expirado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-ativo">Disponível</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <form asp-action="Toggle" asp-route-id="@v.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                        @(v.Ativo ? "Desativar" : "Ativar")
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div></div>
+}

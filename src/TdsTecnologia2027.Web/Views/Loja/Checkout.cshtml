@@ -1,0 +1,56 @@
+@model TdsTecnologia2027.Web.Models.CheckoutViewModel
+@using System.Globalization
+@{
+    Layout = "_LayoutLoja";
+    ViewData["Title"] = "Finalizar compra";
+    var pt = new CultureInfo("pt-BR");
+}
+
+<h1 style="font-size:1.4rem; margin-bottom:4px;">Finalizar compra</h1>
+<p class="text-muted-2" style="margin-bottom:22px;">Preencha seus dados para pagar com Pix, cartão ou boleto.</p>
+
+@if (ViewBag.Erro != null)
+{
+    <div class="alert alert-danger">@ViewBag.Erro</div>
+}
+
+<div style="background:#0b1220; border:1px solid rgba(148,163,184,0.15); border-radius:12px; padding:16px 18px; margin-bottom:22px;">
+    <div class="text-muted-2 small mb-2" style="text-transform:uppercase; letter-spacing:0.05em;">Seu pedido</div>
+    @foreach (var item in Model.Itens)
+    {
+        <div class="loja-resumo-item">
+            <span>@item.Nome</span>
+            <strong>@item.Preco.ToString("C", pt)</strong>
+        </div>
+    }
+    <div class="loja-resumo-item" style="border-bottom:none; margin-top:6px;">
+        <span style="font-weight:700;">Total</span>
+        <strong style="color:var(--tds-teal); font-size:1.2rem;">@Model.Total.ToString("C", pt)</strong>
+    </div>
+</div>
+
+<form asp-action="Checkout" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    <div class="mb-3">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" placeholder="Seu nome completo" />
+        <span asp-validation-for="Nome" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="seu@email.com" />
+        <span asp-validation-for="Email" class="text-danger small"></span>
+        <div class="text-muted-2 small mt-1">O acesso ao curso será liberado para este e-mail.</div>
+    </div>
+    <div class="mb-4">
+        <label asp-for="Telefone" class="form-label"></label>
+        <input asp-for="Telefone" class="form-control" placeholder="(65) 9 9999-9999" />
+        <span asp-validation-for="Telefone" class="text-danger small"></span>
+    </div>
+    <button type="submit" class="btn btn-tds"><i class="bi bi-lock-fill me-1"></i>Ir para o pagamento</button>
+    <div class="text-center mt-3"><a href="/#features" class="small">&larr; Voltar aos cursos</a></div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

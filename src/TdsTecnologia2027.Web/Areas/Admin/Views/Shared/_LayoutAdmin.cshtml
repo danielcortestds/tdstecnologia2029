@@ -66,6 +66,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pagamentos" ? "active" : "")"
+                           href="/Admin/Pagamentos">
+                            <i class="bi bi-credit-card me-2"></i>Loja &amp; Pagamentos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vouchers" ? "active" : "")"
+                           href="/Admin/Vouchers">
+                            <i class="bi bi-ticket-perforated me-2"></i>Vouchers
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Configuracoes" ? "active" : "")"
                            href="/Admin/Configuracoes">
                             <i class="bi bi-envelope-at me-2"></i>E-mail

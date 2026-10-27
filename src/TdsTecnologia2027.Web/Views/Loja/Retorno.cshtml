@@ -1,0 +1,36 @@
+@model TdsTecnologia2027.Web.Models.Pedido
+@{
+    Layout = "_LayoutLoja";
+    ViewData["Title"] = "Pagamento";
+    var estado = ViewBag.Estado as string ?? "erro";
+}
+
+@if (estado == "pago")
+{
+    <div style="text-align:center;">
+        <div style="font-size:3rem; color:var(--tds-teal);"><i class="bi bi-check-circle-fill"></i></div>
+        <h1 style="font-size:1.5rem; margin:10px 0;">Pagamento confirmado! 🎉</h1>
+        <p class="text-muted-2">Seu acesso foi liberado. Enviamos um e-mail para <strong style="color:#e2e8f0;">@ViewBag.Email</strong> com os dados de acesso à Área do Aluno.</p>
+        <a href="/Aluno" class="btn btn-tds mt-3" style="max-width:280px; margin:0 auto;"><i class="bi bi-play-circle me-1"></i>Acessar meus cursos</a>
+        <p class="text-muted-2 small mt-3">Não recebeu o e-mail? Confira o spam ou fale conosco pelo WhatsApp.</p>
+    </div>
+}
+else if (estado == "processando")
+{
+    <div style="text-align:center;">
+        <div style="font-size:3rem; color:#fbbf24;"><i class="bi bi-hourglass-split"></i></div>
+        <h1 style="font-size:1.5rem; margin:10px 0;">Estamos confirmando seu pagamento</h1>
+        <p class="text-muted-2">Assim que for aprovado (geralmente em segundos no Pix), você receberá um e-mail em <strong style="color:#e2e8f0;">@ViewBag.Email</strong> com o acesso à Área do Aluno.</p>
+        <p class="text-muted-2 small mt-3">Pode fechar esta página — o acesso é liberado automaticamente.</p>
+        <a href="/" class="btn btn-tds mt-2" style="max-width:260px; margin:0 auto;">Voltar ao site</a>
+    </div>
+}
+else
+{
+    <div style="text-align:center;">
+        <div style="font-size:3rem; color:#f87171;"><i class="bi bi-exclamation-circle"></i></div>
+        <h1 style="font-size:1.4rem; margin:10px 0;">Pedido não encontrado</h1>
+        <p class="text-muted-2">Não localizamos este pedido. Se você concluiu o pagamento, aguarde o e-mail de acesso ou fale conosco pelo WhatsApp.</p>
+        <a href="/" class="btn btn-tds mt-2" style="max-width:260px; margin:0 auto;">Voltar ao site</a>
+    </div>
+}

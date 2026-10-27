@@ -15,6 +15,9 @@ public interface IEmailSender
 
     /// <summary>Envio genérico (usado pelo botão "enviar e-mail de teste" do admin).</summary>
     Task EnviarAsync(string para, string assunto, string corpoHtml, string? responderPara = null);
+
+    /// <summary>E-mail de liberação de acesso (compra ou voucher), com login e senha se for conta nova.</summary>
+    Task EnviarAcessoAsync(string email, string nome, IEnumerable<string> cursos, string? senhaTemporaria);
 }
 
 /// <summary>
@@ -26,11 +29,49 @@ public class EmailSender : IEmailSender
 {
     private readonly ApplicationDbContext _db;
     private readonly ILogger<EmailSender> _logger;
+    private readonly IHttpContextAccessor _http;
 
-    public EmailSender(ApplicationDbContext db, ILogger<EmailSender> logger)
+    public EmailSender(ApplicationDbContext db, ILogger<EmailSender> logger, IHttpContextAccessor http)
     {
         _db = db;
         _logger = logger;
+        _http = http;
+    }
+
+    public async Task EnviarAcessoAsync(string email, string nome, IEnumerable<string> cursos, string? senhaTemporaria)
+    {
+        var req = _http.HttpContext?.Request;
+        var baseUrl = req != null ? $"{req.Scheme}://{req.Host}" : "https://tdstecnologia.com.br";
+        var loginUrl = $"{baseUrl}/Aluno";
+
+        var listaCursos = string.Join("", cursos.Select(c => $"<li>{Escapar(c)}</li>"));
+
+        var blocoAcesso = string.IsNullOrWhiteSpace(senhaTemporaria)
+            ? $"<p>Use o e-mail e a senha que você já tem na plataforma. Esqueceu a senha? Fale com a gente.</p>"
+            : $"""
+                <p>Criamos seu acesso. Use os dados abaixo para entrar (recomendamos trocar a senha depois):</p>
+                <table style="border-collapse:collapse; margin:12px 0;">
+                  <tr><td style="padding:6px 14px; background:#f1f5f9; font-weight:bold;">E-mail</td><td style="padding:6px 14px; border:1px solid #e2e8f0;">{Escapar(email)}</td></tr>
+                  <tr><td style="padding:6px 14px; background:#f1f5f9; font-weight:bold;">Senha</td><td style="padding:6px 14px; border:1px solid #e2e8f0;"><code>{Escapar(senhaTemporaria!)}</code></td></tr>
+                </table>
+                """;
+
+        var corpo = $"""
+            <div style="font-family:Arial,sans-serif; color:#0f172a;">
+              <h2 style="color:#0d9488;">Acesso liberado! 🎉</h2>
+              <p>Olá, {Escapar(nome)}!</p>
+              <p>Seu acesso ao(s) curso(s) abaixo foi liberado na Área do Aluno da TDS Tecnologia:</p>
+              <ul>{listaCursos}</ul>
+              {blocoAcesso}
+              <p style="margin:24px 0;">
+                <a href="{loginUrl}" style="background:#14b8a6; color:#04201c; font-weight:bold; text-decoration:none; padding:12px 26px; border-radius:999px; display:inline-block;">Acessar meus cursos</a>
+              </p>
+              <p style="color:#64748b; font-size:13px;">Se o botão não funcionar, acesse: {loginUrl}</p>
+              <p style="color:#64748b; font-size:13px;">Bons estudos! — Equipe TDS Tecnologia</p>
+            </div>
+            """;
+
+        await EnviarAsync(para: email, assunto: "Seu acesso na TDS Tecnologia está liberado", corpoHtml: corpo);
     }
 
     public async Task EnviarContatoAsync(ContatoForm contato)

@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Gerar vouchers";
+    var cursos = ViewBag.Cursos as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<div class="mb-4">
+    <h3 class="mb-1"><i class="bi bi-ticket-perforated me-2"></i>Gerar vouchers</h3>
+    <p class="text-muted mb-0">Cria um ou vários códigos para liberar um curso online.</p>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Curso</label>
+                    <select name="cursoOnlineId" class="form-select" asp-items="cursos" required>
+                        <option value="">Selecione o curso...</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Quantidade de vouchers</label>
+                    <input name="quantidade" type="number" value="1" min="1" max="500" class="form-control" />
+                    <div class="form-text">Gera vários códigos de uma vez (até 500).</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Usos por voucher</label>
+                    <input name="usosMaximos" type="number" value="1" min="1" class="form-control" />
+                    <div class="form-text">1 = uso único (recomendado).</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Validade (opcional)</label>
+                    <input name="validade" type="date" class="form-control" />
+                    <div class="form-text">Deixe em branco para não expirar.</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Observação (opcional)</label>
+                    <input name="observacao" class="form-control" placeholder="ex.: parceria X" />
+                </div>
+            </div>
+            <hr class="my-4" />
+            <button type="submit" class="btn btn-primary"><i class="bi bi-magic me-1"></i>Gerar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

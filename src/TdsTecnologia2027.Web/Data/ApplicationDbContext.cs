@@ -24,6 +24,13 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<ProgressoLicao> ProgressosLicao { get; set; }
     public DbSet<MaterialApoio> MateriaisApoio { get; set; }
 
+    // Loja / e-commerce
+    public DbSet<Pedido> Pedidos { get; set; }
+    public DbSet<PedidoItem> PedidosItens { get; set; }
+    public DbSet<ConfiguracaoLoja> ConfiguracoesLoja { get; set; }
+    public DbSet<Voucher> Vouchers { get; set; }
+    public DbSet<VoucherResgate> VouchersResgates { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -110,6 +117,43 @@ public class ApplicationDbContext : IdentityDbContext
             entity.HasIndex(e => new { e.AlunoId, e.LicaoId }).IsUnique();
             entity.HasOne(p => p.Aluno).WithMany().HasForeignKey(p => p.AlunoId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(p => p.Licao).WithMany().HasForeignKey(p => p.LicaoId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── Loja / e-commerce ─────────────────────────────────────────────
+        builder.Entity<Pedido>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.OrderNsu).IsUnique();
+            entity.Property(e => e.Total).HasPrecision(10, 2);
+            entity.HasMany(p => p.Itens)
+                  .WithOne(i => i.Pedido)
+                  .HasForeignKey(i => i.PedidoId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<PedidoItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Preco).HasPrecision(10, 2);
+            // Não cascateia a exclusão do curso para o histórico do pedido.
+            entity.HasOne(i => i.CursoOnline)
+                  .WithMany()
+                  .HasForeignKey(i => i.CursoOnlineId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Voucher>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Codigo).IsUnique();
+            entity.HasOne(v => v.CursoOnline)
+                  .WithMany()
+                  .HasForeignKey(v => v.CursoOnlineId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasMany(v => v.Resgates)
+                  .WithOne(r => r.Voucher)
+                  .HasForeignKey(r => r.VoucherId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

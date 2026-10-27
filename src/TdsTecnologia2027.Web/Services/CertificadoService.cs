@@ -254,30 +254,38 @@ public class CertificadoService
             $"#{(int)(r + (255 - r) * f):X2}{(int)(g + (255 - g) * f):X2}{(int)(b + (255 - b) * f):X2}";
         var tint = Clarear(0.80);
 
+        var cor = tema.Primaria;
+        // Motivo da padronagem (anéis + ondas) — reutilizado em duas intensidades.
+        string Motivo(double op) => $$"""
+                  <g stroke="{{cor}}" stroke-width="1.1" fill="none" opacity="{{op.ToString(System.Globalization.CultureInfo.InvariantCulture)}}">
+                    <circle cx="38" cy="38" r="28"/><circle cx="38" cy="38" r="15"/>
+                    <circle cx="113" cy="113" r="28"/><circle cx="113" cy="113" r="15"/>
+                    <circle cx="113" cy="38" r="7"/><circle cx="38" cy="113" r="7"/>
+                    <path d="M0 75 Q 75 42 150 75"/><path d="M75 0 Q 42 75 75 150"/>
+                  </g>
+            """;
         return $$"""
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1414 1000" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stop-color="{{tint}}" stop-opacity="0.85"/>
-                  <stop offset="0.55" stop-color="{{Clarear(0.92)}}" stop-opacity="0.5"/>
+                  <stop offset="0" stop-color="{{tint}}" stop-opacity="0.6"/>
+                  <stop offset="0.6" stop-color="{{Clarear(0.93)}}" stop-opacity="0.35"/>
                   <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
                 </linearGradient>
-                <pattern id="pat" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
-                  <g stroke="{{tema.Primaria}}" stroke-width="1.1" fill="none" opacity="0.06">
-                    <circle cx="38" cy="38" r="28"/>
-                    <circle cx="38" cy="38" r="15"/>
-                    <circle cx="113" cy="113" r="28"/>
-                    <circle cx="113" cy="113" r="15"/>
-                    <circle cx="113" cy="38" r="7"/>
-                    <circle cx="38" cy="113" r="7"/>
-                    <path d="M0 75 Q 75 42 150 75"/>
-                    <path d="M75 0 Q 42 75 75 150"/>
-                  </g>
+                <pattern id="patF" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+            {{Motivo(0.05)}}
+                </pattern>
+                <pattern id="patB" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+            {{Motivo(0.16)}}
                 </pattern>
               </defs>
               <rect width="1414" height="1000" fill="#ffffff"/>
               <rect width="1414" height="1000" fill="url(#grad)"/>
-              <rect width="1414" height="1000" fill="url(#pat)"/>
+              <rect width="1414" height="1000" fill="url(#patF)"/>
+              <rect x="0" y="0" width="1414" height="78" fill="url(#patB)"/>
+              <rect x="0" y="922" width="1414" height="78" fill="url(#patB)"/>
+              <rect x="0" y="0" width="78" height="1000" fill="url(#patB)"/>
+              <rect x="1336" y="0" width="78" height="1000" fill="url(#patB)"/>
             </svg>
             """;
     }

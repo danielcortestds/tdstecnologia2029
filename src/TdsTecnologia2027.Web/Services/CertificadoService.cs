@@ -135,29 +135,29 @@ public class CertificadoService
                 {
                     // Faixa de destaque no tema da marca
                     outer.Item().Height(8).Background(tema.Primaria);
-                    outer.Item().Border(0.75f).BorderColor(tema.Clara).Padding(26).Column(col =>
+                    outer.Item().Border(0.75f).BorderColor(tema.Clara).Padding(16).Column(col =>
                     {
                         // Logos
                         if (logos.Count > 0)
                         {
-                            col.Item().AlignCenter().Height(52).Row(row =>
+                            col.Item().AlignCenter().Height(44).Row(row =>
                             {
-                                row.Spacing(28);
+                                row.Spacing(26);
                                 foreach (var img in logos)
-                                    row.AutoItem().Height(48).Image(img).FitHeight();
+                                    row.AutoItem().Height(40).Image(img).FitHeight();
                             });
                         }
 
-                        col.Item().PaddingTop(16).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
-                            .FontSize(29).Bold().FontColor(tema.Primaria).LetterSpacing(0.08f);
+                        col.Item().PaddingTop(8).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
+                            .FontSize(28).Bold().FontColor(tema.Primaria).LetterSpacing(0.08f);
 
-                        col.Item().PaddingTop(4).AlignCenter().Text("A TDS Tecnologia certifica que")
+                        col.Item().PaddingTop(3).AlignCenter().Text("A TDS Tecnologia certifica que")
                             .FontSize(13).FontColor("#64748b");
 
-                        col.Item().PaddingTop(14).AlignCenter().Text(cert.NomeAluno)
-                            .FontSize(26).Bold().FontColor("#0f172a");
+                        col.Item().PaddingTop(10).AlignCenter().Text(cert.NomeAluno)
+                            .FontSize(25).Bold().FontColor("#0f172a");
 
-                        col.Item().PaddingTop(12).AlignCenter().MaxWidth(640).Text(txt =>
+                        col.Item().PaddingTop(8).AlignCenter().MaxWidth(640).Text(txt =>
                         {
                             txt.AlignCenter();
                             txt.DefaultTextStyle(x => x.FontSize(14).FontColor("#334155").LineHeight(1.5f));
@@ -167,7 +167,7 @@ public class CertificadoService
                         });
 
                         // Carga horária + período de realização
-                        col.Item().PaddingTop(16).AlignCenter().Text(txt =>
+                        col.Item().PaddingTop(10).AlignCenter().Text(txt =>
                         {
                             txt.AlignCenter();
                             txt.DefaultTextStyle(x => x.FontSize(12).FontColor("#334155"));
@@ -185,14 +185,17 @@ public class CertificadoService
                             }
                         });
 
-                        col.Item().PaddingTop(22).AlignCenter().Text($"Emitido em {data}")
+                        col.Item().PaddingTop(10).AlignCenter().Text($"Emitido em {data}")
                             .FontSize(12).FontColor("#64748b");
 
                         // Assinatura
-                        col.Item().PaddingTop(28).AlignCenter().Column(sig =>
+                        col.Item().PaddingTop(12).AlignCenter().Column(sig =>
                         {
                             if (assinatura != null)
-                                sig.Item().AlignCenter().Height(42).Image(assinatura).FitHeight();
+                                sig.Item().AlignCenter().Height(40).Image(assinatura).FitHeight();
+                            else
+                                sig.Item().AlignCenter().PaddingBottom(0).Text("Daniel Côrtes")
+                                    .FontFamily("Great Vibes").FontSize(32).FontColor("#1b3a8f");
                             sig.Item().Width(240).LineHorizontal(0.75f).LineColor("#94a3b8");
                             sig.Item().PaddingTop(5).AlignCenter().Text("TDS Tecnologia").FontSize(12).Bold().FontColor("#0f172a");
                             sig.Item().AlignCenter().Text("Treinamento e Consultoria em Informática").FontSize(9).FontColor("#94a3b8");
@@ -200,7 +203,7 @@ public class CertificadoService
                         });
 
                         // Rodapé: validação + QR
-                        col.Item().PaddingTop(22).Row(row =>
+                        col.Item().PaddingTop(12).Row(row =>
                         {
                             row.RelativeItem().AlignBottom().Column(c =>
                             {
@@ -208,7 +211,7 @@ public class CertificadoService
                                 c.Item().Text(UrlValidacao(cert.CodigoValidacao)).FontSize(8).FontColor("#94a3b8");
                                 c.Item().Text($"Código: {cert.CodigoValidacao}").FontSize(8).FontColor("#cbd5e1");
                             });
-                            row.ConstantItem(62).Height(62).Image(qr).FitArea();
+                            row.ConstantItem(56).Height(56).Image(qr).FitArea();
                         });
                     });
                 });

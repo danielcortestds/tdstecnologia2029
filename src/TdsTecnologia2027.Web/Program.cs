@@ -31,6 +31,14 @@ builder.Services.AddScoped<TdsTecnologia2027.Web.Services.MatriculaService>();
 // Certificados (PDF via QuestPDF — licença Community, gratuita).
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddScoped<TdsTecnologia2027.Web.Services.CertificadoService>();
+
+// Fonte manuscrita para a assinatura do certificado (Great Vibes).
+var fonteAssinatura = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "fonts", "GreatVibes-Regular.ttf");
+if (File.Exists(fonteAssinatura))
+{
+    using var fonteStream = File.OpenRead(fonteAssinatura);
+    QuestPDF.Drawing.FontManager.RegisterFontFromStream(fonteStream);
+}
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromDays(7);

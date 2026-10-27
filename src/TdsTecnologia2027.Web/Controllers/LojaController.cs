@@ -51,9 +51,13 @@ public class LojaController : Controller
     [HttpGet]
     public async Task<IActionResult> Mini() => await EstadoJson(true, null);
 
-    /// <summary>Marcador de versão (ajuda a confirmar qual build está no ar).</summary>
+    /// <summary>Marcador de versão + último Id de pedido (diagnóstico de deploy).</summary>
     [HttpGet]
-    public IActionResult Ping() => Json(new { ok = true, build = "loja-match-v3-normaliza-nsu" });
+    public async Task<IActionResult> Ping()
+    {
+        var ultimoId = await _db.Pedidos.OrderByDescending(p => p.Id).Select(p => (int?)p.Id).FirstOrDefaultAsync();
+        return Json(new { ok = true, build = "loja-match-v4-id-na-url", ultimoPedido = ultimoId });
+    }
 
     private async Task<IActionResult> EstadoJson(bool ok, string? mensagem)
     {
@@ -128,13 +132,14 @@ public class LojaController : Controller
         _db.Pedidos.Add(pedido);
         await _db.SaveChangesAsync();
 
-        // order_nsu = Id numérico do pedido. A InfinitePay ("NSU" = número sequencial)
-        // aceita esse valor e o devolve idêntico no retorno/webhook — um GUID longo
-        // não era aceito/casado, deixando o pedido "não encontrado".
         pedido.OrderNsu = pedido.Id.ToString();
 
-        var redirectUrl = Url.Action(nameof(Retorno), "Loja", null, Request.Scheme)!;
-        var webhookUrl = Url.Action(nameof(Webhook), "Loja", null, Request.Scheme)!;
+        // O Id do pedido vai na PRÓPRIA URL de retorno/webhook (que nós controlamos):
+        // /Loja/Retorno/{id} e /Loja/Webhook/{id}. A InfinitePay chama essas URLs com
+        // o nosso Id intacto — ela gera o próprio order_nsu e um slug de fatura
+        // diferente do slug do link, então esses não serviam para casar o pedido.
+        var redirectUrl = Url.Action(nameof(Retorno), "Loja", new { id = pedido.Id }, Request.Scheme)!;
+        var webhookUrl = Url.Action(nameof(Webhook), "Loja", new { id = pedido.Id }, Request.Scheme)!;
 
         string? url;
         try
@@ -165,9 +170,13 @@ public class LojaController : Controller
 
     // ── Retorno do cliente (redirect_url do InfinitePay) ───────────────────
     [HttpGet]
-    public async Task<IActionResult> Retorno(string? order_nsu, string? slug, string? transaction_nsu)
+    public async Task<IActionResult> Retorno(int? id, string? order_nsu, string? slug, string? transaction_nsu)
     {
-        var pedido = await LocalizarPedidoAsync(order_nsu, slug);
+        // Prioriza o Id que nós colocamos na URL; cai para order_nsu/slug por garantia.
+        var pedido = (id.HasValue
+                ? await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.Id == id.Value)
+                : null)
+            ?? await LocalizarPedidoAsync(order_nsu, slug);
 
         if (pedido == null)
         {
@@ -192,7 +201,7 @@ public class LojaController : Controller
     [HttpPost]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
-    public async Task<IActionResult> Webhook()
+    public async Task<IActionResult> Webhook(int? id)
     {
         string body;
         using (var reader = new StreamReader(Request.Body))
@@ -218,7 +227,11 @@ public class LojaController : Controller
             return Ok(); // não pedir reenvio de algo que não dá para processar
         }
 
-        var pedido = await LocalizarPedidoAsync(orderNsu, slug);
+        // Prioriza o Id que nós colocamos na URL do webhook; cai para order_nsu/slug.
+        var pedido = (id.HasValue
+                ? await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.Id == id.Value)
+                : null)
+            ?? await LocalizarPedidoAsync(orderNsu, slug);
         if (pedido == null || pedido.Status == StatusPedido.Pago) return Ok(); // desconhecido ou já processado
 
         // O webhook só é enviado quando o pagamento é aprovado, e casamos o pedido

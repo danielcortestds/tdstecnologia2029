@@ -77,7 +77,12 @@
                                     <div>@p.NomeCliente</div>
                                     <div class="text-muted small">@p.EmailCliente</div>
                                 </td>
-                                <td class="small">@string.Join(", ", p.Itens.Select(i => i.Descricao))</td>
+                                <td class="small">
+                                    @string.Join(", ", p.Itens.Select(i => i.Descricao))
+                                    <div class="text-muted" style="font-size:11px;">
+                                        #@p.Id · nsu:<code>@p.OrderNsu</code> · slug:<code>@(p.InvoiceSlug ?? "—")</code>
+                                    </div>
+                                </td>
                                 <td class="text-end text-nowrap">@p.Total.ToString("C", pt)</td>
                                 <td class="small text-muted">@(p.MetodoPagamento ?? "—")</td>
                                 <td>

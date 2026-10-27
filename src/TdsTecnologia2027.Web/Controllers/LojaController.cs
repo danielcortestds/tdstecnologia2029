@@ -51,6 +51,10 @@ public class LojaController : Controller
     [HttpGet]
     public async Task<IActionResult> Mini() => await EstadoJson(true, null);
 
+    /// <summary>Marcador de versão (ajuda a confirmar qual build está no ar).</summary>
+    [HttpGet]
+    public IActionResult Ping() => Json(new { ok = true, build = "loja-match-v3-normaliza-nsu" });
+
     private async Task<IActionResult> EstadoJson(bool ok, string? mensagem)
     {
         var itens = await _carrinho.ItensAsync();
@@ -242,15 +246,38 @@ public class LojaController : Controller
         Pedido? pedido = null;
         if (!string.IsNullOrWhiteSpace(orderNsu))
         {
+            // 1) match direto
             pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.OrderNsu == orderNsu);
-            // Reforço: order_nsu numérico == Id do pedido.
+
+            // 2) order_nsu numérico == Id do pedido
             if (pedido == null && int.TryParse(orderNsu, out var pid))
                 pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.Id == pid);
+
+            // 3) GUID devolvido pela InfinitePay em outro formato (com hífens/caixa
+            //    diferente). Compara ignorando tudo que não for letra/dígito.
+            if (pedido == null)
+            {
+                var alvo = NormalizarNsu(orderNsu);
+                if (alvo.Length > 0)
+                {
+                    var recentes = await _db.Pedidos.Include(p => p.Itens)
+                        .OrderByDescending(p => p.Id).Take(300).ToListAsync();
+                    pedido = recentes.FirstOrDefault(p => NormalizarNsu(p.OrderNsu) == alvo);
+                }
+            }
         }
+
+        // 4) pelo slug da fatura
         if (pedido == null && !string.IsNullOrWhiteSpace(slug))
             pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.InvoiceSlug == slug);
+
         return pedido;
     }
+
+    /// <summary>Normaliza o NSU para comparação (só letras/dígitos, minúsculo) —
+    /// a InfinitePay pode devolver o mesmo GUID com hífens ou caixa diferente.</summary>
+    private static string NormalizarNsu(string? s) =>
+        new string((s ?? string.Empty).Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
 
     /// <summary>Extrai o slug (último segmento) da URL do checkout do InfinitePay.</summary>
     private static string? ExtrairSlug(string url)

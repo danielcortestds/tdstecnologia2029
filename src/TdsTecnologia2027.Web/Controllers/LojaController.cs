@@ -124,6 +124,11 @@ public class LojaController : Controller
         _db.Pedidos.Add(pedido);
         await _db.SaveChangesAsync();
 
+        // order_nsu = Id numérico do pedido. A InfinitePay ("NSU" = número sequencial)
+        // aceita esse valor e o devolve idêntico no retorno/webhook — um GUID longo
+        // não era aceito/casado, deixando o pedido "não encontrado".
+        pedido.OrderNsu = pedido.Id.ToString();
+
         var redirectUrl = Url.Action(nameof(Retorno), "Loja", null, Request.Scheme)!;
         var webhookUrl = Url.Action(nameof(Webhook), "Loja", null, Request.Scheme)!;
 
@@ -236,7 +241,12 @@ public class LojaController : Controller
     {
         Pedido? pedido = null;
         if (!string.IsNullOrWhiteSpace(orderNsu))
+        {
             pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.OrderNsu == orderNsu);
+            // Reforço: order_nsu numérico == Id do pedido.
+            if (pedido == null && int.TryParse(orderNsu, out var pid))
+                pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.Id == pid);
+        }
         if (pedido == null && !string.IsNullOrWhiteSpace(slug))
             pedido = await _db.Pedidos.Include(p => p.Itens).FirstOrDefaultAsync(p => p.InvoiceSlug == slug);
         return pedido;

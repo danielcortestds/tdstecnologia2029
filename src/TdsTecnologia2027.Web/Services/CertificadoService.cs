@@ -147,9 +147,18 @@ public class CertificadoService
 
                         layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 40).PaddingHorizontal(fundo == null ? 30 : 48).Column(col =>
                         {
-                        // Logos: parceiro à esquerda, TDS à direita. TDS um pouco maior,
-                        // alinhadas pela base, para equilibrar os tamanhos.
-                        if (partnerLogo != null || tdsLogo != null)
+                        // Logos (alinhadas pela base). Microsoft: parceiro na borda
+                        // esquerda e TDS na borda direita. Demais temas: centralizadas.
+                        if (tema.LogosNasBordas && partnerLogo != null && tdsLogo != null)
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.AutoItem().AlignBottom().Height(tema.ParceiroAltura).Image(partnerLogo).FitHeight();
+                                row.RelativeItem(); // empurra a TDS para a direita
+                                row.AutoItem().AlignBottom().Height(82).Image(tdsLogo).FitHeight();
+                            });
+                        }
+                        else if (partnerLogo != null || tdsLogo != null)
                         {
                             col.Item().AlignCenter().Row(row =>
                             {
@@ -236,15 +245,16 @@ public class CertificadoService
         return doc.GeneratePdf();
     }
 
-    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo, float ParceiroAltura = 66f);
+    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo, float ParceiroAltura = 66f, bool LogosNasBordas = false);
 
     /// <summary>Cores e logo de parceiro por fabricante. Todos emitidos pela TDS.</summary>
     private static TemaCertificado Tema(FabricanteCertificado fab) => fab switch
     {
         // ParceiroAltura ajusta o tamanho visual da logo do parceiro (o selo Qlik é
-        // alto; a faixa "Microsoft Partner" é larga, então vai um pouco menor).
+        // alto; a faixa "Microsoft Partner" é larga, então vai menor). LogosNasBordas:
+        // Microsoft fica com o parceiro à esquerda e a TDS à direita (nas bordas).
         FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png", 74f),
-        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png", 52f),
+        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png", 44f, LogosNasBordas: true),
         _ => new TemaCertificado("#15356a", "#c7d2fe", null) // TDS (azul-marinho da logo)
     };
 

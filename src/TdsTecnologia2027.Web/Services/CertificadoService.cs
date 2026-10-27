@@ -114,6 +114,7 @@ public class CertificadoService
         var tema = Tema(curso.Fabricante);
         var logos = CarregarLogosTema(curso.Fabricante);
         var fundo = CarregarFundo(curso.Fabricante);
+        var marca = CarregarImagem($"marca-dagua-{curso.Fabricante.ToString().ToLowerInvariant()}.png");
         var assinatura = CarregarImagem("assinatura.png");
         var qr = GerarQrPng(UrlValidacao(cert.CodigoValidacao));
         var data = cert.EmitidoEm.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"));
@@ -131,20 +132,27 @@ public class CertificadoService
                 if (fundo != null)
                     page.Background().Image(fundo).FitArea();
 
-                page.Content().Border(1.5f).BorderColor(tema.Primaria).Padding(6).Column(outer =>
-                {
-                    // Faixa de destaque no tema da marca
-                    outer.Item().Height(8).Background(tema.Primaria);
-                    outer.Item().Border(0.75f).BorderColor(tema.Clara).Padding(16).Column(col =>
+                page.Content()
+                    .Border(3).BorderColor(tema.Primaria)
+                    .Padding(4)
+                    .Border(1).BorderColor(tema.Primaria)
+                    .Padding(fundo == null ? 24 : 40)
+                    .Layers(layers =>
                     {
+                        // Marca d'água discreta (logo bem clara no centro)
+                        if (marca != null)
+                            layers.Layer().AlignCenter().AlignMiddle().Width(240).Image(marca).FitWidth();
+
+                        layers.PrimaryLayer().Column(col =>
+                        {
                         // Logos
                         if (logos.Count > 0)
                         {
-                            col.Item().AlignCenter().Height(44).Row(row =>
+                            col.Item().AlignCenter().Height(72).Row(row =>
                             {
-                                row.Spacing(26);
+                                row.Spacing(34);
                                 foreach (var img in logos)
-                                    row.AutoItem().Height(40).Image(img).FitHeight();
+                                    row.AutoItem().Height(66).Image(img).FitHeight();
                             });
                         }
 
@@ -192,7 +200,7 @@ public class CertificadoService
                         col.Item().PaddingTop(12).AlignCenter().Column(sig =>
                         {
                             if (assinatura != null)
-                                sig.Item().AlignCenter().Height(40).Image(assinatura).FitHeight();
+                                sig.Item().AlignCenter().Height(52).Image(assinatura).FitHeight();
                             else
                                 sig.Item().AlignCenter().PaddingBottom(0).Text("Daniel Côrtes")
                                     .FontFamily("Great Vibes").FontSize(32).FontColor("#1b3a8f");
@@ -228,7 +236,7 @@ public class CertificadoService
     {
         FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png"),
         FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png"),
-        _ => new TemaCertificado("#1d4ed8", "#c7d2fe", null) // TDS (azul)
+        _ => new TemaCertificado("#15356a", "#c7d2fe", null) // TDS (azul-marinho da logo)
     };
 
     /// <summary>Logos do certificado: TDS sempre; logo de parceiro conforme o fabricante (se o arquivo existir).</summary>

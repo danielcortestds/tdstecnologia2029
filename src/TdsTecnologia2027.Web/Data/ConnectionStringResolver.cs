@@ -11,7 +11,10 @@ namespace TdsTecnologia2027.Web.Data;
 /// </summary>
 public static class ConnectionStringResolver
 {
-    public static string Resolve(IHostEnvironment environment)
+    public const string DbFileName = "tdstecnologia2027.db";
+
+    /// <summary>Pasta persistente onde ficam o banco e os materiais.</summary>
+    public static string DataDir(IHostEnvironment environment)
     {
         // No Azure App Service a variável HOME aponta para o armazenamento
         // persistente (D:\home). Localmente ela normalmente não existe.
@@ -22,8 +25,12 @@ public static class ConnectionStringResolver
             : Path.Combine(environment.ContentRootPath, "App_Data");
 
         Directory.CreateDirectory(dataDir);
+        return dataDir;
+    }
 
-        var dbPath = Path.Combine(dataDir, "tdstecnologia2027.db");
+    public static string Resolve(IHostEnvironment environment)
+    {
+        var dbPath = Path.Combine(DataDir(environment), DbFileName);
         return $"Data Source={dbPath}";
     }
 }

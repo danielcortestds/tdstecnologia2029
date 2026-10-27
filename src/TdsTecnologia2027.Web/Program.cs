@@ -66,6 +66,33 @@ if (builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
+// ── Importação de dados (migração) ────────────────────────────────────────
+// Se existir um arquivo "<banco>.incoming" na pasta de dados, ele substitui o
+// banco atual ANTES de qualquer conexão ser aberta. A troca acontece aqui, no
+// boot, quando nada está travando o arquivo — forma segura de importar os dados
+// reais enviados pela tela Admin → Importar. Enviado uma vez e removido depois.
+try
+{
+    var dataDir = ConnectionStringResolver.DataDir(builder.Environment);
+    var dbPath = Path.Combine(dataDir, ConnectionStringResolver.DbFileName);
+    var incoming = dbPath + ".incoming";
+    if (File.Exists(incoming))
+    {
+        Console.WriteLine("[TDS] Importação: arquivo .incoming encontrado, substituindo o banco...");
+        foreach (var sufixo in new[] { "", "-wal", "-shm" })
+        {
+            var f = dbPath + sufixo;
+            if (File.Exists(f)) File.Delete(f);
+        }
+        File.Move(incoming, dbPath);
+        Console.WriteLine("[TDS] Importação: banco substituído com sucesso pelos dados enviados.");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[TDS] Importação: falha ao aplicar o arquivo .incoming: {ex.Message}");
+}
+
 // Aplicar migrations e seed na inicialização.
 // O MySQL no Aplicativo pode demorar alguns segundos para ficar disponível após o boot
 // do App Service, então tentamos várias vezes antes de desistir. Mesmo que falhe, a

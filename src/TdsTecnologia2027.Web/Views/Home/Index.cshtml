@@ -339,8 +339,8 @@
 
 									<div class="col-lg-4 col-md-6">
 										<div class="bd-feature-card h-100 d-flex flex-column">
-											<div class="bd-feature-icon" style="background:@corCapa;"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
-											<h4>@curso.Nome</h4>
+											<div class="bd-feature-icon" style="background:@corCapa; cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
+											<h4 style="cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso">@curso.Nome</h4>
 											<p>@curso.DescricaoCurta</p>
 											<div class="d-flex flex-wrap gap-2 mt-3 mb-3">
 												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-clock" style="margin-right:4px;"></i>@curso.CargaHoraria h</div>
@@ -361,7 +361,7 @@
 												<span class="loja-preco-atual">@Moeda(curso.Preco)</span>
 											</div>
 											<div class="d-flex align-items-center gap-2">
-												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px;">Ver módulos</button>
+												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</button>
 												<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="font-size:0.8rem; padding:8px 18px;"><i class="bi bi-cart-plus" style="margin-right:5px;"></i>Adicionar</button>
 											</div>
 										</div>

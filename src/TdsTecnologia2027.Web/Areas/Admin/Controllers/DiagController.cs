@@ -38,8 +38,24 @@ public class DiagController : Controller
         var u = porNome ?? porEmail;
 
         if (u == null)
-            return Json(new { encontrado = false, achaPorNome = false, achaPorEmail = false,
-                dica = "Nenhum IdentityUser com esse e-mail. A conta de login não existe." });
+        {
+            // Sem conta de login. Vê se existe PERFIL de aluno com esse e-mail,
+            // para saber o caminho: editar um aluno existente × cadastrar do zero.
+            var perfil = await _db.Alunos.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Email == email);
+            return Json(new
+            {
+                encontrado = false,
+                achaPorNome = false,
+                achaPorEmail = false,
+                temPerfilAluno = perfil != null,
+                alunoId = perfil?.Id,
+                nomeAluno = perfil?.NomeCompleto,
+                dica = perfil != null
+                    ? "Existe o PERFIL de aluno, mas NÃO a conta de login. Em Admin → Alunos → Editar, defina uma senha e salve: o sistema cria a conta agora."
+                    : "Não existe conta de login NEM perfil de aluno com esse e-mail. Cadastre em Admin → Alunos → Novo aluno (com senha)."
+            });
+        }
 
         var roles = await _userManager.GetRolesAsync(u);
         var aluno = await _db.Alunos.AsNoTracking().FirstOrDefaultAsync(a => a.UserId == u.Id);

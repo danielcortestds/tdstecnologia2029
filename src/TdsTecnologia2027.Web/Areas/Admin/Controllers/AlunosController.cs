@@ -158,10 +158,47 @@ public class AlunosController : Controller
 
         await _db.SaveChangesAsync();
 
-        // Identity: senha e status (bloqueio)
-        var user = await _userManager.FindByIdAsync(aluno.UserId);
-        if (user != null)
+        // ── Identity: garante a conta de login, senha e status ──────────────
+        // Acha a conta pelo vínculo do perfil; se o vínculo estiver quebrado
+        // (migração antiga, conta removida), tenta recuperar pelo e-mail.
+        var user = await _userManager.FindByIdAsync(aluno.UserId ?? string.Empty);
+        if (user == null && !string.IsNullOrWhiteSpace(aluno.Email))
+            user = await _userManager.FindByEmailAsync(aluno.Email);
+
+        await GarantirPapelAlunoAsync();
+
+        if (user == null)
         {
+            // Aluno sem conta de login (só tinha o perfil). Cria a conta agora —
+            // mas precisa de uma senha para isso.
+            if (string.IsNullOrWhiteSpace(model.NovaSenha))
+            {
+                ModelState.AddModelError(nameof(model.NovaSenha),
+                    "Este aluno ainda não tem conta de login. Defina uma senha aqui e salve para criar o acesso dele.");
+                model.Email = aluno.Email;
+                return View(model);
+            }
+
+            user = new IdentityUser { UserName = aluno.Email, Email = aluno.Email, EmailConfirmed = true };
+            var criado = await _userManager.CreateAsync(user, model.NovaSenha);
+            if (!criado.Succeeded)
+            {
+                foreach (var e in criado.Errors) ModelState.AddModelError(string.Empty, TraduzErro(e));
+                model.Email = aluno.Email;
+                return View(model);
+            }
+            aluno.UserId = user.Id;
+            await _db.SaveChangesAsync();
+        }
+        else
+        {
+            // Religa o perfil à conta, caso o vínculo estivesse apontando errado.
+            if (aluno.UserId != user.Id)
+            {
+                aluno.UserId = user.Id;
+                await _db.SaveChangesAsync();
+            }
+
             if (!string.IsNullOrWhiteSpace(model.NovaSenha))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -173,8 +210,12 @@ public class AlunosController : Controller
                     return View(model);
                 }
             }
-            await AplicarStatusAsync(user, model.Status);
         }
+
+        // Garante o papel "Aluno" e aplica o status (bloqueio) em qualquer caso.
+        if (!await _userManager.IsInRoleAsync(user, "Aluno"))
+            await _userManager.AddToRoleAsync(user, "Aluno");
+        await AplicarStatusAsync(user, model.Status);
 
         TempData["Sucesso"] = $"Aluno {aluno.NomeCompleto} atualizado!";
         return RedirectToAction(nameof(Index));

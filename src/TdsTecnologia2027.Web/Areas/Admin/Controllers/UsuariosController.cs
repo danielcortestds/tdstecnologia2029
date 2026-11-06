@@ -27,6 +27,9 @@ public class UsuariosController : Controller
         foreach (var u in usuarios)
         {
             var papeis = await _userManager.GetRolesAsync(u);
+            // Esta tela é só dos que ADMINISTRAM o painel (Master/Editor).
+            // Os alunos são geridos em Admin → Alunos, numa lista separada.
+            if (!papeis.Contains("Master") && !papeis.Contains("Editor")) continue;
             lista.Add(new UsuarioListaItem
             {
                 Id = u.Id,

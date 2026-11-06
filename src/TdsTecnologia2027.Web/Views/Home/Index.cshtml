@@ -24,6 +24,10 @@
 
     string Moeda(decimal valor) => valor.ToString("C", new CultureInfo("pt-BR"));
 
+    // Parcelamento exibido na vitrine (para o aluno não se assustar com o valor cheio).
+    const int ParcelasMax = 10;
+    string Parcela(decimal valor) => Moeda(valor / ParcelasMax);
+
     IEnumerable<string> Bullets(string? raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) yield break;
@@ -148,8 +152,13 @@
 
 	/* ===================== Loja de cursos online ===================== */
 	.loja-preco { display:flex; align-items:baseline; gap:10px; }
-	.loja-preco-de { color:#94a3b8; text-decoration:line-through; font-size:0.9rem; }
+	.loja-preco-de { color:#94a3b8; text-decoration:line-through; font-size:0.9rem; display:block; }
 	.loja-preco-atual { color:#0f172a; font-weight:800; font-size:1.5rem; font-family:'Plus Jakarta Sans',sans-serif; }
+	.loja-preco-wrap { display:flex; flex-direction:column; gap:2px; }
+	.loja-parcela { display:flex; align-items:baseline; gap:6px; color:#0f172a; }
+	.loja-parcela-x { font-weight:700; font-size:0.95rem; color:#334155; }
+	.loja-parcela-valor { font-weight:800; font-size:1.6rem; line-height:1.1; font-family:'Plus Jakarta Sans',sans-serif; color:#0d9488; }
+	.loja-avista { font-size:0.82rem; color:#64748b; }
 	.loja-add { border:none; cursor:pointer; }
 	.loja-cart-btn { position:relative; background:transparent; border:none; color:#fff; font-size:1.35rem; cursor:pointer; margin-right:14px; line-height:1; padding:6px; }
 	.loja-cart-btn:hover { color:#5eead4; }
@@ -185,7 +194,7 @@
 	.loja-modulo ul { list-style:none; padding:0; margin:0; }
 	.loja-modulo li { display:flex; align-items:center; gap:8px; font-size:0.85rem; color:#475569; padding:4px 0; }
 	.loja-modulo li i { color:#94a3b8; font-size:0.8rem; }
-	.loja-modal-preco { display:flex; align-items:baseline; gap:10px; margin:18px 0; }
+	.loja-modal-preco { display:flex; flex-direction:column; gap:2px; margin:18px 0; }
 	.loja-presencial-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:22px; height:100%; }
 	.loja-presencial-card h5 { font-size:1rem; color:#0f172a; font-weight:700; margin:0 0 6px; }
 	.loja-presencial-card p { font-size:0.86rem; color:#64748b; margin:0 0 14px; line-height:1.5; }
@@ -353,12 +362,13 @@
 													<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-patch-check" style="margin-right:4px;"></i>Certificado</div>
 												}
 											</div>
-											<div class="loja-preco mb-3 mt-auto">
+											<div class="loja-preco-wrap mb-3 mt-auto">
 												@if (temDesconto)
 												{
 													<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
 												}
-												<span class="loja-preco-atual">@Moeda(curso.Preco)</span>
+												<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span></div>
+													<div class="loja-avista">ou @Moeda(curso.Preco) à vista</div>
 											</div>
 											<div class="d-flex align-items-center gap-2">
 												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</button>
@@ -864,7 +874,8 @@
 					{
 						<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
 					}
-					<span class="loja-preco-atual">@Moeda(curso.Preco)</span>
+					<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span></div>
+													<div class="loja-avista">ou @Moeda(curso.Preco) à vista</div>
 				</div>
 				<div class="te-modal-actions">
 					<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="flex:1; justify-content:center;"><i class="bi bi-cart-plus"></i> &nbsp;Adicionar ao carrinho</button>

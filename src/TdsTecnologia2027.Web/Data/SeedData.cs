@@ -11,6 +11,12 @@ public static class SeedData
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var normalizer = serviceProvider.GetRequiredService<ILookupNormalizer>();
+
+        // 0) Repara contas migradas: NormalizedUserName/NormalizedEmail/SecurityStamp
+        //    nulos ou errados impedem o LOGIN (que busca pelo nome normalizado),
+        //    mesmo com senha correta. Idempotente — só mexe no que está quebrado.
+        await RepararContasAsync(db, normalizer);
 
         // 1) Criar os papéis (roles) de acesso ao admin:
         //    Master = acesso total | Editor = somente cursos
@@ -298,6 +304,47 @@ public static class SeedData
             curso.CriadoEm = DateTime.Now;
             db.Cursos.Add(curso);
             await db.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Conserta contas (geralmente migradas do sistema antigo) cujos campos de
+    /// normalização do Identity estão nulos/errados. Sem NormalizedUserName correto
+    /// o login falha com "e-mail ou senha inválidos" mesmo com a senha certa, porque
+    /// o SignInManager procura o usuário pelo nome normalizado. Também garante um
+    /// SecurityStamp (necessário para redefinição de senha e segurança da sessão).
+    /// </summary>
+    private static async Task RepararContasAsync(ApplicationDbContext db, ILookupNormalizer normalizer)
+    {
+        var usuarios = await db.Users.ToListAsync();
+        var alterou = false;
+
+        foreach (var u in usuarios)
+        {
+            var normUser = normalizer.NormalizeName(u.UserName);
+            var normEmail = normalizer.NormalizeEmail(u.Email);
+
+            if (!string.Equals(u.NormalizedUserName, normUser, StringComparison.Ordinal))
+            {
+                u.NormalizedUserName = normUser;
+                alterou = true;
+            }
+            if (!string.Equals(u.NormalizedEmail, normEmail, StringComparison.Ordinal))
+            {
+                u.NormalizedEmail = normEmail;
+                alterou = true;
+            }
+            if (string.IsNullOrEmpty(u.SecurityStamp))
+            {
+                u.SecurityStamp = Guid.NewGuid().ToString("N").ToUpperInvariant();
+                alterou = true;
+            }
+        }
+
+        if (alterou)
+        {
+            await db.SaveChangesAsync();
+            Console.WriteLine("[TDS] Reparo de contas (normalização) aplicado.");
         }
     }
 }

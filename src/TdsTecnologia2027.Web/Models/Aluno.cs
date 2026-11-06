@@ -10,16 +10,26 @@ public enum StatusAluno
 }
 
 /// <summary>
-/// Perfil do aluno (Área do Aluno). A autenticação reutiliza o ASP.NET Identity:
-/// cada Aluno está ligado a um IdentityUser (UserId) com o papel "Aluno".
+/// Aluno (Área do Aluno). A partir de nov/2026 os alunos têm autenticação PRÓPRIA,
+/// totalmente separada da administração: login/senha ficam NESTA tabela (SenhaHash),
+/// e não mais no ASP.NET Identity (AspNetUsers), que agora é só dos administradores.
 /// </summary>
 public class Aluno
 {
     public int Id { get; set; }
 
-    /// <summary>Id do IdentityUser correspondente (AspNetUsers).</summary>
-    [Required]
-    public string UserId { get; set; } = string.Empty;
+    /// <summary>
+    /// (Legado) Id do antigo IdentityUser. Mantido só para a migração dos dados;
+    /// não é mais usado na autenticação.
+    /// </summary>
+    public string? UserId { get; set; }
+
+    /// <summary>Hash da senha do aluno (PasswordHasher). Null = ainda sem senha definida.</summary>
+    public string? SenhaHash { get; set; }
+
+    /// <summary>Token de recuperação de senha (uso único) e sua validade.</summary>
+    public string? TokenReset { get; set; }
+    public DateTime? TokenResetExpira { get; set; }
 
     [Required(ErrorMessage = "Informe o nome completo.")]
     [StringLength(150)]

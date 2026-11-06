@@ -13,10 +13,15 @@ public static class SeedData
         var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
         var normalizer = serviceProvider.GetRequiredService<ILookupNormalizer>();
 
-        // 0) Repara contas migradas: NormalizedUserName/NormalizedEmail/SecurityStamp
-        //    nulos ou errados impedem o LOGIN (que busca pelo nome normalizado),
-        //    mesmo com senha correta. Idempotente — só mexe no que está quebrado.
+        // 0) Repara contas de ADMIN migradas: NormalizedUserName/NormalizedEmail/
+        //    SecurityStamp nulos ou errados impedem o LOGIN. Idempotente.
         await RepararContasAsync(db, normalizer);
+
+        // 0.1) Migra a senha dos ALUNOS para a tabela própria. Os alunos agora
+        //      autenticam na tabela Alunos (SenhaHash), separada do admin. Copia o
+        //      hash do antigo IdentityUser (algoritmo idêntico → compatível), para
+        //      ninguém perder a senha. Idempotente: só preenche SenhaHash vazio.
+        await MigrarSenhasAlunosAsync(db);
 
         // 1) Criar os papéis (roles) de acesso ao admin:
         //    Master = acesso total | Editor = somente cursos
@@ -304,6 +309,37 @@ public static class SeedData
             curso.CriadoEm = DateTime.Now;
             db.Cursos.Add(curso);
             await db.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Copia o hash de senha dos alunos do antigo IdentityUser (AspNetUsers) para a
+    /// tabela Alunos (SenhaHash). O PasswordHasher usa o mesmo algoritmo independente
+    /// do tipo, então o hash é verificável na nova tabela — o aluno mantém a senha.
+    /// Só preenche quem está com SenhaHash vazio (idempotente).
+    /// </summary>
+    private static async Task MigrarSenhasAlunosAsync(ApplicationDbContext db)
+    {
+        var pendentes = await db.Alunos
+            .Where(a => a.SenhaHash == null && a.UserId != null)
+            .ToListAsync();
+        if (pendentes.Count == 0) return;
+
+        var migrados = 0;
+        foreach (var aluno in pendentes)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == aluno.UserId);
+            if (user != null && !string.IsNullOrEmpty(user.PasswordHash))
+            {
+                aluno.SenhaHash = user.PasswordHash;
+                migrados++;
+            }
+        }
+
+        if (migrados > 0)
+        {
+            await db.SaveChangesAsync();
+            Console.WriteLine($"[TDS] Migração de senha de alunos: {migrados} conta(s) migrada(s) para a tabela própria.");
         }
     }
 

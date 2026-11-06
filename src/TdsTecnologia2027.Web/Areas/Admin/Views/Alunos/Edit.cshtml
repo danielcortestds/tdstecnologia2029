@@ -9,6 +9,13 @@
 
 <form asp-action="Edit" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    @if (Model.SemSenha)
+    {
+        <div class="alert alert-warning d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>Este aluno <strong>ainda não tem senha de acesso</strong> e não consegue entrar. Defina uma senha no campo <strong>"Nova senha"</strong> abaixo e salve.</div>
+        </div>
+    }
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Email" />
 

@@ -22,21 +22,18 @@ public class ResultadoProvisao
 public class MatriculaService
 {
     private readonly ApplicationDbContext _db;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IPasswordHasher<Aluno> _hasher;
     private readonly IEmailSender _email;
     private readonly ILogger<MatriculaService> _logger;
 
     public MatriculaService(
         ApplicationDbContext db,
-        UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager,
+        IPasswordHasher<Aluno> hasher,
         IEmailSender email,
         ILogger<MatriculaService> logger)
     {
         _db = db;
-        _userManager = userManager;
-        _roleManager = roleManager;
+        _hasher = hasher;
         _email = email;
         _logger = logger;
     }
@@ -48,40 +45,33 @@ public class MatriculaService
         var ids = cursoOnlineIds.Distinct().ToList();
         var resultado = new ResultadoProvisao();
 
-        if (!await _roleManager.RoleExistsAsync("Aluno"))
-            await _roleManager.CreateAsync(new IdentityRole("Aluno"));
-
-        // 1) Usuário (Identity)
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null)
-        {
-            var senha = GerarSenha();
-            user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
-            var r = await _userManager.CreateAsync(user, senha);
-            if (!r.Succeeded)
-                throw new InvalidOperationException("Falha ao criar usuário: " +
-                    string.Join("; ", r.Errors.Select(e => e.Description)));
-            resultado.NovoUsuario = true;
-            resultado.SenhaGerada = senha;
-        }
-        if (!await _userManager.IsInRoleAsync(user, "Aluno"))
-            await _userManager.AddToRoleAsync(user, "Aluno");
-
-        // 2) Perfil Aluno
-        var aluno = await _db.Alunos.Include(a => a.Matriculas).FirstOrDefaultAsync(a => a.UserId == user.Id);
+        // Aluno (tabela própria — autenticação separada do admin).
+        var aluno = await _db.Alunos.Include(a => a.Matriculas)
+            .FirstOrDefaultAsync(a => a.Email.ToLower() == email);
         if (aluno == null)
         {
+            var senha = GerarSenha();
             aluno = new Aluno
             {
-                UserId = user.Id,
                 NomeCompleto = string.IsNullOrWhiteSpace(nome) ? email : nome.Trim(),
                 Email = email,
                 Telefone = telefone,
                 Status = StatusAluno.Ativo
             };
+            aluno.SenhaHash = _hasher.HashPassword(aluno, senha);
             _db.Alunos.Add(aluno);
             await _db.SaveChangesAsync();
             aluno = await _db.Alunos.Include(a => a.Matriculas).FirstAsync(a => a.Id == aluno.Id);
+            resultado.NovoUsuario = true;
+            resultado.SenhaGerada = senha;
+        }
+        else if (string.IsNullOrEmpty(aluno.SenhaHash))
+        {
+            // Aluno existia sem senha (ex.: migração) — define uma agora e informa.
+            var senha = GerarSenha();
+            aluno.SenhaHash = _hasher.HashPassword(aluno, senha);
+            await _db.SaveChangesAsync();
+            resultado.SenhaGerada = senha;
         }
 
         // 3) Matrículas vitalícias (DataFim = null)

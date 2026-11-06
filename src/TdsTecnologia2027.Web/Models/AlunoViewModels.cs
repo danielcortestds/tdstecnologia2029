@@ -92,6 +92,9 @@ public class EditarAlunoViewModel
     [Display(Name = "Nova senha (opcional)")]
     public string? NovaSenha { get; set; }
 
+    /// <summary>True quando o aluno ainda não tem senha de acesso definida.</summary>
+    public bool SemSenha { get; set; }
+
     /// <summary>Lista de todos os cursos online com o estado de liberação para este aluno.</summary>
     public List<AcessoCursoItem> Acessos { get; set; } = new();
 }

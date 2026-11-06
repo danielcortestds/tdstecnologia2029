@@ -1,0 +1,30 @@
+@model TdsTecnologia2027.Web.Areas.Aluno.Controllers.EsqueciSenhaAlunoViewModel
+@{
+    ViewData["Title"] = "Esqueci minha senha";
+    Layout = "_LayoutAcesso";
+}
+
+<div class="selo-aluno"><i class="bi bi-mortarboard-fill"></i> Área do Aluno</div>
+
+@if (Model.Enviado)
+{
+    <h1>Verifique seu e-mail</h1>
+    <p class="sub">Se existir uma conta de aluno com esse e-mail, enviamos um link para criar uma nova senha. O link vale por 2 horas.</p>
+    <a href="/Aluno/Entrar" class="btn btn-aluno w-100"><i class="bi bi-arrow-left me-1"></i>Voltar para o login</a>
+}
+else
+{
+    <h1>Esqueci minha senha</h1>
+    <p class="sub">Informe seu e-mail e enviaremos um link para redefinir a senha.</p>
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" autofocus />
+        </div>
+        <button type="submit" class="btn btn-aluno w-100">Enviar link</button>
+    </form>
+    <p class="text-center mt-4 mb-0"><a href="/Aluno/Entrar" class="small">Voltar para o login</a></p>
+}
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

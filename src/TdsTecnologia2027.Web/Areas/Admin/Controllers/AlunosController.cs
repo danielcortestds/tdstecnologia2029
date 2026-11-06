@@ -12,14 +12,12 @@ namespace TdsTecnologia2027.Web.Areas.Admin.Controllers;
 public class AlunosController : Controller
 {
     private readonly ApplicationDbContext _db;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IPasswordHasher<Models.Aluno> _hasher;
 
-    public AlunosController(ApplicationDbContext db, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AlunosController(ApplicationDbContext db, IPasswordHasher<Models.Aluno> hasher)
     {
         _db = db;
-        _userManager = userManager;
-        _roleManager = roleManager;
+        _hasher = hasher;
     }
 
     // GET: Admin/Alunos
@@ -48,37 +46,24 @@ public class AlunosController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(NovoAlunoViewModel model)
     {
-        if (await _userManager.FindByEmailAsync(model.Email) != null)
-            ModelState.AddModelError(nameof(model.Email), "Já existe um usuário com este e-mail.");
+        var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
+        if (await _db.Alunos.AnyAsync(a => a.Email.ToLower() == email))
+            ModelState.AddModelError(nameof(model.Email), "Já existe um aluno com este e-mail.");
 
         if (!ModelState.IsValid) return View(model);
 
-        await GarantirPapelAlunoAsync();
-
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
-        var resultado = await _userManager.CreateAsync(user, model.Senha);
-        if (!resultado.Succeeded)
-        {
-            foreach (var e in resultado.Errors) ModelState.AddModelError(string.Empty, TraduzErro(e));
-            return View(model);
-        }
-
-        await _userManager.AddToRoleAsync(user, "Aluno");
-
         var aluno = new Models.Aluno
         {
-            UserId = user.Id,
             NomeCompleto = model.NomeCompleto,
-            Email = model.Email,
+            Email = email,
             Cpf = model.Cpf,
             Telefone = model.Telefone,
             Empresa = model.Empresa,
             Status = model.Status
         };
+        aluno.SenhaHash = _hasher.HashPassword(aluno, model.Senha);
         _db.Alunos.Add(aluno);
         await _db.SaveChangesAsync();
-
-        await AplicarStatusAsync(user, model.Status);
 
         TempData["Sucesso"] = $"Aluno {model.NomeCompleto} criado! Agora libere os cursos.";
         return RedirectToAction(nameof(Edit), new { id = aluno.Id });
@@ -100,6 +85,7 @@ public class AlunosController : Controller
             Telefone = aluno.Telefone,
             Empresa = aluno.Empresa,
             Status = aluno.Status,
+            SemSenha = string.IsNullOrEmpty(aluno.SenhaHash),
             Acessos = cursos.Select(c =>
             {
                 var m = aluno.Matriculas.FirstOrDefault(x => x.CursoOnlineId == c.Id);
@@ -126,6 +112,7 @@ public class AlunosController : Controller
         if (!ModelState.IsValid)
         {
             model.Email = aluno.Email;
+            model.SemSenha = string.IsNullOrEmpty(aluno.SenhaHash);
             return View(model);
         }
 
@@ -156,66 +143,21 @@ public class AlunosController : Controller
             }
         }
 
+        // Senha: define/reseta se informada. Se o aluno ainda não tem senha, exige uma.
+        if (!string.IsNullOrWhiteSpace(model.NovaSenha))
+        {
+            aluno.SenhaHash = _hasher.HashPassword(aluno, model.NovaSenha);
+        }
+        else if (string.IsNullOrEmpty(aluno.SenhaHash))
+        {
+            ModelState.AddModelError(nameof(model.NovaSenha),
+                "Este aluno ainda não tem senha de acesso. Defina uma senha para ele poder entrar.");
+            model.Email = aluno.Email;
+            model.SemSenha = true;
+            return View(model);
+        }
+
         await _db.SaveChangesAsync();
-
-        // ── Identity: garante a conta de login, senha e status ──────────────
-        // Acha a conta pelo vínculo do perfil; se o vínculo estiver quebrado
-        // (migração antiga, conta removida), tenta recuperar pelo e-mail.
-        var user = await _userManager.FindByIdAsync(aluno.UserId ?? string.Empty);
-        if (user == null && !string.IsNullOrWhiteSpace(aluno.Email))
-            user = await _userManager.FindByEmailAsync(aluno.Email);
-
-        await GarantirPapelAlunoAsync();
-
-        if (user == null)
-        {
-            // Aluno sem conta de login (só tinha o perfil). Cria a conta agora —
-            // mas precisa de uma senha para isso.
-            if (string.IsNullOrWhiteSpace(model.NovaSenha))
-            {
-                ModelState.AddModelError(nameof(model.NovaSenha),
-                    "Este aluno ainda não tem conta de login. Defina uma senha aqui e salve para criar o acesso dele.");
-                model.Email = aluno.Email;
-                return View(model);
-            }
-
-            user = new IdentityUser { UserName = aluno.Email, Email = aluno.Email, EmailConfirmed = true };
-            var criado = await _userManager.CreateAsync(user, model.NovaSenha);
-            if (!criado.Succeeded)
-            {
-                foreach (var e in criado.Errors) ModelState.AddModelError(string.Empty, TraduzErro(e));
-                model.Email = aluno.Email;
-                return View(model);
-            }
-            aluno.UserId = user.Id;
-            await _db.SaveChangesAsync();
-        }
-        else
-        {
-            // Religa o perfil à conta, caso o vínculo estivesse apontando errado.
-            if (aluno.UserId != user.Id)
-            {
-                aluno.UserId = user.Id;
-                await _db.SaveChangesAsync();
-            }
-
-            if (!string.IsNullOrWhiteSpace(model.NovaSenha))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var res = await _userManager.ResetPasswordAsync(user, token, model.NovaSenha);
-                if (!res.Succeeded)
-                {
-                    foreach (var e in res.Errors) ModelState.AddModelError(string.Empty, TraduzErro(e));
-                    model.Email = aluno.Email;
-                    return View(model);
-                }
-            }
-        }
-
-        // Garante o papel "Aluno" e aplica o status (bloqueio) em qualquer caso.
-        if (!await _userManager.IsInRoleAsync(user, "Aluno"))
-            await _userManager.AddToRoleAsync(user, "Aluno");
-        await AplicarStatusAsync(user, model.Status);
 
         TempData["Sucesso"] = $"Aluno {aluno.NomeCompleto} atualizado!";
         return RedirectToAction(nameof(Index));
@@ -228,40 +170,10 @@ public class AlunosController : Controller
         var aluno = await _db.Alunos.FindAsync(id);
         if (aluno != null)
         {
-            var user = await _userManager.FindByIdAsync(aluno.UserId);
             _db.Alunos.Remove(aluno); // matrículas em cascata
             await _db.SaveChangesAsync();
-            if (user != null) await _userManager.DeleteAsync(user);
             TempData["Sucesso"] = "Aluno excluído.";
         }
         return RedirectToAction(nameof(Index));
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────
-    private async Task GarantirPapelAlunoAsync()
-    {
-        if (!await _roleManager.RoleExistsAsync("Aluno"))
-            await _roleManager.CreateAsync(new IdentityRole("Aluno"));
-    }
-
-    /// <summary>Bloqueia (lockout) o login quando o aluno não está Ativo.</summary>
-    private async Task AplicarStatusAsync(IdentityUser user, StatusAluno status)
-    {
-        await _userManager.SetLockoutEnabledAsync(user, true);
-        if (status == StatusAluno.Ativo)
-            await _userManager.SetLockoutEndDateAsync(user, null);
-        else
-            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddYears(100));
-    }
-
-    private static string TraduzErro(IdentityError erro) => erro.Code switch
-    {
-        "PasswordTooShort" => "A senha é muito curta.",
-        "PasswordRequiresNonAlphanumeric" => "A senha precisa de um caractere especial.",
-        "PasswordRequiresDigit" => "A senha precisa de um número.",
-        "PasswordRequiresUpper" => "A senha precisa de uma letra maiúscula.",
-        "PasswordRequiresLower" => "A senha precisa de uma letra minúscula.",
-        "DuplicateUserName" or "DuplicateEmail" => "Já existe um usuário com este e-mail.",
-        _ => erro.Description
-    };
 }

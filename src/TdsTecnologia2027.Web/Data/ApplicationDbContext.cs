@@ -96,7 +96,8 @@ public class ApplicationDbContext : IdentityDbContext
         builder.Entity<Aluno>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.UserId).IsUnique();
+            // E-mail é a chave de login do aluno agora (índice ajuda a busca no login).
+            entity.HasIndex(e => e.Email);
         });
 
         builder.Entity<MatriculaCurso>(entity =>

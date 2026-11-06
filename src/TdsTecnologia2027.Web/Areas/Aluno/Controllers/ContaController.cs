@@ -2,20 +2,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TdsTecnologia2027.Web.Data;
 using TdsTecnologia2027.Web.Models;
+using TdsTecnologia2027.Web.Services;
 
 namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 
-/// <summary>Conta do aluno: troca de senha.</summary>
+/// <summary>Conta do aluno: troca de senha (na tabela Alunos, ambiente próprio).</summary>
 public class ContaController : AlunoBaseController
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly IPasswordHasher<Models.Aluno> _hasher;
 
-    public ContaController(ApplicationDbContext db, UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager) : base(db)
+    public ContaController(ApplicationDbContext db, IPasswordHasher<Models.Aluno> hasher) : base(db)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _hasher = hasher;
     }
 
     // GET: /Aluno/Conta/AlterarSenha
@@ -28,29 +26,24 @@ public class ContaController : AlunoBaseController
     {
         if (!ModelState.IsValid) return View(model);
 
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Challenge();
+        var aluno = await ObterAlunoAsync();
+        if (aluno == null) return Challenge("Aluno");
 
-        var resultado = await _userManager.ChangePasswordAsync(user, model.SenhaAtual, model.NovaSenha);
-        if (!resultado.Succeeded)
+        // Confere a senha atual.
+        if (string.IsNullOrEmpty(aluno.SenhaHash) ||
+            _hasher.VerifyHashedPassword(aluno, aluno.SenhaHash, model.SenhaAtual) == PasswordVerificationResult.Failed)
         {
-            foreach (var e in resultado.Errors) ModelState.AddModelError(string.Empty, TraduzErro(e));
+            ModelState.AddModelError(string.Empty, "A senha atual está incorreta.");
             return View(model);
         }
 
-        await _signInManager.RefreshSignInAsync(user);
+        aluno.SenhaHash = _hasher.HashPassword(aluno, model.NovaSenha);
+        await Db.SaveChangesAsync();
+
+        // Renova o cookie do aluno (mantém logado com os dados atualizados).
+        await AlunoAuth.EntrarAsync(HttpContext, aluno, lembrar: true);
+
         TempData["Sucesso"] = "Senha alterada com sucesso!";
         return RedirectToAction(nameof(AlterarSenha));
     }
-
-    private static string TraduzErro(IdentityError erro) => erro.Code switch
-    {
-        "PasswordMismatch" => "A senha atual está incorreta.",
-        "PasswordTooShort" => "A nova senha é muito curta.",
-        "PasswordRequiresNonAlphanumeric" => "A nova senha precisa de um caractere especial.",
-        "PasswordRequiresDigit" => "A nova senha precisa de um número.",
-        "PasswordRequiresUpper" => "A nova senha precisa de uma letra maiúscula.",
-        "PasswordRequiresLower" => "A nova senha precisa de uma letra minúscula.",
-        _ => erro.Description
-    };
 }

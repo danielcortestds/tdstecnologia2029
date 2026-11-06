@@ -42,7 +42,7 @@ public class EmailSender : IEmailSender
     {
         var req = _http.HttpContext?.Request;
         var baseUrl = req != null ? $"{req.Scheme}://{req.Host}" : "https://tdstecnologia.com.br";
-        var loginUrl = $"{baseUrl}/Aluno";
+        var loginUrl = $"{baseUrl}/Aluno/Entrar";
 
         var listaCursos = string.Join("", cursos.Select(c => $"<li>{Escapar(c)}</li>"));
 

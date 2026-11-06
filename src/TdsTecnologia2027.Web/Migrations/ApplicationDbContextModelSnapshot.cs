@@ -240,6 +240,9 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SenhaHash")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -247,14 +250,18 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TokenReset")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("TokenResetExpira")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("Email");
 
                     b.ToTable("Alunos");
                 });

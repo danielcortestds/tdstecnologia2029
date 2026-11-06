@@ -60,13 +60,32 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Configurar cookie de autenticação
+// Cookie de autenticação da ADMINISTRAÇÃO (ASP.NET Identity / AspNetUsers).
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
     options.LogoutPath = "/Identity/Account/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.Cookie.Name = "tds_admin";
 });
+
+// Cookie de autenticação dos ALUNOS — SEPARADO do admin, ambiente próprio.
+// Alunos autenticam contra a tabela Alunos (SenhaHash), nunca no AspNetUsers.
+// Ter dois cookies distintos permite estar logado como admin e como aluno ao
+// mesmo tempo, sem um login interferir no outro.
+builder.Services.AddAuthentication().AddCookie("Aluno", options =>
+{
+    options.LoginPath = "/Aluno/Entrar";
+    options.LogoutPath = "/Aluno/Sair";
+    options.AccessDeniedPath = "/Aluno/Entrar";
+    options.Cookie.Name = "tds_aluno";
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
+    options.SlidingExpiration = true;
+});
+
+// Hasher de senha dos alunos (mesmo algoritmo do Identity → hashes compatíveis).
+builder.Services.AddScoped<IPasswordHasher<TdsTecnologia2027.Web.Models.Aluno>,
+    PasswordHasher<TdsTecnologia2027.Web.Models.Aluno>>();
 
 // Política de acesso "somente Master".
 builder.Services.AddAuthorization(options =>

@@ -65,14 +65,8 @@ public class LoginModel : PageModel
 
         if (result.Succeeded)
         {
-            _logger.LogInformation("Usuário autenticado.");
-            // Aluno (sem destino específico) vai direto para a Área do Aluno.
-            if (returnUrl == Url.Content("~/"))
-            {
-                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
-                if (user != null && await _signInManager.UserManager.IsInRoleAsync(user, "Aluno"))
-                    return LocalRedirect("~/Aluno");
-            }
+            _logger.LogInformation("Administrador autenticado.");
+            // Este é o login da ADMINISTRAÇÃO.
             return LocalRedirect(returnUrl);
         }
 

@@ -9,55 +9,66 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root { --tds-teal: #14b8a6; --tds-teal-dark: #0d9488; --tds-navy: #0b1220; }
+        /* TEMA DO PAINEL ADMIN — claro + índigo. Propositalmente DIFERENTE do
+           login do aluno (escuro + teal), para identificar o ambiente de cara. */
+        :root { --adm: #4f46e5; --adm-dark: #4338ca; --adm-ink: #1e1b4b; }
         * { box-sizing: border-box; }
         body {
             margin: 0; min-height: 100vh;
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-            background: radial-gradient(1200px 600px at 10% -10%, #14223b 0%, var(--tds-navy) 55%);
+            background: radial-gradient(1200px 600px at 90% -10%, #e0e7ff 0%, #eef2f7 55%);
             display: flex; align-items: center; justify-content: center; padding: 24px;
         }
         .login-card {
             width: 100%; max-width: 420px;
-            background: #0f172a; border: 1px solid rgba(148,163,184,0.15);
-            border-radius: 18px; padding: 40px 34px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+            background: #ffffff; border: 1px solid #e2e8f0; border-top: 5px solid var(--adm);
+            border-radius: 16px; padding: 36px 34px 30px;
+            box-shadow: 0 24px 60px rgba(30,27,75,0.12);
         }
-        .login-logo { text-align: center; margin-bottom: 8px; }
-        .login-logo img { height: 46px; }
-        .login-sub { text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 28px; }
-        .login-title { color: #f1f5f9; font-weight: 700; font-size: 1.35rem; text-align: center; margin-bottom: 4px; }
-        .form-label { color: #cbd5e1; font-weight: 600; font-size: 0.85rem; }
+        .login-logo { text-align: center; margin-bottom: 14px; }
+        .login-logo .logo-chip { display: inline-block; background: var(--adm-ink); padding: 10px 18px; border-radius: 12px; }
+        .login-logo img { height: 30px; display: block; }
+        .selo-adm {
+            display: inline-flex; align-items: center; gap: 7px; margin: 0 auto 4px; width: fit-content;
+            background: #eef2ff; color: var(--adm); border: 1px solid #c7d2fe;
+            font-weight: 700; font-size: .74rem; letter-spacing: .07em; text-transform: uppercase;
+            padding: 5px 12px; border-radius: 999px;
+        }
+        .selo-wrap { text-align: center; margin-bottom: 18px; }
+        .login-sub { text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 26px; }
+        .login-title { color: var(--adm-ink); font-weight: 800; font-size: 1.35rem; text-align: center; margin-bottom: 4px; }
+        .form-label { color: #334155; font-weight: 600; font-size: 0.85rem; }
         .form-control {
-            background: #0b1220; border: 1px solid rgba(148,163,184,0.25); color: #e2e8f0;
+            background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a;
             padding: 11px 14px; border-radius: 10px;
         }
         .form-control:focus {
-            background: #0b1220; color: #e2e8f0; border-color: var(--tds-teal);
-            box-shadow: 0 0 0 0.2rem rgba(20,184,166,0.2);
+            background: #fff; color: #0f172a; border-color: var(--adm);
+            box-shadow: 0 0 0 0.2rem rgba(79,70,229,0.18);
         }
-        .form-control::placeholder { color: #64748b; }
-        .form-check-label { color: #94a3b8; font-size: 0.85rem; }
-        .form-check-input:checked { background-color: var(--tds-teal); border-color: var(--tds-teal); }
+        .form-control::placeholder { color: #94a3b8; }
+        .form-check-label { color: #475569; font-size: 0.85rem; }
+        .form-check-input:checked { background-color: var(--adm); border-color: var(--adm); }
         .btn-tds {
-            background: var(--tds-teal); border: none; color: #04201c; font-weight: 700;
-            padding: 12px; border-radius: 999px; width: 100%; letter-spacing: 0.5px;
+            background: var(--adm); border: none; color: #fff; font-weight: 700;
+            padding: 12px; border-radius: 10px; width: 100%; letter-spacing: 0.5px;
             text-transform: uppercase; font-size: 0.9rem; transition: background .15s;
         }
-        .btn-tds:hover { background: var(--tds-teal-dark); color: #fff; }
-        .login-foot { text-align: center; margin-top: 22px; color: #475569; font-size: 0.78rem; }
-        .login-foot a { color: #64748b; text-decoration: none; }
+        .btn-tds:hover { background: var(--adm-dark); color: #fff; }
+        .login-foot { text-align: center; margin-top: 22px; color: #94a3b8; font-size: 0.78rem; }
+        .login-foot a { color: var(--adm); text-decoration: none; font-weight: 600; }
         .alert { border-radius: 10px; }
         .validation-summary-errors ul { margin: 0; padding-left: 18px; }
-        .text-danger { color: #fca5a5 !important; font-size: 0.82rem; }
+        .text-danger { color: #dc2626 !important; font-size: 0.82rem; }
+        a[href*="ForgotPassword"] { color: var(--adm) !important; }
     </style>
 </head>
 <body>
     <main class="login-card">
         <div class="login-logo">
-            <img src="~/images/logo-dark.png" alt="TDS Tecnologia" />
+            <span class="logo-chip"><img src="~/images/logo-dark.png" alt="TDS Tecnologia" /></span>
         </div>
-        <div class="login-sub">Painel Administrativo</div>
+        <div class="selo-wrap"><span class="selo-adm"><i class="bi bi-shield-lock-fill"></i> Painel Administrativo</span></div>
         @RenderBody()
         <div class="login-foot">
             &copy; @DateTime.Now.Year TDS Tecnologia &middot; <a href="/">Voltar ao site</a>

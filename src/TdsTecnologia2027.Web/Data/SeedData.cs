@@ -285,6 +285,9 @@ public static class SeedData
             python.AtualizadoEm = DateTime.Now;
             await db.SaveChangesAsync();
         }
+
+        // Cursos online (Mashup e LGPD) — carga automática, idempotente por slug.
+        await SeedCursosOnline.ExecutarAsync(db);
     }
 
     /// <summary>Insere um curso apenas se ainda não existir outro com o mesmo Slug.</summary>

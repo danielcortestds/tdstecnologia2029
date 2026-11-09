@@ -28,6 +28,10 @@
     const int ParcelasMax = 10;
     string Parcela(decimal valor) => Moeda(valor / ParcelasMax);
 
+    // Desconto no Pix (configurado também na InfinitePay). Valor já com o desconto.
+    const int DescontoPixPct = 10;
+    string PrecoPix(decimal valor) => Moeda(valor * (100 - DescontoPixPct) / 100m);
+
     IEnumerable<string> Bullets(string? raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) yield break;
@@ -356,8 +360,8 @@
 														{
 															<span class="tdsc-de">@Moeda(curso.PrecoDe!.Value)</span>
 														}
-														<div><span class="tdsc-x">10&times; de</span> <span class="tdsc-val">@Parcela(curso.Preco)</span></div>
-														<span class="tdsc-avista">ou @Moeda(curso.Preco) à vista</span>
+														<div><span class="tdsc-x">@ParcelasMax&times; de</span> <span class="tdsc-val">@Parcela(curso.Preco)</span> <span class="tdsc-x">sem juros</span></div>
+														<span class="tdsc-avista">ou @PrecoPix(curso.Preco) no Pix &middot; 10% off</span>
 													</div>
 													<div class="tdsc-actions">
 														<button type="button" class="tdsc-btn loja-add" data-id="@curso.Id"><i class="bi bi-cart-plus"></i> Comprar agora</button>
@@ -430,8 +434,8 @@
 												{
 													<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
 												}
-												<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span></div>
-													<div class="loja-avista">ou @Moeda(curso.Preco) à vista</div>
+												<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span> <span class="loja-parcela-x">sem juros</span></div>
+													<div class="loja-avista">ou @PrecoPix(curso.Preco) no Pix &middot; 10% off</div>
 											</div>
 											<div class="d-flex align-items-center gap-2">
 												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</button>
@@ -937,8 +941,8 @@
 					{
 						<span class="loja-preco-de">@Moeda(curso.PrecoDe!.Value)</span>
 					}
-					<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span></div>
-													<div class="loja-avista">ou @Moeda(curso.Preco) à vista</div>
+					<div class="loja-parcela"><span class="loja-parcela-x">@ParcelasMax&times; de</span><span class="loja-parcela-valor">@Parcela(curso.Preco)</span> <span class="loja-parcela-x">sem juros</span></div>
+													<div class="loja-avista">ou @PrecoPix(curso.Preco) no Pix &middot; 10% off</div>
 				</div>
 				<div class="te-modal-actions">
 					<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="flex:1; justify-content:center;"><i class="bi bi-cart-plus"></i> &nbsp;Adicionar ao carrinho</button>

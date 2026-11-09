@@ -30,7 +30,14 @@
     <div style="border-top:1px solid rgba(148,163,184,0.14); margin-top:10px; padding-top:10px; display:flex; align-items:center; gap:8px;">
         <i class="bi bi-credit-card-2-front" style="color:var(--tds-teal); font-size:1.05rem;"></i>
         <span class="small" style="color:#cbd5e1;">
-            ou em até <strong style="color:#f1f5f9;">10&times; de @((Model.Total / 10m).ToString("C", pt))</strong> no cartão de crédito
+            em até <strong style="color:#f1f5f9;">10&times; de @((Model.Total / 10m).ToString("C", pt))</strong> sem juros no cartão
+        </span>
+    </div>
+    <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+        <i class="bi bi-qr-code" style="color:var(--tds-teal); font-size:1.05rem;"></i>
+        <span class="small" style="color:#cbd5e1;">
+            ou <strong style="color:#f1f5f9;">@((Model.Total * 0.9m).ToString("C", pt)) no Pix</strong>
+            <span style="color:var(--tds-teal); font-weight:700;">(10% de desconto)</span>
         </span>
     </div>
 </div>

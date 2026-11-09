@@ -11,6 +11,7 @@ public static class SeedCursosOnline
     {
         await GarantirAsync(db, Mashup());
         await GarantirAsync(db, Lgpd());
+        await GarantirAsync(db, PowerBi());
     }
 
     private static async Task GarantirAsync(ApplicationDbContext db, CursoOnline curso)
@@ -140,6 +141,77 @@ public static class SeedCursosOnline
                 new Licao { Titulo = "Simulado parte 1: escopo, conceitos e papéis", Ordem = 2, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1244180229" },
                 new Licao { Titulo = "Simulado parte 2: princípios, bases legais e direitos", Ordem = 3, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1244180281" },
                 new Licao { Titulo = "Simulado parte 3: segurança, sanções e governança", Ordem = 4, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1244180353" },
+            }},
+        }
+    };
+
+    private static CursoOnline PowerBi() => new CursoOnline
+    {
+        Nome = "Power BI Essencial",
+        Slug = "power-bi-essencial",
+        DescricaoCurta = "Formação prática em Microsoft Power BI: do zero ao dashboard profissional — Power Query (ETL), modelagem, DAX, visualizações e publicação no Power BI Service.",
+        DescricaoCompleta = "Curso completo e prático de Microsoft Power BI, do zero ao dashboard profissional. Você começa entendendo o que é BI e a interface do Power BI Desktop; aprende a obter e preparar dados com o Power Query (ETL) e a linguagem M; modela os dados (modelo estrela, relacionamentos, tabela calendário); cria visualizações (gráficos, tabelas, mapas, visuais de IA e Copilot); domina cálculos com DAX (medidas, CALCULATE, inteligência de tempo, variáveis); e finaliza com um projeto completo publicado no Serviço do Power BI. Ideal para quem quer analisar e visualizar dados na prática e sair com um relatório de verdade no portfólio.",
+        CorCapa = "#C99700",
+        IconeCapa = "bi-bar-chart-fill",
+        Categoria = "Business Intelligence",
+        Instrutor = "Daniel Côrtes",
+        Status = StatusCursoOnline.Publicado,
+        Ordem = 5,
+        CargaHoraria = 40,
+        Certificado = true,
+        LogosCertificado = "tds,microsoft",
+        Fabricante = FabricanteCertificado.Microsoft,
+        Preco = 990m,
+        AVenda = false,
+        Modulos = new List<ModuloCurso>
+        {
+            new ModuloCurso { Titulo = "Primeiros Passos no Power BI", Ordem = 1, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "O que é BI e onde o Power BI se encaixa", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234263" },
+                new Licao { Titulo = "Instalando o Power BI Desktop e tour pela interface", Ordem = 2, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234296" },
+                new Licao { Titulo = "Interatividade: filtragem cruzada, realce e segmentações", Ordem = 3, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245234312" },
+                new Licao { Titulo = "Explorando um relatório pronto: páginas, pesquisa e detalhamento", Ordem = 4, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245234311" },
+            }},
+            new ModuloCurso { Titulo = "Carregando e Preparando Dados (Power Query)", Ordem = 2, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Obter dados: importando um Excel", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234840" },
+                new Licao { Titulo = "Editor do Power Query: perfil, tipos e etapas aplicadas", Ordem = 2, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234861" },
+                new Licao { Titulo = "Transformações essenciais e a linguagem M", Ordem = 3, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234862" },
+                new Licao { Titulo = "Atualizando dados e resolvendo erros de carga", Ordem = 4, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245234889" },
+                new Licao { Titulo = "Tabela Calendário: Ano, Mês e Trimestre", Ordem = 5, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1245231109" },
+            }},
+            new ModuloCurso { Titulo = "Modelagem de Dados", Ordem = 3, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Exibição de Modelo: relacionamentos, cardinalidade e direção do filtro", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245231108" },
+                new Licao { Titulo = "Tabela fato e tabelas dimensão (modelo estrela)", Ordem = 2, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245231106" },
+                new Licao { Titulo = "Metas: tabelas com granularidade diferente", Ordem = 3, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1245231105" },
+                new Licao { Titulo = "Relacionamentos inativos, muitos-para-muitos e filtro nos dois sentidos", Ordem = 4, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245231442" },
+            }},
+            new ModuloCurso { Titulo = "Visualização de Dados", Ordem = 4, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Páginas, tela, grade e boas práticas de layout", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245231567" },
+                new Licao { Titulo = "Cartão, gráfico de barras e de linhas", Ordem = 2, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1245231844" },
+                new Licao { Titulo = "Tabela, matriz e segmentação de dados", Ordem = 3, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245231902" },
+                new Licao { Titulo = "Mapa, rosca e gráfico combinado: quando usar cada um", Ordem = 4, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1245231915" },
+                new Licao { Titulo = "Visuais de IA: árvore de decomposição, principais influenciadores e Copilot", Ordem = 5, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245231994" },
+                new Licao { Titulo = "Temas, formatação condicional e formatação de números", Ordem = 6, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245232602" },
+            }},
+            new ModuloCurso { Titulo = "DAX — Cálculos e Medidas", Ordem = 5, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Medidas DAX: SUM, COUNTROWS, DISTINCTCOUNT, AVERAGE, MAX e MIN", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245232607" },
+                new Licao { Titulo = "Colunas calculadas, medidas e tabela de medidas", Ordem = 2, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245232704" },
+                new Licao { Titulo = "Variáveis, IF, SWITCH e parâmetros numéricos", Ordem = 3, Duracao = 5, UrlVideoVimeo = "https://vimeo.com/1245232760" },
+                new Licao { Titulo = "CALCULATE e inteligência de tempo: ano atual vs ano anterior", Ordem = 4, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245233162" },
+                new Licao { Titulo = "Indicadores (bookmarks) e botões de navegação", Ordem = 5, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245233239" },
+            }},
+            new ModuloCurso { Titulo = "Projeto Final e Publicação", Ordem = 6, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Projeto final (parte 1): arquivo, tema e cabeçalho", Ordem = 1, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245233304" },
+                new Licao { Titulo = "Projeto final (parte 2): cartões e gráficos com design moderno", Ordem = 2, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245233556" },
+                new Licao { Titulo = "Projeto final (parte 3): página Vendedores, navegação e filtros sincronizados", Ordem = 3, Duracao = 4, UrlVideoVimeo = "https://vimeo.com/1245233705" },
+                new Licao { Titulo = "Publicando no Serviço do Power BI: workspace, assinatura e atualização", Ordem = 4, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245233796" },
+                new Licao { Titulo = "Exportação, modelo PBIT e entrega do projeto", Ordem = 5, Duracao = 2, UrlVideoVimeo = "https://vimeo.com/1245233979" },
+                new Licao { Titulo = "Encerramento e próximos passos", Ordem = 6, Duracao = 1, UrlVideoVimeo = "https://vimeo.com/1245234184" },
             }},
         }
     };

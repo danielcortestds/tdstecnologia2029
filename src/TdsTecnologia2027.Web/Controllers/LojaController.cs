@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -94,8 +96,15 @@ public class LojaController : Controller
         }
 
         var vm = new CheckoutViewModel { Itens = itens, Total = itens.Sum(i => i.Preco) };
-        if (User.Identity?.IsAuthenticated == true)
-            vm.Email = User.Identity.Name ?? string.Empty;
+
+        // Pré-preenche os dados SOMENTE se for um ALUNO logado (comprando outro
+        // curso) — nunca a sessão de admin, para não confundir o comprador.
+        var alunoAuth = await HttpContext.AuthenticateAsync(AlunoAuth.Scheme);
+        if (alunoAuth.Succeeded && alunoAuth.Principal != null)
+        {
+            vm.Email = alunoAuth.Principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+            vm.Nome = alunoAuth.Principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        }
         return View(vm);
     }
 

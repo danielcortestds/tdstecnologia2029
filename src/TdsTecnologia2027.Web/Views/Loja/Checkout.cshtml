@@ -27,6 +27,12 @@
         <span style="font-weight:700;">Total</span>
         <strong style="color:var(--tds-teal); font-size:1.2rem;">@Model.Total.ToString("C", pt)</strong>
     </div>
+    <div style="border-top:1px solid rgba(148,163,184,0.14); margin-top:10px; padding-top:10px; display:flex; align-items:center; gap:8px;">
+        <i class="bi bi-credit-card-2-front" style="color:var(--tds-teal); font-size:1.05rem;"></i>
+        <span class="small" style="color:#cbd5e1;">
+            ou em até <strong style="color:#f1f5f9;">10&times; de @((Model.Total / 10m).ToString("C", pt))</strong> no cartão de crédito
+        </span>
+    </div>
 </div>
 
 <form asp-action="Checkout" method="post">

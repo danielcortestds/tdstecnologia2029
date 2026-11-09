@@ -1,5 +1,6 @@
 @model List<TdsTecnologia2027.Web.Models.CursoOnline>
 @using TdsTecnologia2027.Web.Models
+@inject IWebHostEnvironment Env
 @{ ViewData["Title"] = "Cursos Online"; }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -48,6 +49,13 @@
                             }
                         </td>
                         <td class="text-end">
+                            @{
+                                var temHotsite = System.IO.Directory.Exists(System.IO.Path.Combine(Env.WebRootPath, "curso", c.Slug ?? ""));
+                            }
+                            @if (temHotsite)
+                            {
+                                <a href="/curso/@c.Slug" target="_blank" rel="noopener" class="btn btn-sm btn-outline-success" title="Abrir hotsite (link do Instagram)"><i class="bi bi-megaphone"></i> Hotsite</a>
+                            }
                             <a asp-action="Conteudo" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary" title="Módulos e aulas"><i class="bi bi-list-ul"></i></a>
                             <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="bi bi-pencil"></i></a>
                             <form asp-action="Delete" asp-route-id="@c.Id" method="post" class="d-inline"

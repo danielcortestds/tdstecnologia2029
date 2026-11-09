@@ -53,6 +53,24 @@ public class LojaController : Controller
     [HttpGet]
     public async Task<IActionResult> Mini() => await EstadoJson(true, null);
 
+    /// <summary>
+    /// "Comprar agora" a partir de um hotsite: adiciona o curso (pelo slug) ao
+    /// carrinho e leva direto ao checkout. É GET para servir como link simples.
+    /// </summary>
+    [HttpGet("/comprar/{slug}")]
+    public async Task<IActionResult> ComprarAgora(string slug)
+    {
+        var curso = await _db.CursosOnline
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Slug == slug && c.AVenda && c.Status == StatusCursoOnline.Publicado);
+        if (curso != null)
+        {
+            await _carrinho.AdicionarAsync(curso.Id);
+            return Redirect("/Loja/Checkout");
+        }
+        return Redirect("/#features"); // curso inexistente ou fora de venda
+    }
+
     /// <summary>Marcador de versão + último Id de pedido (diagnóstico de deploy).</summary>
     [HttpGet]
     public async Task<IActionResult> Ping()

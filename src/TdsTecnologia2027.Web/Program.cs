@@ -152,6 +152,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles(); // serve index.html em pastas como /curso/{slug}/ (hotsites)
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();

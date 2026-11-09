@@ -312,6 +312,8 @@
 					<div class="col-lg-6 d-none d-lg-block">
 						@if (Model.CursosPresenciais.Any())
 						{
+							// Ordem aleatória a cada carregamento da página.
+							var cursosCarrossel = Model.CursosPresenciais.OrderBy(_ => Guid.NewGuid()).ToList();
 							<div class="tdsc" id="tdscCarousel">
 								<div class="tdsc-head">
 									<span class="tdsc-chip"><i class="fa-solid fa-graduation-cap"></i> Cursos em destaque</span>
@@ -322,7 +324,7 @@
 								</div>
 								<div class="tdsc-viewport">
 									<div class="tdsc-track" id="tdscTrack">
-										@foreach (var curso in Model.CursosPresenciais)
+										@foreach (var curso in cursosCarrossel)
 										{
 											var icCar = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
 											<div class="tdsc-slide">
@@ -349,7 +351,7 @@
 									</div>
 								</div>
 								<div class="tdsc-dots" id="tdscDots">
-									@for (var i = 0; i < Model.CursosPresenciais.Count; i++)
+									@for (var i = 0; i < cursosCarrossel.Count; i++)
 									{
 										<button type="button" class="tdsc-dot @(i == 0 ? "active" : "")" data-i="@i" aria-label="Ir para o curso @(i + 1)"></button>
 									}

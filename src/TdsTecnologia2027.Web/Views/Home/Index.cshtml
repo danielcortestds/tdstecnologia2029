@@ -220,8 +220,12 @@
 	.tdsc-x { color:#94a3b8; font-size:0.85rem; font-weight:600; }
 	.tdsc-val { color:#2dd4bf; font-weight:800; font-size:1.5rem; font-family:'Plus Jakarta Sans',sans-serif; }
 	.tdsc-avista { color:#64748b; font-size:0.78rem; }
-	.tdsc-btn { display:inline-flex; align-items:center; gap:8px; background:#14b8a6; color:#04201c; font-weight:800; padding:11px 20px; border-radius:10px; text-decoration:none; transition:all .15s; }
-	.tdsc-btn:hover { background:#0d9488; color:#fff; gap:12px; }
+	.tdsc-de { color:#64748b; text-decoration:line-through; font-size:0.82rem; }
+	.tdsc-actions { display:flex; align-items:center; gap:14px; }
+	.tdsc-btn { display:inline-flex; align-items:center; gap:8px; background:#14b8a6; color:#04201c; font-weight:800; padding:11px 20px; border:none; border-radius:10px; text-decoration:none; cursor:pointer; transition:all .15s; }
+	.tdsc-btn:hover { background:#0d9488; color:#fff; }
+	.tdsc-link { color:#94a3b8; font-size:0.85rem; font-weight:600; text-decoration:none; transition:color .15s; }
+	.tdsc-link:hover { color:#14b8a6; }
 	.tdsc-dots { display:flex; gap:7px; justify-content:center; margin-top:16px; }
 	.tdsc-dot { width:8px; height:8px; border-radius:999px; border:none; background:rgba(148,163,184,0.3); cursor:pointer; transition:all .2s; padding:0; }
 	.tdsc-dot.active { width:22px; background:#14b8a6; }
@@ -310,13 +314,13 @@
 					</div>
 
 					<div class="col-lg-6 d-none d-lg-block">
-						@if (Model.CursosPresenciais.Any())
+						@if (Model.CursosOnline.Any())
 						{
-							// Ordem aleatória a cada carregamento da página.
-							var cursosCarrossel = Model.CursosPresenciais.OrderBy(_ => Guid.NewGuid()).ToList();
+							// Só cursos ONLINE à venda (compra imediata), em ordem aleatória.
+							var cursosCarrossel = Model.CursosOnline.OrderBy(_ => Guid.NewGuid()).ToList();
 							<div class="tdsc" id="tdscCarousel">
 								<div class="tdsc-head">
-									<span class="tdsc-chip"><i class="fa-solid fa-graduation-cap"></i> Cursos em destaque</span>
+									<span class="tdsc-chip"><i class="fa-solid fa-bolt"></i> Cursos online &middot; compra imediata</span>
 									<div class="tdsc-arrows">
 										<button type="button" class="tdsc-arrow" data-dir="-1" aria-label="Curso anterior"><i class="fa-solid fa-chevron-left"></i></button>
 										<button type="button" class="tdsc-arrow" data-dir="1" aria-label="Próximo curso"><i class="fa-solid fa-chevron-right"></i></button>
@@ -326,25 +330,39 @@
 									<div class="tdsc-track" id="tdscTrack">
 										@foreach (var curso in cursosCarrossel)
 										{
-											var icCar = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
+											var corCapaCar = string.IsNullOrWhiteSpace(curso.CorCapa) ? "#0d9488" : curso.CorCapa;
+											var iconeCapaCar = string.IsNullOrWhiteSpace(curso.IconeCapa) ? "bi-play-circle-fill" : curso.IconeCapa;
+											var nAulasCar = curso.Modulos.Sum(m => m.Licoes.Count);
+											var temDescontoCar = curso.PrecoDe.HasValue && curso.PrecoDe.Value > curso.Preco;
 											<div class="tdsc-slide">
 												<div class="tdsc-card">
-													<div class="tdsc-icon"><i class="@icCar"></i></div>
-													@if (!string.IsNullOrWhiteSpace(curso.Categoria))
-													{
-														<span class="tdsc-cat">@curso.Categoria</span>
-													}
-													<h3 class="tdsc-title">@curso.Titulo</h3>
+													<div class="tdsc-icon" style="background:@corCapaCar; color:#fff;"><i class="bi @iconeCapaCar"></i></div>
+													<span class="tdsc-cat">Curso online &middot; acesso vitalício</span>
+													<h3 class="tdsc-title">@curso.Nome</h3>
 													<p class="tdsc-desc">@curso.DescricaoCurta</p>
 													<div class="tdsc-meta">
-														<span><i class="fa-regular fa-clock"></i>@curso.CargaHoraria h</span>
-														<span><i class="fa-solid fa-certificate"></i>Certificado</span>
+														<span><i class="bi bi-clock"></i>@curso.CargaHoraria h</span>
+														@if (nAulasCar > 0)
+														{
+															<span><i class="bi bi-collection-play"></i>@nAulasCar aulas</span>
+														}
+														@if (curso.Certificado)
+														{
+															<span><i class="bi bi-patch-check"></i>Certificado</span>
+														}
 													</div>
 													<div class="tdsc-price">
+														@if (temDescontoCar)
+														{
+															<span class="tdsc-de">@Moeda(curso.PrecoDe!.Value)</span>
+														}
 														<div><span class="tdsc-x">10&times; de</span> <span class="tdsc-val">@Parcela(curso.Preco)</span></div>
 														<span class="tdsc-avista">ou @Moeda(curso.Preco) à vista</span>
 													</div>
-													<a href="#" onclick="teOpenModal('modal-@curso.Slug');return false;" class="tdsc-btn">Quero este curso <i class="fa-solid fa-arrow-right"></i></a>
+													<div class="tdsc-actions">
+														<button type="button" class="tdsc-btn loja-add" data-id="@curso.Id"><i class="bi bi-cart-plus"></i> Comprar agora</button>
+														<a href="#" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="tdsc-link">Ver detalhes</a>
+													</div>
 												</div>
 											</div>
 										}

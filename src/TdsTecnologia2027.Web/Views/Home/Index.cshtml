@@ -198,6 +198,33 @@
 	.loja-presencial-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:22px; height:100%; }
 	.loja-presencial-card h5 { font-size:1rem; color:#0f172a; font-weight:700; margin:0 0 6px; }
 	.loja-presencial-card p { font-size:0.86rem; color:#64748b; margin:0 0 14px; line-height:1.5; }
+
+	/* Carrossel de cursos do hero (comercial) — cores do site (navy + teal) */
+	.tdsc { background:#0f172a; border:1px solid rgba(148,163,184,0.15); border-radius:20px; padding:22px; box-shadow:0 24px 60px rgba(0,0,0,0.45); }
+	.tdsc-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+	.tdsc-chip { display:inline-flex; align-items:center; gap:7px; background:rgba(20,184,166,0.12); color:#5eead4; border:1px solid rgba(20,184,166,0.35); font-size:0.72rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:6px 12px; border-radius:999px; }
+	.tdsc-arrows { display:flex; gap:8px; }
+	.tdsc-arrow { width:34px; height:34px; border-radius:50%; border:1px solid rgba(148,163,184,0.3); background:#0b1220; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+	.tdsc-arrow:hover { border-color:#14b8a6; color:#14b8a6; }
+	.tdsc-viewport { overflow:hidden; }
+	.tdsc-track { display:flex; transition:transform .55s cubic-bezier(.22,.61,.36,1); }
+	.tdsc-slide { min-width:100%; box-sizing:border-box; }
+	.tdsc-card { background:linear-gradient(180deg,#111c30,#0d1526); border:1px solid rgba(148,163,184,0.12); border-radius:16px; padding:24px; }
+	.tdsc-icon { width:52px; height:52px; border-radius:14px; background:rgba(20,184,166,0.14); color:#2dd4bf; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:14px; }
+	.tdsc-cat { color:#5eead4; font-size:0.74rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; }
+	.tdsc-title { color:#f1f5f9; font-size:1.3rem; font-weight:800; margin:6px 0 8px; font-family:'Plus Jakarta Sans',sans-serif; line-height:1.25; }
+	.tdsc-desc { color:#94a3b8; font-size:0.9rem; line-height:1.6; margin-bottom:16px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; min-height:4.3em; }
+	.tdsc-meta { display:flex; gap:18px; margin-bottom:16px; color:#cbd5e1; font-size:0.8rem; }
+	.tdsc-meta i { color:#14b8a6; margin-right:6px; }
+	.tdsc-price { display:flex; flex-direction:column; gap:2px; margin-bottom:18px; }
+	.tdsc-x { color:#94a3b8; font-size:0.85rem; font-weight:600; }
+	.tdsc-val { color:#2dd4bf; font-weight:800; font-size:1.5rem; font-family:'Plus Jakarta Sans',sans-serif; }
+	.tdsc-avista { color:#64748b; font-size:0.78rem; }
+	.tdsc-btn { display:inline-flex; align-items:center; gap:8px; background:#14b8a6; color:#04201c; font-weight:800; padding:11px 20px; border-radius:10px; text-decoration:none; transition:all .15s; }
+	.tdsc-btn:hover { background:#0d9488; color:#fff; gap:12px; }
+	.tdsc-dots { display:flex; gap:7px; justify-content:center; margin-top:16px; }
+	.tdsc-dot { width:8px; height:8px; border-radius:999px; border:none; background:rgba(148,163,184,0.3); cursor:pointer; transition:all .2s; padding:0; }
+	.tdsc-dot.active { width:22px; background:#14b8a6; }
 	</style>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -283,36 +310,52 @@
 					</div>
 
 					<div class="col-lg-6 d-none d-lg-block">
-						<div class="chat-window">
-							<div class="chat-header">
-								<div class="chat-header-left">
-									<div class="chat-avatar">T</div>
-									<div>
-										<div style="font-size:0.875rem; font-weight:700; color:#f1f5f9;">TDS Tecnologia</div>
-										<div style="font-size:0.75rem; color:#0d9488;">
-											<span class="chat-dot-online"></span>Online agora
-										</div>
+						@if (Model.CursosPresenciais.Any())
+						{
+							<div class="tdsc" id="tdscCarousel">
+								<div class="tdsc-head">
+									<span class="tdsc-chip"><i class="fa-solid fa-graduation-cap"></i> Cursos em destaque</span>
+									<div class="tdsc-arrows">
+										<button type="button" class="tdsc-arrow" data-dir="-1" aria-label="Curso anterior"><i class="fa-solid fa-chevron-left"></i></button>
+										<button type="button" class="tdsc-arrow" data-dir="1" aria-label="Próximo curso"><i class="fa-solid fa-chevron-right"></i></button>
 									</div>
 								</div>
-								<div class="chat-traffic">
-									<span style="background:#ef4444;"></span>
-									<span style="background:#f59e0b;"></span>
-									<span style="background:#22c55e;"></span>
+								<div class="tdsc-viewport">
+									<div class="tdsc-track" id="tdscTrack">
+										@foreach (var curso in Model.CursosPresenciais)
+										{
+											var icCar = string.IsNullOrWhiteSpace(curso.Icone) ? "fa-solid fa-graduation-cap" : curso.Icone;
+											<div class="tdsc-slide">
+												<div class="tdsc-card">
+													<div class="tdsc-icon"><i class="@icCar"></i></div>
+													@if (!string.IsNullOrWhiteSpace(curso.Categoria))
+													{
+														<span class="tdsc-cat">@curso.Categoria</span>
+													}
+													<h3 class="tdsc-title">@curso.Titulo</h3>
+													<p class="tdsc-desc">@curso.DescricaoCurta</p>
+													<div class="tdsc-meta">
+														<span><i class="fa-regular fa-clock"></i>@curso.CargaHoraria h</span>
+														<span><i class="fa-solid fa-certificate"></i>Certificado</span>
+													</div>
+													<div class="tdsc-price">
+														<div><span class="tdsc-x">10&times; de</span> <span class="tdsc-val">@Parcela(curso.Preco)</span></div>
+														<span class="tdsc-avista">ou @Moeda(curso.Preco) à vista</span>
+													</div>
+													<a href="#" onclick="teOpenModal('modal-@curso.Slug');return false;" class="tdsc-btn">Quero este curso <i class="fa-solid fa-arrow-right"></i></a>
+												</div>
+											</div>
+										}
+									</div>
+								</div>
+								<div class="tdsc-dots" id="tdscDots">
+									@for (var i = 0; i < Model.CursosPresenciais.Count; i++)
+									{
+										<button type="button" class="tdsc-dot @(i == 0 ? "active" : "")" data-i="@i" aria-label="Ir para o curso @(i + 1)"></button>
+									}
 								</div>
 							</div>
-							<div class="chat-body">
-								<div class="bubble-bot">Olá! &#128075; Seja bem-vindo à TDS Tecnologia. Posso te ajudar a escolher o curso ideal?</div>
-								<div class="bubble-user">Quero aprender Power BI para mudar de área</div>
-								<div class="bubble-bot">Perfeito! O Power BI Essencial é ideal pra você. Do zero ao profissional — e você ainda sai com a certificação Microsoft.</div>
-								<div class="bubble-user">Tem parcelamento? É presencial?</div>
-								<div class="bubble-bot">&#9989; Sim! Parcelamos em até 10x sem juros. Temos turmas presenciais em MT e online ao vivo. Quer falar com um consultor agora? &#128640;</div>
-								<div class="bubble-typing">
-									<span class="typing-dot"></span>
-									<span class="typing-dot"></span>
-									<span class="typing-dot"></span>
-								</div>
-							</div>
-						</div>
+						}
 					</div>
 
 				</div>
@@ -905,6 +948,33 @@
 	</button>
 
 	<script>
+	// Carrossel de cursos do hero: auto-passa, setas, indicadores, pausa no hover.
+	(function(){
+		var track = document.getElementById('tdscTrack');
+		if (!track) return;
+		var total = track.children.length;
+		if (total <= 1) return;
+		var idx = 0, timer = null;
+		var dots = Array.prototype.slice.call(document.querySelectorAll('#tdscDots .tdsc-dot'));
+		function go(n){
+			idx = (n % total + total) % total;
+			track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+			dots.forEach(function(d, k){ d.classList.toggle('active', k === idx); });
+		}
+		function start(){ stop(); timer = setInterval(function(){ go(idx + 1); }, 4500); }
+		function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+		document.querySelectorAll('#tdscCarousel .tdsc-arrow').forEach(function(b){
+			b.addEventListener('click', function(){ go(idx + parseInt(b.getAttribute('data-dir'), 10)); start(); });
+		});
+		dots.forEach(function(d){
+			d.addEventListener('click', function(){ go(parseInt(d.getAttribute('data-i'), 10)); start(); });
+		});
+		var root = document.getElementById('tdscCarousel');
+		root.addEventListener('mouseenter', stop);
+		root.addEventListener('mouseleave', start);
+		start();
+	})();
+
 	function teOpenModal(id) {
 		document.getElementById(id).classList.add('is-open');
 		document.body.style.overflow = 'hidden';

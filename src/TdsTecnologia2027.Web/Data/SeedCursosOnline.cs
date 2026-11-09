@@ -12,6 +12,25 @@ public static class SeedCursosOnline
         await GarantirAsync(db, Mashup());
         await GarantirAsync(db, Lgpd());
         await GarantirAsync(db, PowerBi());
+
+        // Ativa a venda do Power BI Essencial UMA ÚNICA VEZ. Fica guardado por
+        // AtualizadoEm: depois de rodar (ou se o admin editar o curso), não mexe
+        // mais — assim não atropela mudanças futuras feitas no painel.
+        await AtivarVendaAsync(db, "power-bi-essencial", 990m);
+    }
+
+    /// <summary>Coloca o curso à venda com o preço informado, só se ele ainda não
+    /// foi configurado manualmente (AtualizadoEm nulo). Idempotente.</summary>
+    private static async Task AtivarVendaAsync(ApplicationDbContext db, string slug, decimal preco)
+    {
+        var curso = await db.CursosOnline.FirstOrDefaultAsync(c => c.Slug == slug);
+        if (curso != null && curso.AtualizadoEm == null && !curso.AVenda)
+        {
+            curso.AVenda = true;
+            curso.Preco = preco;
+            curso.AtualizadoEm = DateTime.Now;
+            await db.SaveChangesAsync();
+        }
     }
 
     private static async Task GarantirAsync(ApplicationDbContext db, CursoOnline curso)

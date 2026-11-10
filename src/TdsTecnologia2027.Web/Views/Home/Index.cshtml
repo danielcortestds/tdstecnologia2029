@@ -135,6 +135,13 @@
 	@@media (max-width: 991.98px) {
 		#header, #header #header-wrap { background-color: #0f172a !important; }
 	}
+	/* Celular/tablet em pé (coluna única): hero não ocupa a tela inteira e
+	   alinha ao topo, subindo o conteúdo para perto do cabeçalho. */
+	@@media (max-width: 991.98px) {
+		#hero.vh-100 { min-height: auto !important; height: auto !important; }
+		#hero.align-items-center { align-items: flex-start !important; }
+		#hero { padding-top: 28px !important; padding-bottom: 54px !important; }
+	}
 	#te-back-top {
 		position: fixed; bottom: 26px; right: 22px; z-index: 9990;
 		width: 38px; height: 38px; border-radius: 50%;

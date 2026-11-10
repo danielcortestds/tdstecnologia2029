@@ -12,6 +12,7 @@ public static class SeedCursosOnline
         await GarantirAsync(db, Mashup());
         await GarantirAsync(db, Lgpd());
         await GarantirAsync(db, PowerBi());
+        await GarantirAsync(db, Python());
 
         // Ativa a venda do Power BI Essencial UMA ÚNICA VEZ. Fica guardado por
         // AtualizadoEm: depois de rodar (ou se o admin editar o curso), não mexe
@@ -231,6 +232,74 @@ public static class SeedCursosOnline
                 new Licao { Titulo = "Publicando no Serviço do Power BI: workspace, assinatura e atualização", Ordem = 4, Duracao = 3, UrlVideoVimeo = "https://vimeo.com/1245233796" },
                 new Licao { Titulo = "Exportação, modelo PBIT e entrega do projeto", Ordem = 5, Duracao = 2, UrlVideoVimeo = "https://vimeo.com/1245233979" },
                 new Licao { Titulo = "Encerramento e próximos passos", Ordem = 6, Duracao = 1, UrlVideoVimeo = "https://vimeo.com/1245234184" },
+            }},
+        }
+    };
+
+    private static CursoOnline Python() => new CursoOnline
+    {
+        Nome = "Python Essencial",
+        Slug = "python-essencial",
+        DescricaoCurta = "Formação prática em Python: do zero ao projeto real — lógica, coleções, funções, leitura de dados com pandas, consumo de APIs (Tabela FIPE), gráficos e um painel em Streamlit.",
+        DescricaoCompleta = "Curso completo e prático de Python, do primeiro script ao projeto final publicado. Você instala o ambiente (Python + VS Code), aprende os fundamentos da linguagem (variáveis, tipos, f-strings, operadores e entrada de dados), controle de fluxo (if/elif/else), repetição e coleções (listas, laço for, dicionários, while e tratamento de erros) e organização do código (funções, módulos, pip e ambiente virtual, leitura e escrita de arquivos TXT, CSV e JSON). Em seguida entra no mundo de dados com pandas (leitura, filtros, agrupamentos e KPIs), consome uma API pública real (Tabela FIPE), gera gráficos com matplotlib e exporta para Excel. Finaliza com dois projetos guiados — o Relatório Auto MT e um painel interativo em Streamlit — construídos passo a passo. Ideal para quem quer programar e automatizar análises de verdade, saindo com projetos no portfólio.",
+        CorCapa = "#3776AB",
+        IconeCapa = "bi-filetype-py",
+        Categoria = "Programação e Dados",
+        Instrutor = "Daniel Côrtes",
+        Status = StatusCursoOnline.Publicado,
+        Ordem = 6,
+        CargaHoraria = 40,
+        Certificado = true,
+        LogosCertificado = "tds",
+        Fabricante = FabricanteCertificado.Tds,
+        Preco = 990m,
+        AVenda = true,
+        Modulos = new List<ModuloCurso>
+        {
+            new ModuloCurso { Titulo = "Primeiros Passos no Python", Ordem = 1, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Por que Python e o que vamos construir", Ordem = 1, Duracao = 7, UrlVideoVimeo = "https://vimeo.com/1245290552" },
+                new Licao { Titulo = "Instalando o Python no Windows", Ordem = 2, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1245290648" },
+                new Licao { Titulo = "VS Code, extensão Python e o primeiro script", Ordem = 3, Duracao = 7, UrlVideoVimeo = "https://vimeo.com/1245290645" },
+            }},
+            new ModuloCurso { Titulo = "Fundamentos da Linguagem", Ordem = 2, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Variáveis, tipos e f-strings", Ordem = 1, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245290865" },
+                new Licao { Titulo = "Operadores e entrada de dados", Ordem = 2, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1245290893" },
+                new Licao { Titulo = "Decisões com if, elif e else", Ordem = 3, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1245290686" },
+            }},
+            new ModuloCurso { Titulo = "Repetição e Coleções", Ordem = 3, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Listas e o laço for", Ordem = 1, Duracao = 7, UrlVideoVimeo = "https://vimeo.com/1245290939" },
+                new Licao { Titulo = "Dicionários: dados com nome", Ordem = 2, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1245291136" },
+                new Licao { Titulo = "while, break e tratamento de erros", Ordem = 3, Duracao = 6, UrlVideoVimeo = "https://vimeo.com/1245290922" },
+            }},
+            new ModuloCurso { Titulo = "Organizando o Código", Ordem = 4, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Funções", Ordem = 1, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245291134" },
+                new Licao { Titulo = "Módulos, pip e ambiente virtual", Ordem = 2, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245291149" },
+                new Licao { Titulo = "Arquivos: TXT, CSV e JSON", Ordem = 3, Duracao = 8, UrlVideoVimeo = "https://vimeo.com/1245291135" },
+            }},
+            new ModuloCurso { Titulo = "Dados com pandas e APIs", Ordem = 5, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "pandas: lendo e explorando as vendas", Ordem = 1, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245291352" },
+                new Licao { Titulo = "pandas: filtros, agrupamentos e KPIs", Ordem = 2, Duracao = 8, UrlVideoVimeo = "https://vimeo.com/1245291417" },
+                new Licao { Titulo = "Consumindo uma API pública (Tabela FIPE)", Ordem = 3, Duracao = 10, UrlVideoVimeo = "https://vimeo.com/1245291432" },
+                new Licao { Titulo = "Gráficos com matplotlib e exportação para Excel", Ordem = 4, Duracao = 7, UrlVideoVimeo = "https://vimeo.com/1245291349" },
+            }},
+            new ModuloCurso { Titulo = "Projeto Guiado: Relatório Auto MT", Ordem = 6, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "O script completo do Relatório Auto MT", Ordem = 1, Duracao = 10, UrlVideoVimeo = "https://vimeo.com/1245291706" },
+                new Licao { Titulo = "Painel Auto MT com Streamlit e próximos passos", Ordem = 2, Duracao = 8, UrlVideoVimeo = "https://vimeo.com/1245291520" },
+            }},
+            new ModuloCurso { Titulo = "Projeto Final Passo a Passo", Ordem = 7, Licoes = new List<Licao>
+            {
+                new Licao { Titulo = "Preparando o projeto: pastas, utils e dados", Ordem = 1, Duracao = 10, UrlVideoVimeo = "https://vimeo.com/1245291754" },
+                new Licao { Titulo = "fipe.py: buscando o preço na API", Ordem = 2, Duracao = 8, UrlVideoVimeo = "https://vimeo.com/1245291777" },
+                new Licao { Titulo = "fipe.py: cache para consultar a API uma vez só", Ordem = 3, Duracao = 8, UrlVideoVimeo = "https://vimeo.com/1245291991" },
+                new Licao { Titulo = "main.py e os indicadores", Ordem = 4, Duracao = 10, UrlVideoVimeo = "https://vimeo.com/1245292012" },
+                new Licao { Titulo = "relatorio.py: gráficos e Excel", Ordem = 5, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245292044" },
+                new Licao { Titulo = "painel.py: o painel Streamlit do zero", Ordem = 6, Duracao = 9, UrlVideoVimeo = "https://vimeo.com/1245291740" },
             }},
         }
     };

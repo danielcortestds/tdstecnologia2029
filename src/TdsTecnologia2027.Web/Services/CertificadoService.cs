@@ -114,6 +114,7 @@ public class CertificadoService
         var tema = Tema(curso.Fabricante);
         var tdsLogo = CarregarImagem("tds.png");
         var partnerLogo = tema.ParceiroArquivo != null ? CarregarImagem(tema.ParceiroArquivo) : null;
+        var seloInferior = tema.SeloInferiorArquivo != null ? CarregarImagem(tema.SeloInferiorArquivo) : null;
         var fundo = CarregarFundo(curso.Fabricante);
         var padrao = GerarPadraoSvg(tema);
         var assinatura = CarregarImagem("assinatura.png");
@@ -144,6 +145,16 @@ public class CertificadoService
                             layers.Layer().Image(fundo).FitUnproportionally(); // preenche exatamente (sem letterbox)
                         else
                             layers.Layer().Svg(padrao);
+
+                        // Realce: reforça o azul do fundo (degradê por cima).
+                        if (tema.Realce)
+                            layers.Layer().Svg(GerarRealceSvg(tema));
+
+                        // Selo discreto no canto inferior esquerdo (ex.: parceiro Microsoft).
+                        if (seloInferior != null)
+                            layers.Layer().AlignBottom().AlignLeft()
+                                  .PaddingBottom(fundo == null ? 20 : 34).PaddingLeft(fundo == null ? 34 : 50)
+                                  .Height(tema.SeloInferiorAltura).Image(seloInferior).FitHeight();
 
                         layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 40).PaddingHorizontal(fundo == null ? 30 : 48).Column(col =>
                         {
@@ -229,7 +240,8 @@ public class CertificadoService
                         // Rodapé: validação + QR
                         col.Item().PaddingTop(12).Row(row =>
                         {
-                            row.RelativeItem().AlignBottom().Column(c =>
+                            // Abre espaço à esquerda para o selo do canto inferior não sobrepor o texto.
+                            row.RelativeItem().PaddingLeft(seloInferior != null ? 92 : 0).AlignBottom().Column(c =>
                             {
                                 c.Item().Text("Validação do certificado").FontSize(8).Bold().FontColor("#94a3b8");
                                 c.Item().Text(UrlValidacao(cert.CodigoValidacao)).FontSize(8).FontColor("#94a3b8");
@@ -245,7 +257,13 @@ public class CertificadoService
         return doc.GeneratePdf();
     }
 
-    private sealed record TemaCertificado(string Primaria, string Clara, string? ParceiroArquivo, float ParceiroAltura = 66f, bool LogosNasBordas = false);
+    private sealed record TemaCertificado(
+        string Primaria, string Clara, string? ParceiroArquivo,
+        float ParceiroAltura = 66f, bool LogosNasBordas = false,
+        // Realce: reforça o azul do fundo com uma camada de degradê por cima.
+        bool Realce = false,
+        // Selo discreto no canto inferior esquerdo (ex.: parceiro Microsoft).
+        string? SeloInferiorArquivo = null, float SeloInferiorAltura = 48f);
 
     /// <summary>Cores e logo de parceiro por fabricante. Todos emitidos pela TDS.</summary>
     private static TemaCertificado Tema(FabricanteCertificado fab) => fab switch
@@ -254,9 +272,27 @@ public class CertificadoService
         // alto; a faixa "Microsoft Partner" é larga, então vai menor). LogosNasBordas:
         // Microsoft fica com o parceiro à esquerda e a TDS à direita (nas bordas).
         FabricanteCertificado.Qlik => new TemaCertificado("#009845", "#bbf7d0", "qlik-partner.png", 74f),
-        FabricanteCertificado.Microsoft => new TemaCertificado("#0067b8", "#cfe4fa", "microsoft-partner.png", 44f, LogosNasBordas: true),
+        FabricanteCertificado.Microsoft => new TemaCertificado(
+            "#0067b8", "#cfe4fa", "microsoft-partner.png", 44f, LogosNasBordas: true,
+            Realce: true,
+            SeloInferiorArquivo: "microsoft-solutions-partner.png", SeloInferiorAltura: 50f),
         _ => new TemaCertificado("#15356a", "#c7d2fe", null) // TDS (azul-marinho da logo)
     };
+
+    /// <summary>Camada de realce: degradê azul diagonal por cima do fundo, para
+    /// o azul→branco ficar um pouco mais forte (sem refazer a imagem de fundo).</summary>
+    private static string GerarRealceSvg(TemaCertificado tema) => $$"""
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1414 1000" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="realce" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="{{tema.Primaria}}" stop-opacity="0.42"/>
+              <stop offset="0.5" stop-color="{{tema.Primaria}}" stop-opacity="0.19"/>
+              <stop offset="0.9" stop-color="{{tema.Primaria}}" stop-opacity="0.04"/>
+            </linearGradient>
+          </defs>
+          <rect x="30" y="30" width="1354" height="940" fill="url(#realce)"/>
+        </svg>
+        """;
 
     private static (int r, int g, int b) HexToRgb(string hex)
     {

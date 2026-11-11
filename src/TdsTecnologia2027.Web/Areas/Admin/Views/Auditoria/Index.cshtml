@@ -7,7 +7,12 @@
 <div class="d-flex align-items-center justify-content-between mb-1">
     <h1 class="h3 mb-0"><i class="bi bi-clipboard-data me-2"></i>Auditoria de Progresso</h1>
 </div>
-<p class="text-muted mb-4">Clique em um curso para ver os alunos matriculados e, depois, no aluno para ver aula por aula.</p>
+<p class="text-muted mb-3">Clique em um curso para ver os alunos matriculados e, depois, no aluno para ver aula por aula.</p>
+
+<div class="btn-group mb-4" role="group" aria-label="Modo de auditoria">
+    <a href="@Url.Action("Index")" class="btn btn-sm btn-dark"><i class="bi bi-collection-play me-1"></i>Por curso</a>
+    <a href="@Url.Action("Alunos")" class="btn btn-sm btn-outline-dark"><i class="bi bi-people me-1"></i>Por aluno</a>
+</div>
 
 @if (!Model.Any())
 {

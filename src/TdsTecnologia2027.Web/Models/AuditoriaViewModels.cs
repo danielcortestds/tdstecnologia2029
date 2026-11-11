@@ -72,3 +72,54 @@ public class AuditoriaAlunoViewModel
     public int Percentual => TotalAulas == 0 ? 0 : (int)Math.Round(100.0 * Concluidas / TotalAulas);
     public List<AuditoriaModuloGrupo> Modulos { get; set; } = new();
 }
+
+// ===== Visão por aluno =====
+
+/// <summary>Linha da lista de alunos (visão por aluno).</summary>
+public class AuditoriaAlunoGeralItem
+{
+    public int AlunoId { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public int Cursos { get; set; }
+    public int TotalAulas { get; set; }
+    public int Concluidas { get; set; }
+    public DateTime? UltimoAcesso { get; set; }
+    public int Percentual => TotalAulas == 0 ? 0 : (int)Math.Round(100.0 * Concluidas / TotalAulas);
+}
+
+/// <summary>Curso dentro do perfil de um aluno.</summary>
+public class AuditoriaPerfilCurso
+{
+    public int CursoId { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public int TotalAulas { get; set; }
+    public int Concluidas { get; set; }
+    public DateTime? UltimoAcesso { get; set; }
+    public string? UltimaAula { get; set; }
+    public int Percentual => TotalAulas == 0 ? 0 : (int)Math.Round(100.0 * Concluidas / TotalAulas);
+}
+
+/// <summary>Item do histórico recente de aulas de um aluno.</summary>
+public class AuditoriaHistoricoItem
+{
+    public string Curso { get; set; } = string.Empty;
+    public string Aula { get; set; } = string.Empty;
+    public DateTime Quando { get; set; }
+    public bool Concluida { get; set; }
+}
+
+/// <summary>Tela: perfil de um aluno (cursos + histórico recente).</summary>
+public class AuditoriaPerfilViewModel
+{
+    public int AlunoId { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public int TotalCursos { get; set; }
+    public int TotalAulas { get; set; }
+    public int Concluidas { get; set; }
+    public DateTime? UltimoAcesso { get; set; }
+    public int Percentual => TotalAulas == 0 ? 0 : (int)Math.Round(100.0 * Concluidas / TotalAulas);
+    public List<AuditoriaPerfilCurso> Cursos { get; set; } = new();
+    public List<AuditoriaHistoricoItem> Historico { get; set; } = new();
+}

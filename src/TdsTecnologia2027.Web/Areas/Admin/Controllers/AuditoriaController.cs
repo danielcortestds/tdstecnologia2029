@@ -170,4 +170,120 @@ public class AuditoriaController : Controller
 
         return View(vm);
     }
+
+    // Lista de alunos (visão por aluno) com nº de cursos e progresso geral.
+    public async Task<IActionResult> Alunos()
+    {
+        var matriculas = await _db.Matriculas
+            .Where(m => m.Ativo)
+            .Select(m => new { m.AlunoId, Nome = m.Aluno!.NomeCompleto, m.Aluno.Email, m.CursoOnlineId })
+            .ToListAsync();
+
+        var aulasMap = (await _db.Licoes
+                .GroupBy(l => l.Modulo!.CursoOnlineId)
+                .Select(g => new { CursoId = g.Key, Qtd = g.Count() })
+                .ToListAsync())
+            .ToDictionary(x => x.CursoId, x => x.Qtd);
+
+        // Progresso achatado (sem GroupBy no SQL) — agregado em memória.
+        var prog = await _db.ProgressosLicao
+            .Select(p => new { p.AlunoId, CursoId = p.Licao!.Modulo!.CursoOnlineId, p.Concluida, p.UltimoAcesso })
+            .ToListAsync();
+
+        var lista = matriculas
+            .GroupBy(m => new { m.AlunoId, m.Nome, m.Email })
+            .Select(g =>
+            {
+                var cursoIds = g.Select(x => x.CursoOnlineId).Distinct().ToList();
+                var totalAulas = cursoIds.Sum(cid => aulasMap.GetValueOrDefault(cid));
+                var meus = prog.Where(p => p.AlunoId == g.Key.AlunoId && cursoIds.Contains(p.CursoId)).ToList();
+                return new AuditoriaAlunoGeralItem
+                {
+                    AlunoId = g.Key.AlunoId,
+                    Nome = g.Key.Nome,
+                    Email = g.Key.Email,
+                    Cursos = cursoIds.Count,
+                    TotalAulas = totalAulas,
+                    Concluidas = meus.Count(p => p.Concluida),
+                    UltimoAcesso = meus.Count > 0 ? meus.Max(p => p.UltimoAcesso) : null
+                };
+            })
+            .OrderBy(a => a.Nome)
+            .ToList();
+
+        return View(lista);
+    }
+
+    // Perfil do aluno: cursos que faz (com %) + histórico recente de aulas.
+    public async Task<IActionResult> Perfil(int alunoId)
+    {
+        var aluno = await _db.Alunos.FirstOrDefaultAsync(a => a.Id == alunoId);
+        if (aluno == null) return NotFound();
+
+        var matriculas = await _db.Matriculas
+            .Where(m => m.AlunoId == alunoId && m.Ativo)
+            .Select(m => new { m.CursoOnlineId, Nome = m.CursoOnline!.Nome, m.CursoOnline.Ordem })
+            .ToListAsync();
+
+        var aulasMap = (await _db.Licoes
+                .GroupBy(l => l.Modulo!.CursoOnlineId)
+                .Select(g => new { CursoId = g.Key, Qtd = g.Count() })
+                .ToListAsync())
+            .ToDictionary(x => x.CursoId, x => x.Qtd);
+
+        var progressos = await _db.ProgressosLicao
+            .Where(p => p.AlunoId == alunoId)
+            .OrderByDescending(p => p.UltimoAcesso)
+            .Select(p => new
+            {
+                CursoId = p.Licao!.Modulo!.CursoOnlineId,
+                Curso = p.Licao.Modulo.CursoOnline!.Nome,
+                Aula = p.Licao.Titulo,
+                p.UltimoAcesso,
+                p.Concluida
+            })
+            .ToListAsync();
+
+        var vm = new AuditoriaPerfilViewModel
+        {
+            AlunoId = alunoId,
+            Nome = aluno.NomeCompleto,
+            Email = aluno.Email
+        };
+
+        vm.Cursos = matriculas
+            .OrderBy(m => m.Ordem).ThenBy(m => m.Nome)
+            .Select(m =>
+            {
+                var meus = progressos.Where(p => p.CursoId == m.CursoOnlineId).ToList();
+                return new AuditoriaPerfilCurso
+                {
+                    CursoId = m.CursoOnlineId,
+                    Nome = m.Nome,
+                    TotalAulas = aulasMap.GetValueOrDefault(m.CursoOnlineId),
+                    Concluidas = meus.Count(p => p.Concluida),
+                    UltimoAcesso = meus.Count > 0 ? meus.Max(p => p.UltimoAcesso) : null,
+                    UltimaAula = meus.Count > 0 ? meus.First().Aula : null
+                };
+            })
+            .ToList();
+
+        vm.Historico = progressos
+            .Take(12)
+            .Select(p => new AuditoriaHistoricoItem
+            {
+                Curso = p.Curso,
+                Aula = p.Aula,
+                Quando = p.UltimoAcesso,
+                Concluida = p.Concluida
+            })
+            .ToList();
+
+        vm.TotalCursos = vm.Cursos.Count;
+        vm.TotalAulas = vm.Cursos.Sum(c => c.TotalAulas);
+        vm.Concluidas = vm.Cursos.Sum(c => c.Concluidas);
+        vm.UltimoAcesso = progressos.Count > 0 ? progressos.Max(p => p.UltimoAcesso) : null;
+
+        return View(vm);
+    }
 }

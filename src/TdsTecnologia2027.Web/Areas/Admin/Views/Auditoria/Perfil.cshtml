@@ -1,0 +1,150 @@
+@model TdsTecnologia2027.Web.Models.AuditoriaPerfilViewModel
+@{
+    ViewData["Title"] = $"Auditoria — {Model.Nome}";
+    Layout = "_LayoutAdmin";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="@Url.Action("Alunos")">Auditoria por aluno</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Nome</li>
+    </ol>
+</nav>
+
+<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0"><i class="bi bi-person-video3 me-2"></i>@Model.Nome</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Email))
+        {
+            <div class="text-muted small">@Model.Email</div>
+        }
+    </div>
+    <a href="@Url.Action("Alunos")" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar aos alunos</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm h-100"><div class="card-body py-3">
+            <div class="text-muted small">Cursos</div>
+            <div class="h4 mb-0">@Model.TotalCursos</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm h-100"><div class="card-body py-3">
+            <div class="text-muted small">Aulas concluídas</div>
+            <div class="h4 mb-0">@Model.Concluidas / @Model.TotalAulas</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm h-100"><div class="card-body py-3">
+            <div class="text-muted small">Progresso geral</div>
+            <div class="h4 mb-0">@Model.Percentual%</div>
+        </div></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm h-100"><div class="card-body py-3">
+            <div class="text-muted small">Último acesso</div>
+            <div class="h6 mb-0">@(Model.UltimoAcesso.HasValue ? Model.UltimoAcesso.Value.ToString("dd/MM/yyyy HH:mm") : "—")</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-semibold"><i class="bi bi-collection-play me-1"></i>Cursos do aluno</div>
+    @if (!Model.Cursos.Any())
+    {
+        <div class="card-body text-muted">Este aluno não está matriculado em nenhum curso.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Curso</th>
+                        <th class="text-center">Concluídas</th>
+                        <th style="min-width:180px;">Progresso</th>
+                        <th>Última aula</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.Cursos)
+                    {
+                        var url = Url.Action("Aluno", new { cursoId = c.CursoId, alunoId = Model.AlunoId });
+                        var cor = c.Percentual >= 100 ? "bg-success" : (c.Percentual > 0 ? "bg-info" : "bg-secondary");
+                        <tr style="cursor:pointer;" onclick="location.href='@url'">
+                            <td class="fw-semibold">@c.Nome</td>
+                            <td class="text-center text-muted">@c.Concluidas / @c.TotalAulas</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height:8px; min-width:90px;" role="progressbar" aria-valuenow="@c.Percentual" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-bar @cor" style="width:@c.Percentual%"></div>
+                                    </div>
+                                    <small class="text-muted" style="width:38px;">@c.Percentual%</small>
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(c.UltimaAula))
+                                {
+                                    <span class="small">@c.UltimaAula</span>
+                                    @if (c.UltimoAcesso.HasValue)
+                                    {
+                                        <div class="text-muted" style="font-size:0.72rem;">@c.UltimoAcesso.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Ainda não iniciou</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a href="@url" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation();">
+                                    Ver aulas <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white fw-semibold"><i class="bi bi-clock-history me-1"></i>Histórico recente de aulas</div>
+    @if (!Model.Historico.Any())
+    {
+        <div class="card-body text-muted">Sem acessos registrados ainda.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm mb-0 align-middle">
+                <thead class="table-light">
+                    <tr><th>Aula</th><th>Curso</th><th class="text-center">Status</th><th>Quando</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model.Historico)
+                    {
+                        <tr>
+                            <td>@h.Aula</td>
+                            <td class="text-muted">@h.Curso</td>
+                            <td class="text-center">
+                                @if (h.Concluida)
+                                {
+                                    <span class="badge rounded-pill text-bg-success">Concluída</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill text-bg-info">Em andamento</span>
+                                }
+                            </td>
+                            <td class="text-muted small">@h.Quando.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -154,36 +154,68 @@ public class CertificadoService
                         // assinaturas. Preenchemos apenas os dados nos espaços em branco. =====
                         if (fundoCustom)
                         {
-                            // Nome do aluno (espaço superior, centralizado).
-                            layers.Layer().AlignTop().AlignCenter().PaddingTop(178)
-                                  .Text(cert.NomeAluno).FontSize(28).Bold().FontColor("#111827");
-                            // Curso (alinhado com o texto em inglês "Microsoft Official Course:").
-                            layers.Layer().AlignTop().AlignLeft().PaddingTop(322).PaddingLeft(324).PaddingRight(70)
-                                  .Text(cert.CursoNome).FontSize(16).Bold().FontColor("#1f2937");
-                            // Carga horária + mês de execução (abaixo do curso).
-                            layers.Layer().AlignTop().AlignLeft().PaddingTop(352).PaddingLeft(324).PaddingRight(70).Text(txt =>
-                            {
-                                txt.DefaultTextStyle(x => x.FontSize(11).FontColor("#475569"));
-                                if (cert.CargaHoraria > 0)
+                            // A posição dos dados muda por tema, porque cada arte traz os
+                            // espaços em branco em alturas diferentes.
+                            void ValidacaoInferiorEsquerda() =>
+                                layers.Layer().AlignBottom().AlignLeft().PaddingBottom(88).PaddingLeft(28).Column(c =>
                                 {
-                                    txt.Span("Carga horária: ").FontColor("#64748b");
-                                    txt.Span($"{cert.CargaHoraria} horas").Bold();
-                                }
-                                if (cert.CargaHoraria > 0 && !string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
-                                    txt.Span("   ·   ");
-                                if (!string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
-                                    txt.Span(cert.PeriodoExecucao!).Bold();
-                            });
-                            // Validação (canto inferior esquerdo, na parte branca — acima da faixa).
-                            layers.Layer().AlignBottom().AlignLeft().PaddingBottom(88).PaddingLeft(28).Column(c =>
+                                    c.Item().Text("Validação do certificado").FontSize(8).Bold().FontColor("#475569");
+                                    c.Item().Text(UrlValidacao(cert.CodigoValidacao)).FontSize(8).FontColor("#475569");
+                                    c.Item().Text($"Código: {cert.CodigoValidacao}").FontSize(8).FontColor("#94a3b8");
+                                });
+
+                            if (curso.Fabricante == FabricanteCertificado.Tds)
                             {
-                                c.Item().Text("Validação do certificado").FontSize(8).Bold().FontColor("#475569");
-                                c.Item().Text(UrlValidacao(cert.CodigoValidacao)).FontSize(8).FontColor("#475569");
-                                c.Item().Text($"Código: {cert.CodigoValidacao}").FontSize(8).FontColor("#94a3b8");
-                            });
-                            // QR (canto inferior direito).
-                            layers.Layer().AlignBottom().AlignRight().PaddingBottom(58).PaddingRight(56)
-                                  .Width(58).Height(58).Image(qr).FitArea();
+                                // Arte TDS: nome abaixo de "A TDS Tecnologia certifica que";
+                                // curso abaixo de "concluiu com êxito o curso" (centralizados).
+                                layers.Layer().AlignTop().AlignCenter().PaddingTop(236)
+                                      .Text(cert.NomeAluno).FontSize(26).Bold().FontColor("#111827");
+                                layers.Layer().AlignTop().AlignCenter().PaddingTop(392).PaddingHorizontal(130)
+                                      .Text(cert.CursoNome).FontSize(16).Bold().FontColor("#1f2937");
+                                layers.Layer().AlignTop().AlignCenter().PaddingTop(420).Text(txt =>
+                                {
+                                    txt.AlignCenter();
+                                    txt.DefaultTextStyle(x => x.FontSize(11).FontColor("#475569"));
+                                    if (cert.CargaHoraria > 0)
+                                    {
+                                        txt.Span("Carga horária: ").FontColor("#64748b");
+                                        txt.Span($"{cert.CargaHoraria} horas").Bold();
+                                    }
+                                    if (cert.CargaHoraria > 0 && !string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                        txt.Span("   ·   ");
+                                    if (!string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                        txt.Span(cert.PeriodoExecucao!).Bold();
+                                });
+                                ValidacaoInferiorEsquerda();
+                                // QR logo acima da validação (lado esquerdo).
+                                layers.Layer().AlignBottom().AlignLeft().PaddingBottom(150).PaddingLeft(28)
+                                      .Width(58).Height(58).Image(qr).FitArea();
+                            }
+                            else
+                            {
+                                // Arte Microsoft (layout aprovado) e demais fundos personalizados.
+                                layers.Layer().AlignTop().AlignCenter().PaddingTop(178)
+                                      .Text(cert.NomeAluno).FontSize(28).Bold().FontColor("#111827");
+                                layers.Layer().AlignTop().AlignLeft().PaddingTop(322).PaddingLeft(324).PaddingRight(70)
+                                      .Text(cert.CursoNome).FontSize(16).Bold().FontColor("#1f2937");
+                                layers.Layer().AlignTop().AlignLeft().PaddingTop(352).PaddingLeft(324).PaddingRight(70).Text(txt =>
+                                {
+                                    txt.DefaultTextStyle(x => x.FontSize(11).FontColor("#475569"));
+                                    if (cert.CargaHoraria > 0)
+                                    {
+                                        txt.Span("Carga horária: ").FontColor("#64748b");
+                                        txt.Span($"{cert.CargaHoraria} horas").Bold();
+                                    }
+                                    if (cert.CargaHoraria > 0 && !string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                        txt.Span("   ·   ");
+                                    if (!string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                        txt.Span(cert.PeriodoExecucao!).Bold();
+                                });
+                                ValidacaoInferiorEsquerda();
+                                // QR (canto inferior direito).
+                                layers.Layer().AlignBottom().AlignRight().PaddingBottom(58).PaddingRight(56)
+                                      .Width(58).Height(58).Image(qr).FitArea();
+                            }
                             // Camada primária full-size (define o tamanho do componente).
                             layers.PrimaryLayer().Extend();
                             return;

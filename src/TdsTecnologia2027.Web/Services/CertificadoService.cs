@@ -164,10 +164,12 @@ public class CertificadoService
                                     c.Item().Text($"Código: {cert.CodigoValidacao}").FontSize(8).FontColor("#94a3b8");
                                 });
 
-                            if (curso.Fabricante == FabricanteCertificado.Tds)
+                            if (curso.Fabricante == FabricanteCertificado.Tds
+                                || curso.Fabricante == FabricanteCertificado.Qlik)
                             {
-                                // Arte TDS: nome abaixo de "A TDS Tecnologia certifica que";
-                                // curso abaixo de "concluiu com êxito o curso" (centralizados).
+                                // Artes TDS e Qlik (mesma estrutura): nome abaixo de "A TDS
+                                // Tecnologia certifica que" e curso abaixo de "concluiu com
+                                // êxito o curso" (centralizados).
                                 layers.Layer().AlignTop().AlignCenter().PaddingTop(236)
                                       .Text(cert.NomeAluno).FontSize(26).Bold().FontColor("#111827");
                                 layers.Layer().AlignTop().AlignCenter().PaddingTop(392).PaddingHorizontal(130)

@@ -45,7 +45,7 @@ public class CursosOnlineController : Controller
         ModelState.Remove(nameof(CursoOnline.LogosCertificado));
         if (!ModelState.IsValid) return View(model);
 
-        if (model.Fabricante == FabricanteCertificado.Microsoft && fundoCertificado is { Length: > 0 })
+        if (fundoCertificado is { Length: > 0 })
         {
             var nome = await SalvarFundoCertificadoAsync(fundoCertificado);
             if (nome == null) return View(model);
@@ -98,7 +98,7 @@ public class CursosOnlineController : Controller
         curso.AVenda = model.AVenda;
         curso.Fabricante = model.Fabricante;
 
-        // Fundo personalizado do certificado (só Microsoft): remover e/ou substituir.
+        // Fundo personalizado do certificado (qualquer tema): remover e/ou substituir.
         if (removerFundoCertificado)
         {
             ExcluirFundoCertificado(curso.CertificadoFundoImagem);
@@ -233,7 +233,7 @@ public class CursosOnlineController : Controller
         catch { /* arquivo já removido ou inacessível — ignora */ }
     }
 
-    // ── Fundo personalizado do certificado (Microsoft) ────────────────────
+    // ── Fundo personalizado do certificado (qualquer tema) ────────────────
     private static readonly string[] ImagemExtensoes = { ".png", ".jpg", ".jpeg", ".webp" };
 
     /// <summary>Salva a imagem de fundo enviada na pasta persistente. Null (com erro

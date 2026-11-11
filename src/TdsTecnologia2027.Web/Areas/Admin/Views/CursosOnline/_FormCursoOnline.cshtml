@@ -134,11 +134,12 @@
         <div class="form-text">Define o tema do certificado: TDS (azul), Qlik (verde) ou Microsoft (teal). Emitido sempre pela TDS.</div>
     </div>
 
-    <div class="col-12" id="blocoFundoCert" style="display:none;">
+    <div class="col-12" id="blocoFundoCert">
         <div class="border rounded p-3 bg-light">
-            <label class="form-label fw-semibold mb-1"><i class="bi bi-image me-1"></i>Imagem de fundo do certificado (Microsoft)</label>
+            <label class="form-label fw-semibold mb-1"><i class="bi bi-image me-1"></i>Imagem de fundo do certificado (personalizado)</label>
             <div class="form-text mb-2">
-                Opcional. Envie uma arte de fundo para <strong>substituir o fundo padrão</strong> do certificado Microsoft.
+                Opcional. Envie uma arte de fundo para <strong>substituir o fundo padrão</strong> do certificado (vale para qualquer tema: TDS, Qlik ou Microsoft).
+                Quando houver uma arte personalizada, o sistema preenche só os dados (nome, curso, carga horária, validação e QR) nos espaços em branco.
                 Deixe em branco para usar o fundo padrão do tema.
             </div>
             @if (Model.Id > 0 && !string.IsNullOrWhiteSpace(Model.CertificadoFundoImagem))
@@ -169,14 +170,4 @@
         document.getElementById('previaIcone').className = 'bi ' + icone;
     }
     atualizarPreviaCapa();
-
-    // Fundo personalizado do certificado só aparece quando o fabricante é Microsoft (valor 2).
-    (function () {
-        var fab = document.getElementById('Fabricante');
-        var bloco = document.getElementById('blocoFundoCert');
-        if (!fab || !bloco) return;
-        function toggle() { bloco.style.display = (fab.value === '2') ? '' : 'none'; }
-        fab.addEventListener('change', toggle);
-        toggle();
-    })();
 </script>

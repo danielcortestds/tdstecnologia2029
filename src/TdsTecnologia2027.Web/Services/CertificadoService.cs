@@ -114,9 +114,12 @@ public class CertificadoService
         var tema = Tema(curso.Fabricante);
         var tdsLogo = CarregarImagem("tds.png");
         var partnerLogo = tema.ParceiroArquivo != null ? CarregarImagem(tema.ParceiroArquivo) : null;
-        var seloInferior = tema.SeloInferiorArquivo != null ? CarregarImagem(tema.SeloInferiorArquivo) : null;
         // Fundo personalizado do curso (pasta persistente) tem prioridade; senão, o padrão do tema.
-        var fundo = CarregarFundoPersonalizado(curso.CertificadoFundoImagem) ?? CarregarFundo(curso.Fabricante);
+        var fundoPersonalizado = CarregarFundoPersonalizado(curso.CertificadoFundoImagem);
+        var fundoCustom = fundoPersonalizado != null;
+        var fundo = fundoPersonalizado ?? CarregarFundo(curso.Fabricante);
+        // Com fundo personalizado a arte já traz título, logos e selos — não sobrepomos os nossos.
+        var seloInferior = (!fundoCustom && tema.SeloInferiorArquivo != null) ? CarregarImagem(tema.SeloInferiorArquivo) : null;
         var padrao = GerarPadraoSvg(tema);
         var assinatura = CarregarImagem("assinatura.png");
         var qr = GerarQrPng(UrlValidacao(cert.CodigoValidacao));
@@ -147,7 +150,46 @@ public class CertificadoService
                         else
                             layers.Layer().Svg(padrao);
 
-                        // Realce: reforça o azul do fundo (degradê por cima).
+                        // ===== Fundo personalizado: a arte já traz título, logos, selos e
+                        // assinaturas. Preenchemos apenas os dados nos espaços em branco. =====
+                        if (fundoCustom)
+                        {
+                            // Nome do aluno (espaço superior, centralizado).
+                            layers.Layer().AlignTop().AlignCenter().PaddingTop(178)
+                                  .Text(cert.NomeAluno).FontSize(28).Bold().FontColor("#111827");
+                            // Curso (alinhado com o texto em inglês "Microsoft Official Course:").
+                            layers.Layer().AlignTop().AlignLeft().PaddingTop(322).PaddingLeft(324).PaddingRight(70)
+                                  .Text(cert.CursoNome).FontSize(16).Bold().FontColor("#1f2937");
+                            // Carga horária + mês de execução (abaixo do curso).
+                            layers.Layer().AlignTop().AlignLeft().PaddingTop(352).PaddingLeft(324).PaddingRight(70).Text(txt =>
+                            {
+                                txt.DefaultTextStyle(x => x.FontSize(11).FontColor("#475569"));
+                                if (cert.CargaHoraria > 0)
+                                {
+                                    txt.Span("Carga horária: ").FontColor("#64748b");
+                                    txt.Span($"{cert.CargaHoraria} horas").Bold();
+                                }
+                                if (cert.CargaHoraria > 0 && !string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                    txt.Span("   ·   ");
+                                if (!string.IsNullOrWhiteSpace(cert.PeriodoExecucao))
+                                    txt.Span(cert.PeriodoExecucao!).Bold();
+                            });
+                            // Validação (canto inferior esquerdo, na parte branca — acima da faixa).
+                            layers.Layer().AlignBottom().AlignLeft().PaddingBottom(88).PaddingLeft(28).Column(c =>
+                            {
+                                c.Item().Text("Validação do certificado").FontSize(8).Bold().FontColor("#475569");
+                                c.Item().Text(UrlValidacao(cert.CodigoValidacao)).FontSize(8).FontColor("#475569");
+                                c.Item().Text($"Código: {cert.CodigoValidacao}").FontSize(8).FontColor("#94a3b8");
+                            });
+                            // QR (canto inferior direito).
+                            layers.Layer().AlignBottom().AlignRight().PaddingBottom(58).PaddingRight(56)
+                                  .Width(58).Height(58).Image(qr).FitArea();
+                            // Camada primária full-size (define o tamanho do componente).
+                            layers.PrimaryLayer().Extend();
+                            return;
+                        }
+
+                        // ===== Fundo padrão do tema =====
                         if (tema.Realce)
                             layers.Layer().Svg(GerarRealceSvg(tema));
 
@@ -161,7 +203,7 @@ public class CertificadoService
                         {
                         // Logos (alinhadas pela base). Microsoft: parceiro na borda
                         // esquerda e TDS na borda direita. Demais temas: centralizadas.
-                        if (tema.LogosNasBordas && partnerLogo != null && tdsLogo != null)
+                        if (!fundoCustom && tema.LogosNasBordas && partnerLogo != null && tdsLogo != null)
                         {
                             col.Item().Row(row =>
                             {
@@ -170,7 +212,7 @@ public class CertificadoService
                                 row.AutoItem().AlignBottom().Height(82).Image(tdsLogo).FitHeight();
                             });
                         }
-                        else if (partnerLogo != null || tdsLogo != null)
+                        else if (!fundoCustom && (partnerLogo != null || tdsLogo != null))
                         {
                             col.Item().AlignCenter().Row(row =>
                             {
@@ -182,8 +224,9 @@ public class CertificadoService
                             });
                         }
 
-                        col.Item().PaddingTop(8).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
-                            .FontSize(28).Bold().FontColor(tema.Primaria).LetterSpacing(0.08f);
+                        if (!fundoCustom)
+                            col.Item().PaddingTop(8).AlignCenter().Text("CERTIFICADO DE CONCLUSÃO")
+                                .FontSize(28).Bold().FontColor(tema.Primaria).LetterSpacing(0.08f);
 
                         col.Item().PaddingTop(3).AlignCenter().Text("A TDS Tecnologia certifica que")
                             .FontSize(13).FontColor("#64748b");

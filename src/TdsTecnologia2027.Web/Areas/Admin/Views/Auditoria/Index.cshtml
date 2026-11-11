@@ -1,0 +1,62 @@
+@model List<TdsTecnologia2027.Web.Models.AuditoriaCursoItem>
+@{
+    ViewData["Title"] = "Auditoria de Progresso";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-1">
+    <h1 class="h3 mb-0"><i class="bi bi-clipboard-data me-2"></i>Auditoria de Progresso</h1>
+</div>
+<p class="text-muted mb-4">Clique em um curso para ver os alunos matriculados e, depois, no aluno para ver aula por aula.</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-light border">Nenhum curso online cadastrado ainda.</div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Curso</th>
+                        <th class="text-center">Alunos</th>
+                        <th class="text-center">Aulas</th>
+                        <th class="text-center">Conclusões</th>
+                        <th style="min-width:200px;">Progresso médio</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        var url = Url.Action("Curso", new { id = c.CursoId });
+                        <tr style="cursor:pointer;" onclick="location.href='@url'">
+                            <td class="fw-semibold">@c.Nome</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill text-bg-light border">@c.Matriculados</span>
+                            </td>
+                            <td class="text-center text-muted">@c.TotalAulas</td>
+                            <td class="text-center text-muted">@c.TotalConcluidas</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height:8px; min-width:110px;" role="progressbar" aria-valuenow="@c.PercentualMedio" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress-bar bg-success" style="width:@c.PercentualMedio%"></div>
+                                    </div>
+                                    <small class="text-muted" style="width:38px;">@c.PercentualMedio%</small>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a href="@url" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation();">
+                                    Ver alunos <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="text-muted small mt-3"><i class="bi bi-info-circle me-1"></i>Alunos = matrículas ativas. Progresso médio = aulas concluídas ÷ (alunos × total de aulas).</p>
+}

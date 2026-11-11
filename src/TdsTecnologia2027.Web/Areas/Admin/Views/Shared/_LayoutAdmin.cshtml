@@ -60,6 +60,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Auditoria" ? "active" : "")"
+                           href="/Admin/Auditoria">
+                            <i class="bi bi-clipboard-data me-2"></i>Auditoria
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Usuarios" ? "active" : "")"
                            href="/Admin/Usuarios">
                             <i class="bi bi-people me-2"></i>Usuários

@@ -1,0 +1,119 @@
+@model TdsTecnologia2027.Web.Models.AuditoriaAlunoViewModel
+@{
+    ViewData["Title"] = $"Auditoria — {Model.AlunoNome}";
+    Layout = "_LayoutAdmin";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index")">Auditoria</a></li>
+        <li class="breadcrumb-item"><a href="@Url.Action("Curso", new { id = Model.CursoId })">@Model.CursoNome</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.AlunoNome</li>
+    </ol>
+</nav>
+
+<div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0"><i class="bi bi-person-video3 me-2"></i>@Model.AlunoNome</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.AlunoEmail))
+        {
+            <div class="text-muted small">@Model.AlunoEmail · <span class="fw-semibold">@Model.CursoNome</span></div>
+        }
+    </div>
+    <a href="@Url.Action("Curso", new { id = Model.CursoId })" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar aos alunos</a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div class="text-muted small">Progresso no curso</div>
+                <div class="h4 mb-0">@Model.Concluidas de @Model.TotalAulas aulas concluídas</div>
+            </div>
+            <div style="min-width:220px;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height:10px;" role="progressbar" aria-valuenow="@Model.Percentual" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-success" style="width:@Model.Percentual%"></div>
+                    </div>
+                    <span class="fw-semibold">@Model.Percentual%</span>
+                </div>
+                <div class="text-muted small mt-1 text-end">
+                    @if (Model.UltimoAcesso.HasValue)
+                    {
+                        <text>Último acesso: @Model.UltimoAcesso.Value.ToString("dd/MM/yyyy HH:mm")</text>
+                    }
+                    else
+                    {
+                        <text>Sem acessos registrados</text>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach (var mod in Model.Modulos)
+{
+    var concMod = mod.Aulas.Count(a => a.Concluida);
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white d-flex align-items-center justify-content-between">
+            <span class="fw-semibold">@mod.Titulo</span>
+            <small class="text-muted">@concMod / @mod.Aulas.Count concluídas</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <tbody>
+                    @foreach (var aula in mod.Aulas)
+                    {
+                        <tr>
+                            <td style="width:34px;">
+                                @if (aula.Concluida)
+                                {
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                }
+                                else if (aula.Iniciada)
+                                {
+                                    <i class="bi bi-play-circle-fill text-info"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-circle text-secondary opacity-50"></i>
+                                }
+                            </td>
+                            <td>@aula.Titulo</td>
+                            <td style="width:150px;">
+                                @if (aula.Concluida)
+                                {
+                                    <span class="badge rounded-pill text-bg-success">Concluída</span>
+                                }
+                                else if (aula.Iniciada)
+                                {
+                                    <span class="badge rounded-pill text-bg-info">Em andamento</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill text-bg-light border text-muted">Não iniciada</span>
+                                }
+                            </td>
+                            <td style="width:170px;" class="text-muted small">
+                                @if (aula.UltimoAcesso.HasValue)
+                                {
+                                    @aula.UltimoAcesso.Value.ToString("dd/MM/yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <text>—</text>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (!Model.Modulos.Any())
+{
+    <div class="alert alert-light border">Este curso ainda não tem módulos/aulas cadastrados.</div>
+}

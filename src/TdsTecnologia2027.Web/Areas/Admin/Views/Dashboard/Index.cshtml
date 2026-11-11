@@ -39,7 +39,10 @@
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white fw-semibold"><i class="bi bi-people me-1"></i>Alunos por curso</div>
+            <div class="card-header bg-white fw-semibold d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-people me-1"></i>Alunos por curso</span>
+                <a href="/Admin/Auditoria" class="small text-decoration-none"><i class="bi bi-clipboard-data me-1"></i>Auditar progresso <i class="bi bi-arrow-right"></i></a>
+            </div>
             <div class="card-body">
                 @if (!Model.AlunosPorCurso.Any()) { <p class="text-muted mb-0">Sem dados ainda.</p> }
                 @foreach (var item in Model.AlunosPorCurso)

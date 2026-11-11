@@ -13,7 +13,7 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-body">
-        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="CriadoEm" />
             <partial name="_FormCursoOnline" model="Model" />

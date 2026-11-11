@@ -115,7 +115,8 @@ public class CertificadoService
         var tdsLogo = CarregarImagem("tds.png");
         var partnerLogo = tema.ParceiroArquivo != null ? CarregarImagem(tema.ParceiroArquivo) : null;
         var seloInferior = tema.SeloInferiorArquivo != null ? CarregarImagem(tema.SeloInferiorArquivo) : null;
-        var fundo = CarregarFundo(curso.Fabricante);
+        // Fundo personalizado do curso (pasta persistente) tem prioridade; senão, o padrão do tema.
+        var fundo = CarregarFundoPersonalizado(curso.CertificadoFundoImagem) ?? CarregarFundo(curso.Fabricante);
         var padrao = GerarPadraoSvg(tema);
         var assinatura = CarregarImagem("assinatura.png");
         var qr = GerarQrPng(UrlValidacao(cert.CodigoValidacao));
@@ -351,6 +352,15 @@ public class CertificadoService
     /// <summary>Arte de fundo opcional por fabricante (fundo-tds.png / fundo-qlik.png / fundo-microsoft.png).</summary>
     private byte[]? CarregarFundo(FabricanteCertificado fab)
         => CarregarImagem("fundo-" + fab.ToString().ToLowerInvariant() + ".png");
+
+    /// <summary>Imagem de fundo personalizada enviada pelo admin (pasta persistente).</summary>
+    private byte[]? CarregarFundoPersonalizado(string? nomeFisico)
+    {
+        if (string.IsNullOrWhiteSpace(nomeFisico)) return null;
+        var caminho = Armazenamento.CaminhoCertificado(_env, nomeFisico);
+        if (!File.Exists(caminho)) return null;
+        try { return File.ReadAllBytes(caminho); } catch { return null; }
+    }
 
     private byte[]? CarregarImagem(string arquivo)
     {

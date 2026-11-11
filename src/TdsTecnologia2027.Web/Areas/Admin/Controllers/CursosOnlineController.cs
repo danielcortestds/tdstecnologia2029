@@ -37,12 +37,20 @@ public class CursosOnlineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CursoOnline model)
+    [RequestSizeLimit(10_485_760)] // 10 MB (imagem de fundo do certificado)
+    public async Task<IActionResult> Create(CursoOnline model, IFormFile? fundoCertificado)
     {
         model.Slug = await GerarSlugUnicoAsync(model.Slug, model.Nome, null);
         ModelState.Remove(nameof(CursoOnline.Slug)); // gerado automaticamente
         ModelState.Remove(nameof(CursoOnline.LogosCertificado));
         if (!ModelState.IsValid) return View(model);
+
+        if (model.Fabricante == FabricanteCertificado.Microsoft && fundoCertificado is { Length: > 0 })
+        {
+            var nome = await SalvarFundoCertificadoAsync(fundoCertificado);
+            if (nome == null) return View(model);
+            model.CertificadoFundoImagem = nome;
+        }
 
         model.CriadoEm = DateTime.Now;
         _db.CursosOnline.Add(model);
@@ -60,7 +68,8 @@ public class CursosOnlineController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CursoOnline model)
+    [RequestSizeLimit(10_485_760)] // 10 MB (imagem de fundo do certificado)
+    public async Task<IActionResult> Edit(int id, CursoOnline model, IFormFile? fundoCertificado, bool removerFundoCertificado = false)
     {
         if (id != model.Id) return NotFound();
         model.Slug = await GerarSlugUnicoAsync(model.Slug, model.Nome, model.Id);
@@ -88,6 +97,21 @@ public class CursosOnlineController : Controller
         curso.PrecoDe = model.PrecoDe;
         curso.AVenda = model.AVenda;
         curso.Fabricante = model.Fabricante;
+
+        // Fundo personalizado do certificado (só Microsoft): remover e/ou substituir.
+        if (removerFundoCertificado)
+        {
+            ExcluirFundoCertificado(curso.CertificadoFundoImagem);
+            curso.CertificadoFundoImagem = null;
+        }
+        if (fundoCertificado is { Length: > 0 })
+        {
+            var nome = await SalvarFundoCertificadoAsync(fundoCertificado);
+            if (nome == null) return View(model);
+            ExcluirFundoCertificado(curso.CertificadoFundoImagem); // remove o antigo
+            curso.CertificadoFundoImagem = nome;
+        }
+
         curso.AtualizadoEm = DateTime.Now;
 
         await _db.SaveChangesAsync();
@@ -105,6 +129,7 @@ public class CursosOnlineController : Controller
             // Remove os arquivos físicos dos materiais antes de excluir o curso.
             foreach (var mat in curso.Materiais)
                 ExcluirArquivoFisico(mat.ArquivoArmazenado);
+            ExcluirFundoCertificado(curso.CertificadoFundoImagem);
 
             _db.CursosOnline.Remove(curso); // cascata remove módulos, lições e materiais
             await _db.SaveChangesAsync();
@@ -206,6 +231,49 @@ public class CursosOnlineController : Controller
             if (System.IO.File.Exists(caminho)) System.IO.File.Delete(caminho);
         }
         catch { /* arquivo já removido ou inacessível — ignora */ }
+    }
+
+    // ── Fundo personalizado do certificado (Microsoft) ────────────────────
+    private static readonly string[] ImagemExtensoes = { ".png", ".jpg", ".jpeg", ".webp" };
+
+    /// <summary>Salva a imagem de fundo enviada na pasta persistente. Null (com erro
+    /// em TempData) se a extensão não for de imagem.</summary>
+    private async Task<string?> SalvarFundoCertificadoAsync(IFormFile arquivo)
+    {
+        var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+        if (!ImagemExtensoes.Contains(ext))
+        {
+            TempData["Erro"] = "Fundo do certificado: envie uma imagem PNG, JPG ou WEBP.";
+            return null;
+        }
+        var nomeFisico = $"fundo-{Guid.NewGuid():N}{ext}";
+        var caminho = Armazenamento.CaminhoCertificado(_env, nomeFisico);
+        using var stream = new FileStream(caminho, FileMode.Create);
+        await arquivo.CopyToAsync(stream);
+        return nomeFisico;
+    }
+
+    private void ExcluirFundoCertificado(string? nomeFisico)
+    {
+        if (string.IsNullOrWhiteSpace(nomeFisico)) return;
+        try
+        {
+            var caminho = Armazenamento.CaminhoCertificado(_env, nomeFisico);
+            if (System.IO.File.Exists(caminho)) System.IO.File.Delete(caminho);
+        }
+        catch { /* ignora */ }
+    }
+
+    /// <summary>Serve a imagem de fundo personalizada (prévia no admin).</summary>
+    public async Task<IActionResult> FundoCertificado(int id)
+    {
+        var curso = await _db.CursosOnline.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        if (curso == null || string.IsNullOrWhiteSpace(curso.CertificadoFundoImagem)) return NotFound();
+        var caminho = Armazenamento.CaminhoCertificado(_env, curso.CertificadoFundoImagem);
+        if (!System.IO.File.Exists(caminho)) return NotFound();
+        var ext = Path.GetExtension(caminho).ToLowerInvariant();
+        var contentType = ext == ".png" ? "image/png" : ext == ".webp" ? "image/webp" : "image/jpeg";
+        return PhysicalFile(caminho, contentType);
     }
 
     [HttpPost]

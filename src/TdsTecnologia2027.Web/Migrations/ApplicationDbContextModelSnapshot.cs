@@ -483,6 +483,10 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.Property<bool>("Certificado")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CertificadoFundoImagem")
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("CorCapa")
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");

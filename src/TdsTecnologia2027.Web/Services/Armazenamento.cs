@@ -1,24 +1,38 @@
 namespace TdsTecnologia2027.Web.Services;
 
 /// <summary>
-/// Resolve a pasta de armazenamento de arquivos enviados (materiais de apoio),
-/// usando o mesmo diretório persistente do banco: %HOME%\data no Azure
-/// (sobrevive a deploys) ou App_Data localmente.
+/// Resolve a pasta de armazenamento de arquivos enviados (materiais de apoio,
+/// fundos de certificado), usando o mesmo diretório persistente do banco:
+/// %HOME%\data no Azure (sobrevive a deploys) ou App_Data localmente.
 /// </summary>
 public static class Armazenamento
 {
-    public static string PastaMateriais(IHostEnvironment env)
+    private static string BaseDir(IHostEnvironment env)
     {
         var home = Environment.GetEnvironmentVariable("HOME");
-        var baseDir = !string.IsNullOrWhiteSpace(home)
+        return !string.IsNullOrWhiteSpace(home)
             ? Path.Combine(home, "data")
             : Path.Combine(env.ContentRootPath, "App_Data");
+    }
 
-        var dir = Path.Combine(baseDir, "materiais");
+    public static string PastaMateriais(IHostEnvironment env)
+    {
+        var dir = Path.Combine(BaseDir(env), "materiais");
         Directory.CreateDirectory(dir);
         return dir;
     }
 
     public static string CaminhoArquivo(IHostEnvironment env, string nomeFisico)
         => Path.Combine(PastaMateriais(env), nomeFisico);
+
+    /// <summary>Pasta persistente das imagens de fundo de certificado enviadas.</summary>
+    public static string PastaCertificados(IHostEnvironment env)
+    {
+        var dir = Path.Combine(BaseDir(env), "certificados");
+        Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    public static string CaminhoCertificado(IHostEnvironment env, string nomeFisico)
+        => Path.Combine(PastaCertificados(env), nomeFisico);
 }

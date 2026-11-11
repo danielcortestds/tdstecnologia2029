@@ -88,6 +88,12 @@ public class CursoOnline
     [Display(Name = "Fabricante do certificado")]
     public FabricanteCertificado Fabricante { get; set; } = FabricanteCertificado.Tds;
 
+    /// <summary>Nome físico da imagem de fundo personalizada do certificado (na pasta
+    /// persistente). Quando preenchida, substitui o fundo padrão do tema. Usada só no
+    /// tema Microsoft (segunda opção de arte de fundo).</summary>
+    [StringLength(120)]
+    public string? CertificadoFundoImagem { get; set; }
+
     // ── Venda (loja de cursos online) ──────────────────────────────────────
     [Range(0, 999999, ErrorMessage = "Informe um preço válido.")]
     [Column(TypeName = "decimal(10,2)")]

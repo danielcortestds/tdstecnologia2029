@@ -133,6 +133,32 @@
                 asp-items="Html.GetEnumSelectList<FabricanteCertificado>()"></select>
         <div class="form-text">Define o tema do certificado: TDS (azul), Qlik (verde) ou Microsoft (teal). Emitido sempre pela TDS.</div>
     </div>
+
+    <div class="col-12" id="blocoFundoCert" style="display:none;">
+        <div class="border rounded p-3 bg-light">
+            <label class="form-label fw-semibold mb-1"><i class="bi bi-image me-1"></i>Imagem de fundo do certificado (Microsoft)</label>
+            <div class="form-text mb-2">
+                Opcional. Envie uma arte de fundo para <strong>substituir o fundo padrão</strong> do certificado Microsoft.
+                Deixe em branco para usar o fundo padrão do tema.
+            </div>
+            @if (Model.Id > 0 && !string.IsNullOrWhiteSpace(Model.CertificadoFundoImagem))
+            {
+                <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                    <div>
+                        <span class="d-block small text-muted mb-1">Fundo atual (personalizado)</span>
+                        <img src="/Admin/CursosOnline/FundoCertificado/@Model.Id" alt="Fundo atual do certificado"
+                             style="height:120px; border:1px solid #cbd5e1; border-radius:6px; background:#fff;" />
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="removerFundoCertificado" value="true" id="removerFundoCert" />
+                        <label class="form-check-label" for="removerFundoCert">Remover e voltar ao fundo padrão</label>
+                    </div>
+                </div>
+            }
+            <input type="file" name="fundoCertificado" accept="image/png,image/jpeg,image/webp" class="form-control" />
+            <div class="form-text">Formatos: PNG, JPG ou WEBP. Proporção recomendada: A4 paisagem (ex.: 1414×1000 px).</div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -143,4 +169,14 @@
         document.getElementById('previaIcone').className = 'bi ' + icone;
     }
     atualizarPreviaCapa();
+
+    // Fundo personalizado do certificado só aparece quando o fabricante é Microsoft (valor 2).
+    (function () {
+        var fab = document.getElementById('Fabricante');
+        var bloco = document.getElementById('blocoFundoCert');
+        if (!fab || !bloco) return;
+        function toggle() { bloco.style.display = (fab.value === '2') ? '' : 'none'; }
+        fab.addEventListener('change', toggle);
+        toggle();
+    })();
 </script>

@@ -153,7 +153,7 @@ public class CertificadoService
                         // Selo discreto no canto inferior esquerdo (ex.: parceiro Microsoft).
                         if (seloInferior != null)
                             layers.Layer().AlignBottom().AlignLeft()
-                                  .PaddingBottom(fundo == null ? 20 : 34).PaddingLeft(fundo == null ? 34 : 50)
+                                  .PaddingBottom(fundo == null ? 48 : 62).PaddingLeft(fundo == null ? 34 : 50)
                                   .Height(tema.SeloInferiorAltura).Image(seloInferior).FitHeight();
 
                         layers.PrimaryLayer().PaddingVertical(fundo == null ? 22 : 40).PaddingHorizontal(fundo == null ? 30 : 48).Column(col =>
@@ -284,10 +284,11 @@ public class CertificadoService
     private static string GerarRealceSvg(TemaCertificado tema) => $$"""
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1414 1000" preserveAspectRatio="none">
           <defs>
-            <linearGradient id="realce" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="{{tema.Primaria}}" stop-opacity="0.42"/>
-              <stop offset="0.5" stop-color="{{tema.Primaria}}" stop-opacity="0.19"/>
-              <stop offset="0.9" stop-color="{{tema.Primaria}}" stop-opacity="0.04"/>
+            <linearGradient id="realce" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="{{tema.Primaria}}" stop-opacity="0.58"/>
+              <stop offset="0.35" stop-color="{{tema.Primaria}}" stop-opacity="0.28"/>
+              <stop offset="0.7" stop-color="{{tema.Primaria}}" stop-opacity="0.08"/>
+              <stop offset="1" stop-color="{{tema.Primaria}}" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <rect x="30" y="30" width="1354" height="940" fill="url(#realce)"/>

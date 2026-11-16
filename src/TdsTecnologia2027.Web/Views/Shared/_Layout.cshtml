@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <partial name="_Gtm" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     @RenderSection("Head", required: false)
 </head>
 <body class="@ViewData["BodyClass"]">
+    <partial name="_GtmNoscript" />
     @RenderBody()
     @await RenderSectionAsync("Scripts", required: false)
 </body>

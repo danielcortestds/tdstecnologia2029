@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <partial name="_Gtm" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — TDS Tecnologia</title>
@@ -44,6 +45,7 @@
     @await RenderSectionAsync("Head", required: false)
 </head>
 <body>
+    <partial name="_GtmNoscript" />
     <main class="loja-card">
         <div class="loja-logo">
             <a href="/"><img src="/images/logo-dark.png" alt="TDS Tecnologia" /></a>

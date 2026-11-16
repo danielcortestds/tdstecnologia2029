@@ -75,7 +75,7 @@ em{font-style:normal;color:var(--accent)}
 h2{font-size:clamp(32px,3.4vw,49px);line-height:1.2;letter-spacing:-2px;font-weight:600}
 
 /* ===== VÍDEO (anúncio vertical) ===== */
-.video{background:radial-gradient(ellipse at 85% 20%,#f2c8111c,transparent 55%),var(--bg-2);max-width:none;display:grid;grid-template-columns:1fr auto;gap:70px;align-items:center}
+.video{background:radial-gradient(ellipse at 85% 20%,#f2c8111c,transparent 55%),var(--bg-2);max-width:none;display:grid;grid-template-columns:auto auto;justify-content:center;gap:60px;align-items:center}
 .video-copy{max-width:470px}
 .video-copy h2{margin-top:18px}
 .video-copy>p{color:var(--muted);font-size:17px;line-height:1.8;margin:24px 0 32px}

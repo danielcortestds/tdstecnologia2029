@@ -4,6 +4,8 @@
     Layout = "_LayoutLoja";
     ViewData["Title"] = "Finalizar compra";
     var pt = new CultureInfo("pt-BR");
+    // JSON do evento GA4 "begin_checkout" montado no controller (ViewBag).
+    var beginCheckoutJson = ViewBag.BeginCheckoutJson as string;
 }
 
 <h1 style="font-size:1.4rem; margin-bottom:4px;">Finalizar compra</h1>
@@ -66,4 +68,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    @if (!string.IsNullOrEmpty(beginCheckoutJson))
+    {
+        <script>
+            // GA4 / GTM — anuncia os cursos que entraram no checkout.
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ ecommerce: null }); // limpa o ecommerce anterior
+            window.dataLayer.push(@Html.Raw(beginCheckoutJson));
+        </script>
+    }
 }

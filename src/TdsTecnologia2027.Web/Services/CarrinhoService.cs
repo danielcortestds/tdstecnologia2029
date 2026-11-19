@@ -10,6 +10,7 @@ public class ItemCarrinho
 {
     public int CursoOnlineId { get; set; }
     public string Nome { get; set; } = string.Empty;
+    public string? Slug { get; set; }
     public decimal Preco { get; set; }
     public string? CorCapa { get; set; }
     public string? IconeCapa { get; set; }
@@ -86,6 +87,7 @@ public class CarrinhoService
             {
                 CursoOnlineId = c.Id,
                 Nome = c.Nome,
+                Slug = c.Slug,
                 Preco = c.Preco,
                 CorCapa = c.CorCapa,
                 IconeCapa = c.IconeCapa

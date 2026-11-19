@@ -66,7 +66,9 @@ public class LojaController : Controller
         if (curso != null)
         {
             await _carrinho.AdicionarAsync(curso.Id);
-            return Redirect("/Loja/Checkout");
+            // Leva o slug do curso na URL do checkout para o GTM/GA identificar
+            // (Page Path), além do evento begin_checkout no dataLayer da página.
+            return Redirect($"/Loja/Checkout?curso={Uri.EscapeDataString(slug)}");
         }
         return Redirect("/#features"); // curso inexistente ou fora de venda
     }
@@ -114,6 +116,7 @@ public class LojaController : Controller
         }
 
         var vm = new CheckoutViewModel { Itens = itens, Total = itens.Sum(i => i.Preco) };
+        ViewBag.BeginCheckoutJson = MontarBeginCheckoutJson(itens);
 
         // Pré-preenche os dados SOMENTE se for um ALUNO logado (comprando outro
         // curso) — nunca a sessão de admin, para não confundir o comprador.
@@ -133,6 +136,7 @@ public class LojaController : Controller
         var itens = await _carrinho.ItensAsync();
         model.Itens = itens;
         model.Total = itens.Sum(i => i.Preco);
+        ViewBag.BeginCheckoutJson = MontarBeginCheckoutJson(itens);
 
         if (itens.Count == 0)
         {
@@ -278,6 +282,35 @@ public class LojaController : Controller
         }
 
         return Ok();
+    }
+
+    /// <summary>
+    /// Monta o JSON do evento GA4 "begin_checkout" para o dataLayer, com os cursos
+    /// que estão indo para o checkout (item_id/slug, nome, preço e link do curso).
+    /// É isso que o Google Tag Manager lê para saber quais cursos entraram no checkout.
+    /// </summary>
+    private string MontarBeginCheckoutJson(List<ItemCarrinho> itens)
+    {
+        var req = HttpContext.Request;
+        var baseUrl = $"{req.Scheme}://{req.Host}";
+        var payload = new
+        {
+            @event = "begin_checkout",
+            ecommerce = new
+            {
+                currency = "BRL",
+                value = itens.Sum(i => i.Preco),
+                items = itens.Select(i => new
+                {
+                    item_id = string.IsNullOrWhiteSpace(i.Slug) ? i.CursoOnlineId.ToString() : i.Slug,
+                    item_name = i.Nome,
+                    price = i.Preco,
+                    quantity = 1,
+                    item_url = string.IsNullOrWhiteSpace(i.Slug) ? null : $"{baseUrl}/curso/{i.Slug}/"
+                }).ToList()
+            }
+        };
+        return System.Text.Json.JsonSerializer.Serialize(payload);
     }
 
     /// <summary>Localiza o pedido por order_nsu ou, se não achar, pelo slug da fatura.</summary>

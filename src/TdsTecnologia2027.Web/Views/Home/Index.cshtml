@@ -196,6 +196,15 @@
 	.loja-parcela-valor { font-weight:800; font-size:1.6rem; line-height:1.1; font-family:'Plus Jakarta Sans',sans-serif; color:#0d9488; }
 	.loja-avista { font-size:0.82rem; color:#64748b; }
 	.loja-add { border:none; cursor:pointer; }
+	/* Filtro de trilhas (front-end) */
+	.trilha-filtros{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 auto 34px;max-width:960px}
+	.trilha-chip{display:inline-flex;align-items:center;gap:7px;border:1.5px solid #e2e8f0;background:#fff;color:#475569;font-family:'Inter',sans-serif;font-size:0.84rem;font-weight:600;padding:9px 16px;border-radius:999px;cursor:pointer;transition:background .18s,border-color .18s,color .18s,transform .18s;--chip:#0d9488}
+	.trilha-chip i{font-size:0.95rem;color:var(--chip);transition:color .18s}
+	.trilha-chip:hover{border-color:var(--chip);color:#1e293b;transform:translateY(-1px)}
+	.trilha-chip:focus-visible{outline:2px solid var(--chip);outline-offset:2px}
+	.trilha-chip.is-active{background:var(--chip);border-color:var(--chip);color:#fff}
+	.trilha-chip.is-active i{color:#fff}
+	.trilha-hidden{display:none !important}
 	.loja-cart-btn { position:relative; background:transparent; border:none; color:#fff; font-size:1.35rem; cursor:pointer; margin-right:14px; line-height:1; padding:6px; }
 	.loja-cart-btn:hover { color:#5eead4; }
 	.loja-cart-count { position:absolute; top:-4px; right:-6px; background:#14b8a6; color:#04201c; font-size:0.65rem; font-weight:800; min-width:17px; height:17px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
@@ -451,7 +460,49 @@
 						   =========================================================== *@
 						@if (Model.CursosOnline.Any())
 						{
-							<div class="row g-4 justify-content-center">
+								// ===== Trilhas (organização só de front-end) =====
+								// Botões que filtram os cards por tema. O mapa curso->trilha
+								// fica aqui no código (um curso pode estar em várias trilhas).
+								var trilhas = new[]
+								{
+									new { Id = "dados-bi",      Nome = "Dados & BI",             Icone = "bi-bar-chart-line", Cor = "#0d9488" },
+									new { Id = "programacao",   Nome = "Programação do Zero",    Icone = "bi-code-slash",     Cor = "#2563eb" },
+									new { Id = "ia",            Nome = "Inteligência Artificial", Icone = "bi-robot",         Cor = "#7c3aed" },
+									new { Id = "produtividade", Nome = "Produtividade",          Icone = "bi-lightning-charge", Cor = "#f59e0b" },
+									new { Id = "governanca",    Nome = "Governança & EXIN",      Icone = "bi-shield-lock",    Cor = "#334155" },
+								};
+								var mapaTrilhas = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+								{
+									["lpe"] = new[] { "programacao" },
+									["python-essencial"] = new[] { "programacao", "dados-bi" },
+									["power-bi-essencial"] = new[] { "dados-bi" },
+									["qliksense-essencial"] = new[] { "dados-bi" },
+									["qliksense-mashup-developer"] = new[] { "dados-bi" },
+									["chatgpt-e-claude-no-trabalho"] = new[] { "ia", "produtividade" },
+									["engenharia-de-prompt-para-empresas"] = new[] { "ia" },
+									["exin-bcs-ai-foundation"] = new[] { "ia", "governanca" },
+									["microsoft-365-na-pratica"] = new[] { "produtividade" },
+									["lgpd-protecao-de-dados"] = new[] { "governanca" },
+								};
+								System.Func<string?, string[]> trilhasDo = slug =>
+									(slug != null && mapaTrilhas.TryGetValue(slug, out var t)) ? t : System.Array.Empty<string>();
+								// Só exibe o botão de uma trilha se houver pelo menos um curso visível nela.
+								var trilhasVisiveis = trilhas
+									.Where(tr => Model.CursosOnline.Any(c => trilhasDo(c.Slug).Contains(tr.Id)))
+									.ToList();
+
+							@if (trilhasVisiveis.Count > 1)
+							{
+								<div class="trilha-filtros" role="tablist" aria-label="Filtrar cursos por trilha">
+									<button type="button" class="trilha-chip is-active" data-trilha="todos" aria-pressed="true"><i class="bi bi-grid-3x3-gap"></i> Todos os cursos</button>
+									@foreach (var tr in trilhasVisiveis)
+									{
+										<button type="button" class="trilha-chip" data-trilha="@tr.Id" aria-pressed="false" style="--chip:@tr.Cor"><i class="bi @tr.Icone"></i> @tr.Nome</button>
+									}
+								</div>
+							}
+
+							<div class="row g-4 justify-content-center" id="trilhaGrid">
 								@foreach (var curso in Model.CursosOnline)
 								{
 									var corCapa = string.IsNullOrWhiteSpace(curso.CorCapa) ? "#0d9488" : curso.CorCapa;
@@ -460,7 +511,7 @@
 									var temDesconto = curso.PrecoDe.HasValue && curso.PrecoDe.Value > curso.Preco;
 
 									<div class="col-lg-4 col-md-6">
-										<div class="bd-feature-card h-100 d-flex flex-column">
+										<div class="bd-feature-card h-100 d-flex flex-column trilha-item" data-trilhas="@string.Join(" ", trilhasDo(curso.Slug))">
 											<div class="bd-feature-icon" style="background:@corCapa; cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
 											<h4 style="cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso">@curso.Nome</h4>
 											<p>@curso.DescricaoCurta</p>
@@ -1099,6 +1150,30 @@
 	function lojaFinalizar(){ window.location.href = '/Loja/Checkout'; }
 	document.querySelectorAll('.loja-add').forEach(function(b){ b.addEventListener('click', function(){ lojaAdicionar(parseInt(this.getAttribute('data-id'),10)); }); });
 	fetch('/Loja/Mini',{headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(lojaRender).catch(function(){});
+
+	/* Filtro de trilhas (só front-end): mostra/esconde os cards por tema. */
+	(function(){
+		var chips = document.querySelectorAll('.trilha-chip');
+		var itens = document.querySelectorAll('.trilha-item');
+		if (!chips.length || !itens.length) return;
+		function coluna(el){ return el.closest('[class*="col-"]') || el.parentElement; }
+		function filtrar(trilha){
+			itens.forEach(function(it){
+				var trs = (it.getAttribute('data-trilhas') || '').split(/\s+/);
+				var mostrar = (trilha === 'todos') || trs.indexOf(trilha) > -1;
+				var col = coluna(it);
+				if (col) col.classList.toggle('trilha-hidden', !mostrar);
+			});
+			chips.forEach(function(c){
+				var on = c.getAttribute('data-trilha') === trilha;
+				c.classList.toggle('is-active', on);
+				c.setAttribute('aria-pressed', on ? 'true' : 'false');
+			});
+		}
+		chips.forEach(function(c){
+			c.addEventListener('click', function(){ filtrar(c.getAttribute('data-trilha')); });
+		});
+	})();
 	</script>
 
 	<script src="~/js/plugins.min.js"></script>

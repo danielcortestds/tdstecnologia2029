@@ -73,6 +73,19 @@ public class LojaController : Controller
         return Redirect("/#features"); // curso inexistente ou fora de venda
     }
 
+    /// <summary>
+    /// Remove um curso direto da tela de checkout e volta para ela (útil quando o
+    /// cliente tem mais de um curso no carrinho e quer tirar algum). Se esvaziar,
+    /// o Checkout redireciona para a vitrine.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RemoverItem(int id)
+    {
+        _carrinho.Remover(id);
+        return Redirect("/Loja/Checkout");
+    }
+
     /// <summary>Marcador de versão + último Id de pedido (diagnóstico de deploy).</summary>
     [HttpGet]
     public async Task<IActionResult> Ping()

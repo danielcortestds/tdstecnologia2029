@@ -8,6 +8,11 @@
     var beginCheckoutJson = ViewBag.BeginCheckoutJson as string;
 }
 
+<style>
+    .loja-remove-item{width:26px;height:26px;border-radius:50%;border:1px solid rgba(148,163,184,.3);background:transparent;color:#94a3b8;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s,color .15s,border-color .15s}
+    .loja-remove-item:hover,.loja-remove-item:focus-visible{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.5);color:#fca5a5;outline:none}
+</style>
+
 <h1 style="font-size:1.4rem; margin-bottom:4px;">Finalizar compra</h1>
 <p class="text-muted-2" style="margin-bottom:22px;">Preencha seus dados para pagar com Pix, cartão ou boleto.</p>
 
@@ -22,8 +27,19 @@
     {
         <div class="loja-resumo-item">
             <span>@item.Nome</span>
-            <strong>@item.Preco.ToString("C", pt)</strong>
+            <span style="display:flex; align-items:center; gap:12px;">
+                <strong>@item.Preco.ToString("C", pt)</strong>
+                <form asp-action="RemoverItem" method="post" style="margin:0; line-height:0;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@item.CursoOnlineId" />
+                    <button type="submit" class="loja-remove-item" title="Remover @item.Nome" aria-label="Remover @item.Nome do pedido">&times;</button>
+                </form>
+            </span>
         </div>
+    }
+    @if (Model.Itens.Count > 1)
+    {
+        <div class="text-muted-2 small" style="margin-top:2px;">Pode remover um curso no &times; ao lado para ajustar o pedido.</div>
     }
     <div class="loja-resumo-item" style="border-bottom:none; margin-top:6px;">
         <span style="font-weight:700;">Total</span>

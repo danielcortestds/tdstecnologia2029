@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power BI Essencial | Curso online de Power BI | TDS</title>
+<meta name="description" content="Aprenda Power BI do zero em 30 aulas gravadas: Power Query, modelagem, DAX e publicação. Certificado de conclusão da TDS, Microsoft Solutions Partner.">
+<meta property="og:title" content="Power BI Essencial | TDS">
+<meta property="og:description" content="Da planilha ao dashboard em 30 aulas gravadas, com certificado e acesso vitalício.">
+<meta property="og:type" content="website">
+<!-- Google Tag Manager (TDS) - carrega GA4, Meta Pixel e Clarity -->
+<script>
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({ hotsite_versao: 'power-bi-v3' });
+</script>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-55XMGSDF');</script>
+<!-- End Google Tag Manager -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-55XMGSDF"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div style="font-family: 'Instrument Sans', system-ui, sans-serif; color: #15130F; background: #F4F4EF; font-size: 17px; line-height: 1.55; overflow-x: clip">
+
+<!-- FAIXA DE AUTORIDADE -->
+<div style="background: #15130F; color: #F4F4EF; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; letter-spacing: .04em; padding: 10px clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; gap: 6px 28px; justify-content: center; text-align: center">
+<span>Há mais de 20 anos formando profissionais de TI em Cuiabá</span>
+<span style="color: #F5C518">Microsoft Solutions Partner · Training Services</span>
+</div>
+
+<!-- HERO -->
+<header id="topo" style="background-color: #F5C518; background-image: linear-gradient(to right, rgba(21,19,15,.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(21,19,15,.10) 1px, transparent 1px); background-size: 104px 44px; position: relative; overflow: hidden">
+
+<nav style="max-width: 1240px; margin: 0 auto; padding: 18px clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px">
+<a href="#topo" aria-label="TDS, início" style="display: flex; align-items: center; min-height: 44px"><img src="img/logo-tds-escuro.png" alt="TDS" style="height: 30px; width: auto; display: block"></a>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 26px; font-size: 15px; font-weight: 600">
+<a class="navlink" href="#video" style="padding: 12px 0">Vídeo</a>
+<a class="navlink" href="#pratica" style="padding: 12px 0">Na prática</a>
+<a class="navlink" href="#conteudo" style="padding: 12px 0">Conteúdo</a>
+<a class="navlink" href="#depoimentos" style="padding: 12px 0">Alunos</a>
+<a class="navlink" href="#duvidas" style="padding: 12px 0">Dúvidas</a>
+</div>
+<a class="cta tds-purchase cta-ink" data-cta="menu" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #15130F; color: #F5C518; text-decoration: none; font-weight: 700; font-size: 15px; padding: 13px 20px; border-radius: 3px">Comprar · 10x R$ 99</a>
+</nav>
+
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(28px, 4vw, 56px) clamp(20px, 4vw, 48px) clamp(40px, 5vw, 72px); display: flex; flex-wrap: wrap; align-items: center; gap: 40px 48px">
+
+<div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 26px; align-items: flex-start">
+
+<!-- barra de fórmulas -->
+<div class="rise" style="display: flex; flex-wrap: wrap; align-items: stretch; background: #FFFFFF; border: 1.5px solid #15130F; border-radius: 3px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; max-width: 100%">
+<span style="padding: 9px 14px; font-weight: 600; border-right: 1.5px solid #15130F">Power BI Essencial</span>
+<span style="padding: 9px 12px; font-style: italic; color: #0F5C36; font-weight: 600; border-right: 1px solid #D8D7CC">fx</span>
+<span style="padding: 9px 14px">curso online e gravado<span class="caret" aria-hidden="true">|</span></span>
+</div>
+
+<h1 class="rise" style="margin: 0; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(44px, 6.3vw, 94px); line-height: .98; letter-spacing: -.035em; text-wrap: balance; display: flex; flex-direction: column; align-items: flex-start; gap: 10px">
+<span style="position: relative; background: #FFFFFF; border: 3px solid #0F5C36; padding: 2px 16px 8px; font-weight: 500; letter-spacing: -.03em">Da planilha<span aria-hidden="true" style="position: absolute; right: -8px; bottom: -8px; width: 11px; height: 11px; background: #0F5C36; border: 2px solid #FFFFFF"></span></span>
+<span>ao dashboard.</span>
+</h1>
+
+<p class="rise2" style="margin: 0; font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; max-width: 34em; font-weight: 500">Aprenda Power BI do zero em 30 aulas gravadas. Você trata os dados, modela, cria as medidas em DAX e termina com um relatório seu publicado.</p>
+
+<div class="rise2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px">
+<a class="cta tds-purchase cta-ink" data-cta="hero" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #15130F; color: #F5C518; text-decoration: none; font-weight: 700; font-size: 18px; padding: 19px 28px; border-radius: 3px; display: inline-flex; align-items: center; gap: 12px">Quero começar agora
+<svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 14 14 4M6 4h8v8"></path></svg></a>
+<div style="display: flex; flex-direction: column; line-height: 1.25">
+<span style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -.02em">10x de R$ 99</span>
+<span style="font-size: 14px; font-weight: 600; color: #3D3408">ou R$ 891 no Pix</span>
+</div>
+</div>
+</div>
+
+<!-- composição: planilha vira dashboard -->
+<div aria-hidden="true" style="flex: 1 1 440px; min-width: 0; position: relative; height: 540px">
+
+<div class="plx" data-plx="-46" style="position: absolute; left: 0; top: 0; width: 80%">
+<div class="layer rise" style="transform: translate(calc(var(--mx, 0) * -14px), calc(var(--my, 0) * -10px)) rotate(-2.5deg); background: #FFFFFF; border: 1.5px solid #15130F; box-shadow: 10px 10px 0 rgba(21,19,15,.18); font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: #0F5C36; color: #FFFFFF; font-weight: 600">
+<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">vendas_FINAL_v3 (2).xlsx</span>
+<span style="font-weight: 400">antes</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; background: #ECECE6; color: #5A574E; text-align: center; border-bottom: 1px solid #D8D7CC">
+<span style="padding: 4px 0"></span><span style="padding: 4px 0; border-left: 1px solid #D8D7CC">A</span><span style="padding: 4px 0; border-left: 1px solid #D8D7CC">B</span><span style="padding: 4px 0; border-left: 1px solid #D8D7CC">C</span><span style="padding: 4px 0; border-left: 1px solid #D8D7CC">D</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">1</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 600">data</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 600">vendedor</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 600">canal</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 600; color: #15130F">valor</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">2</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">03/01/26</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">ana</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">Online</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F">1.240,00</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">3</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">3-jan</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">ANA P.</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">online</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F">980</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">4</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">05/01/2026</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">Carlos</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">presenc.</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #B3261E">#N/D</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">5</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">06.01</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">carlos s</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">Loja</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F">2.115,5</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">6</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400">TOTAL??</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #B3261E">#REF!</span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">7</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F"></span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">8</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F"></span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">9</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F"></span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">10</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F"></span>
+</div>
+<div style="display: grid; grid-template-columns: 28px 1.2fr 1fr 1fr 1fr; border-bottom: 1px solid #E4E3DA; height: 30px; align-items: center">
+<span style="text-align: center; color: #5A574E; background: #ECECE6; height: 100%; display: flex; align-items: center; justify-content: center">11</span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400"></span>
+<span style="padding: 0 8px; border-left: 1px solid #E4E3DA; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; font-weight: 400; color: #15130F"></span>
+</div>
+</div>
+</div>
+
+<div class="plx" data-plx="54" style="position: absolute; right: 0; bottom: 0; width: 64%">
+<div class="layer rise2" style="transform: translate(calc(var(--mx, 0) * 22px), calc(var(--my, 0) * 16px)) rotate(2deg); background: #15130F; color: #F4F4EF; border-radius: 4px; box-shadow: 0 30px 60px -20px rgba(21,19,15,.55); padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; color: #B9B4A6">
+<span>Receita total</span><span style="color: #F5C518">depois</span>
+</div>
+<div style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 40px); letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums">R$ 248.500</div>
+<div style="display: flex; align-items: flex-end; gap: 8px; height: 104px; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 0; background: #F5C518; height: 45%"></div>
+<div style="flex: 1 1 0; background: #F5C518; height: 55%"></div>
+<div style="flex: 1 1 0; background: #F5C518; height: 78%"></div>
+<div style="flex: 1 1 0; background: #F5C518; height: 67%"></div>
+<div style="flex: 1 1 0; background: #F5C518; height: 83%"></div>
+<div style="flex: 1 1 0; background: #F5C518; height: 100%"></div>
+</div>
+<div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #B9B4A6">
+<span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span><span>MAI</span><span>JUN</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- linha de prova -->
+<div style="border-top: 1.5px solid #15130F; background: #F5C518">
+<div style="max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr))">
+<div style="padding: 20px 20px 20px 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 24px; letter-spacing: -.02em; line-height: 1.1">20+ anos</strong><span style="font-size: 14.5px; font-weight: 500">de mercado em treinamento de TI</span></div>
+<div style="padding: 20px 20px 20px 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 24px; letter-spacing: -.02em; line-height: 1.1">30 aulas</strong><span style="font-size: 14.5px; font-weight: 500">em 6 módulos, no seu ritmo</span></div>
+<div style="padding: 20px 20px 20px 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 24px; letter-spacing: -.02em; line-height: 1.1">Certificado</strong><span style="font-size: 14.5px; font-weight: 500">de conclusão incluído</span></div>
+<div style="padding: 20px 0; display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 24px; letter-spacing: -.02em; line-height: 1.1">Acesso vitalício</strong><span style="font-size: 14.5px; font-weight: 500">reveja quando precisar</span></div>
+</div>
+</div>
+</header>
+
+<!-- FAIXA EM MOVIMENTO -->
+<div aria-hidden="true" style="background: #15130F; overflow: hidden; padding: 26px 0 30px; display: flex; flex-direction: column; gap: 2px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(40px, 6vw, 88px); line-height: 1.05; letter-spacing: -.03em; white-space: nowrap">
+<div><div class="plx" data-plx-x="-260" style="color: #F5C518; margin-left: -60px">Power Query / Modelagem / DAX / Visualização / Publicação / Power Query / Modelagem</div></div>
+<div><div class="plx" data-plx-x="260" style="color: transparent; -webkit-text-stroke: 1.5px #B9B4A6; margin-left: -420px">Do Excel ao dashboard / Business Intelligence / No seu ritmo / Do Excel ao dashboard / Business Intelligence</div></div>
+</div>
+
+<!-- 20 ANOS -->
+<section style="background: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; gap: 32px 72px">
+<div style="flex: 1 1 380px; min-width: 0">
+<div class="plx" data-plx="46">
+<div style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(150px, 23vw, 330px); line-height: .8; letter-spacing: -.06em; color: #15130F">20<span style="color: #F5C518; -webkit-text-stroke: 3px #15130F">+</span></div>
+</div>
+<div style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; padding-top: 22px">anos de TDS no mercado</div>
+</div>
+<div style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(32px, 3.6vw, 52px); line-height: 1.03; letter-spacing: -.03em; text-wrap: balance">Quem ensina faz isso há mais de duas décadas.</h2>
+<p style="margin: 0; max-width: 36em; color: #3F3D36">A TDS é um centro de treinamento em TI de Cuiabá. Forma profissionais em análise de dados, IA, banco de dados, programação e redes. O Power BI Essencial leva essa mesma didática para um curso gravado.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); border: 1.5px solid #15130F; background: #FFFFFF">
+<div style="padding: 18px 20px; border-right: 1px solid #D8D7CC; border-bottom: 1px solid #D8D7CC; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #0F5C36; font-weight: 600">PARCERIA</span><span style="font-weight: 600; line-height: 1.3">Microsoft Solutions Partner em Training Services</span></div>
+<div style="padding: 18px 20px; border-bottom: 1px solid #D8D7CC; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #0F5C36; font-weight: 600">ALUNOS</span><span style="font-weight: 600; line-height: 1.3">+500 profissionais formados em Cuiabá</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- VÍDEO -->
+<section id="video" style="background: #15130F; color: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px 80px">
+<div style="flex: 0 1 330px; min-width: 0; margin: 0 auto">
+<div class="plx" data-plx="-34">
+<div style="position: relative; aspect-ratio: 9 / 16; background: #24211B; border-radius: 6px; overflow: hidden; box-shadow: 14px 14px 0 #F5C518">
+<iframe src="https://player.vimeo.com/video/1247363667?title=0&amp;byline=0&amp;portrait=0&amp;dnt=1&amp;autoplay=1&amp;muted=1&amp;loop=1&amp;playsinline=1" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Apresentação do curso Power BI Essencial" loading="lazy"></iframe>
+</div>
+</div>
+</div>
+<div style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 24px; align-items: flex-start">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #F5C518">00:28</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em; text-wrap: balance">28 segundos para saber se o curso é para você.</h2>
+<p style="margin: 0; color: #B9B4A6; max-width: 32em">Um panorama direto ao ponto, com legendas: o que você aprende, como as aulas funcionam e quanto custa.</p>
+<a class="cta tds-purchase cta-sun" data-cta="video" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #F5C518; color: #15130F; text-decoration: none; font-weight: 700; font-size: 17px; padding: 17px 26px; border-radius: 3px">Quero começar agora</a>
+</div>
+</div>
+</section>
+
+<!-- NA PRÁTICA -->
+<section id="pratica" style="background: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 40px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 48px">
+<h2 style="margin: 0; flex: 1 1 520px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em; text-wrap: balance">É isto que você vai saber construir.</h2>
+<p style="margin: 0; flex: 0 1 360px; color: #3F3D36">Um relatório interativo, do dado bruto ao insight. Clique no semestre e veja os números responderem.</p>
+</div>
+
+<div id="dash" style="background: #FFFFFF; border: 1.5px solid #15130F; box-shadow: 12px 12px 0 #15130F; display: flex; flex-wrap: wrap">
+<div style="flex: 1 1 170px; background: #ECECE6; padding: 22px 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px">
+<strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 19px; padding-bottom: 10px">Análise comercial</strong>
+<span style="background: #F5C518; padding: 8px 10px; font-weight: 600">Visão geral</span>
+<span style="padding: 8px 10px; color: #5A574E">Vendas</span>
+<span style="padding: 8px 10px; color: #5A574E">Indicadores</span>
+</div>
+<div style="flex: 999 1 520px; min-width: 0; padding: clamp(18px, 2.4vw, 30px); display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+<strong style="font-size: 18px">Uma visão. Muitas respostas.</strong>
+<div role="group" aria-label="Período" style="display: flex; border: 1.5px solid #15130F">
+<button type="button" id="sem1" aria-pressed="true" style="border: none; padding: 12px 16px; min-height: 44px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; background: #15130F; color: #F5C518">1º semestre</button>
+<button type="button" id="sem2" aria-pressed="false" style="border: none; border-left: 1.5px solid #15130F; padding: 12px 16px; min-height: 44px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; background: #FFFFFF; color: #15130F">2º semestre</button>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 12px">
+<div style="border: 1px solid #D8D7CC; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #5A574E">Receita total</span><span style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums" id="kReceita">R$ 248.500</span></div>
+<div style="border: 1px solid #D8D7CC; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #5A574E">Pedidos</span><span style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums" id="kPedidos">1.284</span></div>
+<div style="border: 1px solid #D8D7CC; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #5A574E">Ticket médio</span><span style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums" id="kTicket">R$ 193,54</span></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<div style="flex: 3 1 380px; min-width: 0; border: 1px solid #D8D7CC; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; font-size: 13px"><strong>Receita por mês</strong><span style="color: #5A574E">R$ mil</span></div>
+<div style="display: flex; align-items: flex-end; gap: clamp(8px, 2vw, 22px); height: 210px; border-bottom: 1.5px solid #15130F; background-image: linear-gradient(to bottom, #E4E3DA 1px, transparent 1px); background-size: 100% 52px">
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="0">26</span>
+<div data-bar="0" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 24%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="1">32</span>
+<div data-bar="1" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 29%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="2">45</span>
+<div data-bar="2" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 41%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="3">39</span>
+<div data-bar="3" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 36%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="4">48</span>
+<div data-bar="4" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 44%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+<div style="flex: 1 1 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600" data-bv="5">58</span>
+<div data-bar="5" style="width: 100%; background: #F5C518; border: 1.5px solid #15130F; border-bottom: none; box-sizing: border-box; height: 53%; transition: height .7s cubic-bezier(.2,.7,.2,1); transition-delay: 0ms"></div>
+</div>
+</div>
+<div style="display: flex; gap: clamp(8px, 2vw, 22px); font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; color: #5A574E; text-align: center">
+<span data-bm="0" style="flex: 1 1 0">JAN</span>
+<span data-bm="1" style="flex: 1 1 0">FEV</span>
+<span data-bm="2" style="flex: 1 1 0">MAR</span>
+<span data-bm="3" style="flex: 1 1 0">ABR</span>
+<span data-bm="4" style="flex: 1 1 0">MAI</span>
+<span data-bm="5" style="flex: 1 1 0">JUN</span>
+</div>
+</div>
+<div style="flex: 2 1 240px; min-width: 0; border: 1px solid #D8D7CC; padding: 16px 18px; display: flex; flex-direction: column; gap: 16px">
+<strong style="font-size: 13px">Participação por canal</strong>
+<div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 14px"><span>Online</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600" id="onlinePct">62%</span></div><div style="height: 18px; background: #ECECE6"><div id="onlineBar" style="height: 100%; background: #15130F; width: 62%; transition: width .9s cubic-bezier(.2,.7,.2,1)"></div></div></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; justify-content: space-between; font-size: 14px"><span>Presencial</span><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600" id="presPct">38%</span></div><div style="height: 18px; background: #ECECE6"><div id="presBar" style="height: 100%; background: #F5C518; border: 1.5px solid #15130F; box-sizing: border-box; width: 38%; transition: width .9s .15s cubic-bezier(.2,.7,.2,1)"></div></div></div>
+</div>
+</div>
+<span style="font-size: 12.5px; color: #5A574E">Relatório ilustrativo com dados fictícios.</span>
+</div>
+</div>
+
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 0; border-top: 1.5px solid #15130F">
+<li style="padding: 18px 18px 0 0; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #0F5C36; font-weight: 600">passo 1</span><strong style="font-size: 19px">Conecte as fontes</strong><span style="font-size: 15px; color: #3F3D36">Excel, CSV e outras bases no Power Query.</span></li>
+<li style="padding: 18px 18px 0 0; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #0F5C36; font-weight: 600">passo 2</span><strong style="font-size: 19px">Modele os dados</strong><span style="font-size: 15px; color: #3F3D36">Tabelas e relacionamentos que fazem sentido.</span></li>
+<li style="padding: 18px 18px 0 0; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #0F5C36; font-weight: 600">passo 3</span><strong style="font-size: 19px">Crie as visualizações</strong><span style="font-size: 15px; color: #3F3D36">Medidas em DAX e gráficos que respondem.</span></li>
+<li style="padding: 18px 0 0 0; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #0F5C36; font-weight: 600">passo 4</span><strong style="font-size: 19px">Publique e compartilhe</strong><span style="font-size: 15px; color: #3F3D36">Seu relatório no Power BI Service.</span></li>
+</ol>
+</div>
+</section>
+
+<!-- CONTEÚDO -->
+<section id="conteudo" style="background: #15130F; color: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-direction: column; gap: 44px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 48px">
+<h2 style="margin: 0; flex: 1 1 560px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em; text-wrap: balance">30 aulas. 6 módulos. <span style="color: #F5C518">1 projeto seu publicado.</span></h2>
+<p style="margin: 0; flex: 0 1 340px; color: #B9B4A6">Cada barra é um módulo. O tamanho mostra quantas aulas ele tem.</p>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1px solid #4A463C">
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">01</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">Primeiros Passos no Power BI</strong><span style="font-size: 15px; color: #B9B4A6">Do primeiro acesso à interface.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 67%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">4 aulas</div>
+</div>
+</div>
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">02</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">Carregando e Preparando Dados</strong><span style="font-size: 15px; color: #B9B4A6">Power Query para limpar e organizar.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 83%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">5 aulas</div>
+</div>
+</div>
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">03</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">Modelagem de Dados</strong><span style="font-size: 15px; color: #B9B4A6">Tabelas e relacionamentos.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 67%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">4 aulas</div>
+</div>
+</div>
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">04</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">Visualização de Dados</strong><span style="font-size: 15px; color: #B9B4A6">Gráficos e páginas de relatório.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 100%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">6 aulas</div>
+</div>
+</div>
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">05</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">DAX: Cálculos e Medidas</strong><span style="font-size: 15px; color: #B9B4A6">As fórmulas que geram os indicadores.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 83%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">5 aulas</div>
+</div>
+</div>
+<div class="modrow" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; padding: 20px 0; border-bottom: 1px solid #4A463C">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; align-items: baseline; gap: 18px">
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; color: #F5C518">06</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.02em; line-height: 1.15">Projeto Final e Publicação</strong><span style="font-size: 15px; color: #B9B4A6">Seu relatório no Power BI Service.</span></div>
+</div>
+<div style="flex: 1 1 320px; min-width: 0">
+<div class="modbar" style="width: 100%; background: #F5C518; color: #15130F; padding: 10px 14px; box-sizing: border-box; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; white-space: nowrap">6 aulas</div>
+</div>
+</div>
+</div>
+<a class="cta tds-purchase cta-sun" data-cta="conteudo" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="align-self: flex-start; background: #F5C518; color: #15130F; text-decoration: none; font-weight: 700; font-size: 17px; padding: 17px 26px; border-radius: 3px">Quero as 30 aulas</a>
+</div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos" style="background: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px) clamp(84px, 10vw, 140px); display: flex; flex-direction: column; gap: 48px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 48px">
+<h2 style="margin: 0; flex: 1 1 520px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em; text-wrap: balance">Quem já passou pela TDS conta como foi.</h2>
+<p style="margin: 0; flex: 0 1 340px; color: #3F3D36">Em mais de 20 anos, muita gente mudou o jeito de trabalhar com o que aprendeu aqui.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 24px; align-items: start">
+
+<div class="plx" data-plx="26">
+<figure style="margin: 0; background: #FFFFFF; color: #15130F; border: 1.5px solid #15130F; box-shadow: 8px 8px 0 #F5C518; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div role="img" aria-label="5 de 5 estrelas" style="display: flex; gap: 3px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg></div>
+<blockquote style="margin: 0; font-size: 18.5px; line-height: 1.5; font-weight: 500">“Antes do Power BI Essencial, eu lutava com planilhas de Excel. Hoje entrego dashboards executivos para a diretoria toda semana. A certificação Microsoft abriu portas que eu nem sabia que existiam.”</blockquote>
+<figcaption style="display: flex; align-items: center; gap: 14px">
+<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #F5C518; color: #15130F; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; flex: none">JA</span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><strong>João Alves</strong><span style="font-size: 14px; color: #5A574E">Analista de BI · Cuiabá, MT</span></span>
+</figcaption>
+</figure>
+</div>
+
+<div class="plx" data-plx="-30" style="padding-top: clamp(0px, 4vw, 56px)">
+<figure style="margin: 0; background: #15130F; color: #F4F4EF; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div role="img" aria-label="5 de 5 estrelas" style="display: flex; gap: 3px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#F5C518"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#F5C518"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#F5C518"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#F5C518"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#F5C518"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg></div>
+<blockquote style="margin: 0; font-size: 18.5px; line-height: 1.5; font-weight: 500">“O curso de Python para Análise de Dados mudou minha carreira. Fui promovida dois meses depois de concluir. O instrutor tem didática excepcional e experiência real de mercado. Não é teoria, é prática.”</blockquote>
+<figcaption style="display: flex; align-items: center; gap: 14px">
+<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #F5C518; color: #15130F; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; flex: none">CM</span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><strong>Carla Mendes</strong><span style="font-size: 14px; color: #B9B4A6">Cientista de Dados · Sinop, MT</span></span>
+</figcaption>
+</figure>
+</div>
+
+<div class="plx" data-plx="18">
+<figure style="margin: 0; background: #FFFFFF; color: #15130F; border: 1.5px solid #15130F; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div role="img" aria-label="5 de 5 estrelas" style="display: flex; gap: 3px"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="#15130F"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.8l6-.7z"></path></svg></div>
+<blockquote style="margin: 0; font-size: 18.5px; line-height: 1.5; font-weight: 500">“Contratamos turmas in company para toda a equipe de dados da nossa empresa. O nível técnico dos instrutores é impressionante e a certificação Microsoft agregou enorme valor ao nosso time.”</blockquote>
+<figcaption style="display: flex; align-items: center; gap: 14px">
+<span aria-hidden="true" style="width: 48px; height: 48px; border-radius: 50%; background: #15130F; color: #F5C518; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; flex: none">RS</span>
+<span style="display: flex; flex-direction: column; line-height: 1.3"><strong>Ricardo Souza</strong><span style="font-size: 14px; color: #5A574E">Gerente de TI · Rondonópolis, MT</span></span>
+</figcaption>
+</figure>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- CERTIFICADO -->
+<section id="certificado" style="background-color: #F5C518; background-image: linear-gradient(to right, rgba(21,19,15,.10) 1px, transparent 1px), linear-gradient(to bottom, rgba(21,19,15,.10) 1px, transparent 1px); background-size: 104px 44px; border-top: 1.5px solid #15130F; border-bottom: 1.5px solid #15130F">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px 72px">
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 22px; align-items: flex-start">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em; text-wrap: balance">Seu nome no certificado de uma empresa com mais de 20 anos.</h2>
+<p style="margin: 0; max-width: 30em; font-weight: 500">Ao concluir as 30 aulas, você recebe o certificado de conclusão emitido pela TDS Tecnologia, Microsoft Solutions Partner. Vale para o currículo e para o LinkedIn.</p>
+<a class="cta tds-purchase cta-ink" data-cta="certificado" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #15130F; color: #F5C518; text-decoration: none; font-weight: 700; font-size: 17px; padding: 17px 26px; border-radius: 3px">Quero meu certificado</a>
+</div>
+
+<div id="certwrap" style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 18px; align-items: center">
+<div class="plx" data-plx="-28" style="width: 100%; max-width: 640px">
+<div class="layer" style="transform: perspective(1400px) rotateX(calc(var(--rx, 5) * 1deg)) rotateY(calc(var(--ry, -9) * 1deg)); box-shadow: 18px 22px 0 rgba(21,19,15,.9); position: relative; line-height: 0">
+<img src="img/certificado-power-bi-microsoft.png" alt="Modelo do certificado de conclusão do curso Power BI Essencial, emitido pela TDS Tecnologia, Microsoft Solutions Partner" loading="lazy" width="1558" height="1101" style="display: block; width: 100%; height: auto; border: 1.5px solid #15130F">
+</div>
+</div>
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; padding-top: 14px">Modelo ilustrativo do certificado</span>
+</div>
+</div>
+</section>
+
+<!-- OFERTA -->
+<section id="oferta" style="background: #15130F; color: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 120px) clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px 72px">
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 28px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(38px, 5vw, 72px); line-height: .98; letter-spacing: -.035em; text-wrap: balance">Seu próximo relatório já pode ser um <span style="color: #F5C518">dashboard.</span></h2>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 18px">
+<li style="display: flex; gap: 14px; align-items: flex-start"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#F5C518" stroke-width="2.6" style="flex: none; margin-top: 3px"><path d="M4 11.5 9 16l9-10"></path></svg><span>30 aulas gravadas, organizadas em 6 módulos</span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#F5C518" stroke-width="2.6" style="flex: none; margin-top: 3px"><path d="M4 11.5 9 16l9-10"></path></svg><span>Power Query, modelagem, DAX e publicação</span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#F5C518" stroke-width="2.6" style="flex: none; margin-top: 3px"><path d="M4 11.5 9 16l9-10"></path></svg><span>Projeto final com um relatório seu publicado</span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#F5C518" stroke-width="2.6" style="flex: none; margin-top: 3px"><path d="M4 11.5 9 16l9-10"></path></svg><span>Acesso vitalício ao conteúdo</span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#F5C518" stroke-width="2.6" style="flex: none; margin-top: 3px"><path d="M4 11.5 9 16l9-10"></path></svg><span>Certificado de conclusão da TDS, Microsoft Solutions Partner</span></li>
+</ul>
+</div>
+
+<div style="flex: 1 1 400px; min-width: 0">
+<div class="plx" data-plx="-24">
+<div style="background: #F5C518; color: #15130F; padding: clamp(26px, 3.4vw, 44px); display: flex; flex-direction: column; gap: 22px; box-shadow: 14px 14px 0 #F4F4EF">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 1.5px solid #15130F; padding-bottom: 16px">
+<strong style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-size: 26px; letter-spacing: -.02em">Power BI Essencial</strong>
+<span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px">online e gravado</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: baseline; gap: 12px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; letter-spacing: -.04em; line-height: .9">
+<span style="font-size: 30px">10x de</span><span style="font-size: clamp(76px, 9vw, 128px); font-variant-numeric: tabular-nums">R$ 99</span>
+</div>
+<span style="font-size: 16px; font-weight: 600">Total de R$ 990,00, ou <span style="background: #15130F; color: #F5C518; padding: 2px 8px">R$ 891,00 no Pix</span> (10% de desconto)</span>
+</div>
+<a class="cta tds-purchase cta-ink" data-cta="oferta" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #15130F; color: #F5C518; text-decoration: none; font-weight: 700; font-size: 20px; padding: 22px 26px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; gap: 12px">Comprar agora
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 14 14 4M6 4h8v8"></path></svg></a>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; font-weight: 500">
+<span>Você vai para o checkout da TDS com o curso já no carrinho. Pague com Pix, cartão em até 10x ou boleto.</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; background: #15130F; color: #F5C518; padding: 8px 12px; align-self: flex-start; font-weight: 700"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M4 11.5 9 16l9-10"></path></svg>Garantia de 7 dias &middot; reembolso integral (direito de arrependimento, CDC)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- DÚVIDAS -->
+<section id="duvidas" style="background: #F4F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: clamp(64px, 8vw, 112px) clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; gap: 32px 72px">
+<h2 style="margin: 0; flex: 1 1 300px; font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 66px); line-height: 1; letter-spacing: -.035em">Dúvidas antes de comprar.</h2>
+<div style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; border-top: 1.5px solid #15130F">
+<details open style="border-bottom: 1px solid #15130F">
+<summary style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-size: 20px; font-weight: 700">Preciso ter experiência?<span class="plus" aria-hidden="true" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 24px; line-height: 1">+</span></summary>
+<p style="margin: 0; padding: 0 0 22px; max-width: 38em; color: #3F3D36">Não. O curso começa nos primeiros passos no Power BI e avança módulo a módulo até o projeto final.</p>
+</details>
+<details style="border-bottom: 1px solid #15130F">
+<summary style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-size: 20px; font-weight: 700">Qual ferramenta vou usar?<span class="plus" aria-hidden="true" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 24px; line-height: 1">+</span></summary>
+<p style="margin: 0; padding: 0 0 22px; max-width: 38em; color: #3F3D36">Power BI Desktop para construir os relatórios e Power BI Service para publicar e compartilhar.</p>
+</details>
+<details style="border-bottom: 1px solid #15130F">
+<summary style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-size: 20px; font-weight: 700">Como faço a compra?<span class="plus" aria-hidden="true" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 24px; line-height: 1">+</span></summary>
+<p style="margin: 0; padding: 0 0 22px; max-width: 38em; color: #3F3D36">Clique em Comprar agora. Você vai para o checkout da TDS com o curso já no carrinho e paga com Pix, cartão em até 10x ou boleto.</p>
+</details>
+<details style="border-bottom: 1px solid #15130F">
+<summary style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-size: 20px; font-weight: 700">Como recebo o acesso?<span class="plus" aria-hidden="true" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 24px; line-height: 1">+</span></summary>
+<p style="margin: 0; padding: 0 0 22px; max-width: 38em; color: #3F3D36">Assim que o pagamento é confirmado, o acesso é liberado automaticamente para o e-mail que você informar no checkout. No Pix costuma ser em poucos minutos. O acesso é vitalício, então você reassiste quando quiser.</p>
+</details>
+<details style="border-bottom: 1px solid #15130F">
+<summary style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font-size: 20px; font-weight: 700">Quem emite o certificado?<span class="plus" aria-hidden="true" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 24px; line-height: 1">+</span></summary>
+<p style="margin: 0; padding: 0 0 22px; max-width: 38em; color: #3F3D36">A TDS Tecnologia, parceira Microsoft, emite certificado próprio de conclusão.</p>
+</details>
+</div>
+</div>
+</section>
+
+<!-- RODAPÉ -->
+<footer style="background: #15130F; color: #F4F4EF; border-top: 6px solid #F5C518">
+<div style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(20px, 4vw, 48px) 40px; display: flex; flex-direction: column; gap: 36px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px 48px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<img src="img/logo-tds-claro.png" alt="TDS" style="height: 34px; width: auto; display: block; align-self: flex-start">
+<span style="color: #B9B4A6">Seu próximo passo começa com conhecimento.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; font-size: 15px">
+<span style="color: #B9B4A6">Fale com a TDS no WhatsApp</span>
+<a href="https://wa.me/5565993541604" style="font-family: 'Bricolage Grotesque', 'Arial Narrow', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: #F5C518; text-decoration: none; padding: 8px 0">+55 65 99354-1604</a>
+</div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #B9B4A6; max-width: 62em; border-top: 1px solid #4A463C; padding-top: 20px">Power BI e Microsoft são marcas de seus respectivos titulares. A TDS Tecnologia é parceira e emite certificado próprio de conclusão. Relatórios e planilhas desta página são ilustrativos.</p>
+</div>
+</footer>
+
+<!-- BARRA FIXA DE COMPRA -->
+
+<div id="buybar" style="position: sticky; bottom: 0; z-index: 20; background: #15130F; color: #F4F4EF; border-top: 2px solid #F5C518; transition: transform .3s ease">
+<div style="max-width: 1240px; margin: 0 auto; padding: 10px clamp(20px, 4vw, 48px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px">
+<span style="font-size: 15px"><strong>Power BI Essencial</strong> · 10x de R$ 99 ou R$ 891 no Pix</span>
+<a class="cta tds-purchase cta-sun" data-cta="barra-fixa" href="https://www.tdstecnologia.com.br/comprar/power-bi-essencial" style="background: #F5C518; color: #15130F; text-decoration: none; font-weight: 700; font-size: 15px; padding: 13px 22px; border-radius: 3px">Comprar agora</a>
+</div>
+</div>
+
+
+</div>
+
+<!-- Botão flutuante WhatsApp (dúvidas) -->
+<a class="tds-wa-fab" href="https://wa.me/5565993541604?text=Ol%C3%A1%21%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20curso%20Power%20BI%20Essencial." target="_blank" rel="noopener" aria-label="Fale conosco no WhatsApp" title="Fale conosco no WhatsApp">
+  <span class="tds-wa-fab__ico" aria-hidden="true"><svg viewBox="0 0 32 32" role="img"><path d="M16.003 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.26.59 4.47 1.71 6.42L3.2 28.8l6.57-1.72a12.74 12.74 0 0 0 6.23 1.6h.01c7.06 0 12.8-5.74 12.8-12.8S23.06 3.2 16 3.2zm0 23.07h-.01a10.6 10.6 0 0 1-5.4-1.48l-.39-.23-3.9 1.02 1.04-3.8-.25-.39a10.6 10.6 0 0 1-1.62-5.65c0-5.86 4.77-10.63 10.64-10.63 2.84 0 5.51 1.11 7.52 3.12a10.56 10.56 0 0 1 3.11 7.52c0 5.86-4.77 10.63-10.63 10.63zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.71.16-.21.32-.82 1.04-1 1.25-.18.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55l-.61-.01c-.21 0-.56.08-.85.4-.29.32-1.11 1.09-1.11 2.66 0 1.57 1.14 3.08 1.3 3.29.16.21 2.25 3.43 5.45 4.81.76.33 1.35.52 1.81.67.76.24 1.46.21 2.01.13.61-.09 1.89-.77 2.16-1.52.27-.74.27-1.38.19-1.52-.08-.14-.29-.21-.61-.37z"/></svg></span>
+  <span class="tds-wa-fab__label">Dúvidas? Fale conosco</span>
+</a>
+<style>
+.tds-wa-fab{position:fixed;right:20px;bottom:84px;z-index:2147483000;display:flex;align-items:center;height:60px;max-width:60px;border-radius:30px;background:#25d366;color:#fff;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.28);overflow:hidden;font-family:Inter,-apple-system,"Segoe UI",Arial,sans-serif;transition:max-width .35s cubic-bezier(.2,.7,.3,1),transform .25s;animation:tds-wa-pulse 2.6s ease-out infinite}
+.tds-wa-fab__ico{flex:0 0 60px;display:flex;align-items:center;justify-content:center}
+.tds-wa-fab__ico svg{width:34px;height:34px;fill:#fff}
+.tds-wa-fab__label{white-space:nowrap;font-weight:600;font-size:15px;padding-right:24px;opacity:0;transition:opacity .25s .05s}
+.tds-wa-fab:hover,.tds-wa-fab:focus-visible{max-width:320px;transform:translateY(-2px)}
+.tds-wa-fab:hover .tds-wa-fab__label,.tds-wa-fab:focus-visible .tds-wa-fab__label{opacity:1}
+@keyframes tds-wa-pulse{0%{box-shadow:0 8px 24px rgba(0,0,0,.28),0 0 0 0 rgba(37,211,102,.55)}70%{box-shadow:0 8px 24px rgba(0,0,0,.28),0 0 0 16px rgba(37,211,102,0)}100%{box-shadow:0 8px 24px rgba(0,0,0,.28),0 0 0 0 rgba(37,211,102,0)}}
+@media (max-width:700px){.tds-wa-fab{right:16px;bottom:96px;height:56px;max-width:56px}.tds-wa-fab__ico{flex-basis:56px}.tds-wa-fab__label{display:none}}
+@media (prefers-reduced-motion:reduce){.tds-wa-fab{animation:none}}
+</style>
+<script src="js/main.js" defer></script>
+</body>
+</html>

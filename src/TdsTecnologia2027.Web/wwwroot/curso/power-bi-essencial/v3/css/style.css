@@ -1,0 +1,23 @@
+html{scroll-behavior:smooth}
+body{margin:0;background:#15130F}
+a{color:inherit}a:hover{color:inherit}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.cta{transition:transform .18s ease,box-shadow .18s ease}
+.cta-ink:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 #0F5C36}
+.cta-sun:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 #F4F4EF}
+.navlink{text-decoration:none;border-bottom:2px solid transparent}
+.navlink:hover{border-bottom-color:#15130F}
+.layer{transition:transform .3s ease-out;will-change:transform}
+.plx{will-change:transform}
+.modrow:hover .modbar{background:#F4F4EF}
+.modbar{transition:background .2s ease,width .6s ease}
+details summary{list-style:none;cursor:pointer}
+details summary::-webkit-details-marker{display:none}
+details[open] .plus{transform:rotate(45deg)}
+.plus{transition:transform .2s ease}
+@keyframes rise{from{transform:translateY(28px);opacity:0}}
+@keyframes blink{50%{opacity:0}}
+.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.rise2{animation:rise .8s .15s cubic-bezier(.2,.7,.2,1) both}
+.caret{animation:blink 1.1s steps(1) infinite}
+@media (prefers-reduced-motion: reduce){.rise,.rise2,.caret{animation:none}.layer,.cta,.modbar{transition:none}html{scroll-behavior:auto}}

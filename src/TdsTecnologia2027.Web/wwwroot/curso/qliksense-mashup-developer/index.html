@@ -23,14 +23,33 @@
   <link rel="preload" href="assets/hero-editorial.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Acentos Qlik (verde) no painel ilustrativo e preço "de" riscado */
-    .showcase-wrap .sidebar-item.active{background:#00a67d;color:#07201a}
-    .showcase-wrap .sidebar-logo span{color:#00d49b}
-    .showcase-wrap .bars i{background:linear-gradient(0deg,#0a7a5a,#13c892)}
-    .showcase-wrap .donut{background:conic-gradient(#00a67d 0 var(--donut-progress,82%),#e8eeee var(--donut-progress,82%) 100%)}
-    .showcase-wrap .chart-title span:first-letter{color:#00a67d}
-    .showcase-brand{color:#00d49b}
-    .cert-seal{border-color:#1c9f77;color:#0d7a58;background:#e7f6f0}
+    /* Identidade do curso — verde #1e7c04 (cor do ícone QlikSense) */
+    :root{--yellow:#1e7c04}
+    .topline{background:#1e7c04;color:#fff}
+    .trust-band{background:#1e7c04;color:#eafae6}
+    .trust-icon{border-color:#ffffff66}
+    .trust-divider{background:#ffffff33}
+    .scroll-progress,.cue-line,.eyebrow-line{background:#46b85f}
+    .hero-eyebrow,.light-eyebrow{color:#46b85f}
+    .hero h1 span,.quote-heading h2 span,.offer-copy h2 span{color:#46b85f}
+    .hero h1 em{text-decoration-color:#1e7c049e}
+    .dark-eyebrow,.module-index{color:#155c03}
+    .faq-list details[open] summary{color:#155c03}
+    .header-buy{border-color:#7fd79a;color:#cdeed6}
+    .header-buy:hover{background:#1e7c04;color:#fff}
+    .btn-yellow{color:#fff}
+    .btn-yellow:hover{background:#249406}
+    .quote-card.featured{background:#1e7c04;color:#eafae6}
+    .mobile-sticky strong{color:#46b85f}
+    .mobile-sticky a{color:#fff}
+    /* painel ilustrativo (portal Auto MT) */
+    .showcase-wrap .sidebar-item.active{background:#1e7c04;color:#eafae6}
+    .showcase-wrap .sidebar-logo span{color:#46b85f}
+    .showcase-wrap .bars i{background:linear-gradient(0deg,#155c03,#38a64f)}
+    .showcase-wrap .donut{background:conic-gradient(#1e7c04 0 var(--donut-progress,82%),#e8eeee var(--donut-progress,82%) 100%)}
+    .showcase-wrap .chart-title span:first-letter{color:#1e7c04}
+    .showcase-brand{color:#46b85f}
+    .cert-seal{border-color:#1e7c04;color:#155c03;background:#e9f7e6}
     .price-was{font:800 .92rem var(--display);color:#8b9593;margin:0 0 2px}
     .price-was s{color:#b64a3f}
   </style>
@@ -48,7 +67,6 @@
     <div class="header-inner container">
       <a class="brand" href="#topo" aria-label="TDS Tecnologia, voltar ao início"><img src="assets/tds-logo-trim.png" alt="TDS" width="124" height="29"><span class="brand-rule"></span><span class="brand-caption">TECNOLOGIA<br>E EDUCAÇÃO</span></a>
       <nav class="nav-links" aria-label="Navegação principal">
-        <a href="#video">Vídeo</a>
         <a href="#conteudo">O curso</a>
         <a href="#depoimentos">Depoimentos</a>
         <a href="#certificado">Certificado</a>
@@ -57,7 +75,7 @@
       <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button>
     </div>
     <nav class="mobile-menu" id="mobile-menu" aria-label="Navegação móvel" hidden>
-      <a href="#video">Vídeo</a><a href="#conteudo">O curso</a><a href="#depoimentos">Depoimentos</a><a href="#certificado">Certificado</a><a href="#investimento">Investimento</a>
+      <a href="#conteudo">O curso</a><a href="#depoimentos">Depoimentos</a><a href="#certificado">Certificado</a><a href="#investimento">Investimento</a>
     </nav>
   </header>
 
@@ -87,26 +105,6 @@
         <div class="trust-divider"></div>
         <div class="trust-item"><span class="trust-icon">✳</span><span>Treinamento técnico<br><strong>com James Dias</strong></span></div>
         <div class="trust-item"><span class="trust-icon circle-icon">✓</span><span>Curso online com<br><strong>certificado de conclusão</strong></span></div>
-      </div>
-    </section>
-
-    <section class="section video-section" id="video" aria-labelledby="video-title">
-      <div class="container video-layout">
-        <div class="video-copy reveal">
-          <div class="eyebrow light-eyebrow">A PRIMEIRA AULA</div>
-          <h2 id="video-title">Veja o curso<br><span>antes de começar.</span></h2>
-          <p>Assista à primeira aula e entenda o que é um mashup, onde ele se encaixa e o que você vai construir até o portal final.</p>
-          <a class="text-link" href="#conteudo">Explorar o conteúdo <span class="link-underline"></span></a>
-        </div>
-        <div class="video-stage reveal">
-          <div class="video-frame" data-video-src="" aria-label="Primeira aula do curso QlikSense Mashup Developer">
-            <iframe src="https://player.vimeo.com/video/1244176205?title=0&amp;byline=0&amp;portrait=0&amp;dnt=1&amp;playsinline=1"
-              style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block"
-              allow="fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-              referrerpolicy="strict-origin-when-cross-origin" title="Primeira aula do curso QlikSense Mashup Developer" loading="lazy"></iframe>
-          </div>
-          <p class="video-stage-caption">Primeira aula · O que é um mashup e onde ele se encaixa.</p>
-        </div>
       </div>
     </section>
 

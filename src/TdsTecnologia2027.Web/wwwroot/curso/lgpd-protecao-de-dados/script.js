@@ -83,8 +83,8 @@
   });
 
   const videoFrame = document.querySelector('.video-frame');
-  const videoUrl = videoFrame.dataset.videoSrc.trim();
-  if (videoUrl) {
+  const videoUrl = videoFrame ? videoFrame.dataset.videoSrc.trim() : '';
+  if (videoFrame && videoUrl) {
     const player = videoFrame.querySelector('.course-video');
     const preview = videoFrame.querySelector('.video-preview');
     const caption = document.querySelector('.video-stage-caption');

@@ -45,6 +45,30 @@
     @keyframes con-blink{50%{opacity:0}}
     @media(max-width:600px){.code-body{grid-template-columns:1fr}.code-editor ol{padding-left:40px}.code-editor li{font-size:11.5px}.code-console{border-left:0;border-top:1px solid #1c2a37}.code-console p{font-size:11.5px}}
     @media(prefers-reduced-motion:reduce){.con-cursor{animation:none}}
+    /* Identidade do curso — preto #000 (cor do ícone Lógica de Programação) */
+    :root{--yellow:#f2f4f2}
+    .scroll-progress{background:#f2f4f2}
+    .hero-eyebrow,.light-eyebrow{color:#e7ebe9}
+    .eyebrow-line,.cue-line{background:#e7ebe9}
+    .hero h1 span{color:#cdd3d0}
+    .hero h1 em{text-decoration-color:#ffffff9e}
+    .topline{background:#14181b;color:#eef1ef}
+    .trust-band{background:#14181b;color:#e7ecea}
+    .trust-main strong,.trust-item strong{color:#fff}
+    .trust-icon{border-color:#ffffff40}
+    .trust-divider{background:#ffffff2e}
+    .dark-eyebrow,.module-index{color:#3a4249}
+    .faq-list details[open] summary{color:#1c2227}
+    .header-buy{border-color:#c9cfcc;color:#eef1ef}
+    .header-buy:hover{background:#f2f4f2;color:#14191a}
+    .btn-yellow{background:#f4f6f3;color:#15191a}
+    .btn-yellow:hover{background:#fff}
+    .quote-heading h2 span,.offer-copy h2 span{color:#e7ebe9}
+    .quote-card.featured{background:#f4f6f3;color:#15201f}
+    .price-card{border-top-color:#15191c}
+    .mobile-sticky strong{color:#fff}
+    .mobile-sticky a{background:#f4f6f3;color:#15191a}
+    .cert-seal{border-color:#394149;color:#2b3137;background:#eceeec}
     .price-was{font:800 .92rem var(--display);color:#8b9593;margin:0 0 2px}
     .price-was s{color:#b64a3f}
   </style>
@@ -65,13 +89,14 @@
         <a href="#resultado">O que você faz</a>
         <a href="#conteudo">O curso</a>
         <a href="#depoimentos">Depoimentos</a>
+        <a href="#certificado">Certificado</a>
         <a href="#investimento">Investimento</a>
       </nav>
       <a class="header-buy tds-purchase" href="https://www.tdstecnologia.com.br/comprar/lpe">Quero começar</a>
       <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span></button>
     </div>
     <nav class="mobile-menu" id="mobile-menu" aria-label="Navegação móvel" hidden>
-      <a href="#resultado">O que você faz</a><a href="#conteudo">O curso</a><a href="#depoimentos">Depoimentos</a><a href="#investimento">Investimento</a>
+      <a href="#resultado">O que você faz</a><a href="#conteudo">O curso</a><a href="#depoimentos">Depoimentos</a><a href="#certificado">Certificado</a><a href="#investimento">Investimento</a>
     </nav>
   </header>
 
@@ -178,10 +203,27 @@
       </div>
     </section>
 
+    <section class="section certificate-section" id="certificado" aria-labelledby="certificate-title">
+      <div class="container certificate-layout">
+        <div class="certificate-copy reveal"><div class="eyebrow dark-eyebrow">ALÉM DO PRIMEIRO CÓDIGO</div><h2 id="certificate-title">Aprenda de verdade.<br><span>Tenha como mostrar.</span></h2><p>Ao concluir a formação, você recebe o certificado de conclusão emitido pela TDS Tecnologia — a prova de que você já domina a lógica por trás de qualquer linguagem.</p><a class="text-link dark-link" href="#investimento">Ver investimento <span class="link-underline"></span></a></div>
+        <div class="certificate-stage reveal" data-parallax="0.06">
+          <div class="certificate-sheet">
+            <div class="cert-top"><img src="assets/tds-logo-trim.png" alt="TDS Tecnologia"><span>LÓGICA DE PROGRAMAÇÃO</span></div>
+            <div class="cert-rule"></div>
+            <small>CERTIFICADO DE CONCLUSÃO</small>
+            <h3>Lógica de<br>Programação (LPE)</h3>
+            <p>Certificamos que <strong>[seu nome]</strong> concluiu a formação <strong>Lógica de Programação (LPE)</strong>, com 11 módulos e 34 aulas, construindo a base da programação com algoritmos no VisuAlg.</p>
+            <div class="cert-footer"><span>TDS TECNOLOGIA<br><strong>Cuiabá · Mato Grosso</strong></span><span class="cert-seal">LPE</span></div>
+          </div>
+          <div class="cert-stamp">MODELO ILUSTRATIVO<br>SEU NOME E A DATA ENTRAM NA CONCLUSÃO</div>
+        </div>
+      </div>
+    </section>
+
     <section class="section offer-section" id="investimento" aria-labelledby="offer-title">
       <div class="container offer-layout">
         <div class="offer-copy reveal"><div class="eyebrow light-eyebrow">O SEU PRIMEIRO PASSO</div><h2 id="offer-title">Entre no mundo<br>da <span>programação.</span></h2><p>Faça sua inscrição online. Após a aprovação do pagamento, seu acesso ao curso é liberado para começar no seu ritmo.</p><div class="offer-note"><span>✳</span> A base que todo programador tem — e que abre a porta para qualquer linguagem.</div></div>
-        <div class="price-card reveal"><div class="price-header"><span>LÓGICA DE PROGRAMAÇÃO · LPE</span><span>100% ONLINE</span></div><div class="price-main"><small>INVESTIMENTO</small><div class="price-was">de <s>R$ 990</s></div><div class="price-line"><span>10× de</span><strong>R$ 19,90</strong></div><p>sem juros no cartão · ou R$ 199 à vista</p></div><div class="price-divider"></div><ul><li>34 aulas em 11 módulos</li><li>Ambiente VisuAlg configurado do zero</li><li>Decisões, laços, vetores e matrizes</li><li>A base para Python, Java, C# e qualquer linguagem</li><li>Acesso vitalício ao conteúdo</li></ul><a class="btn btn-yellow full-btn tds-purchase" href="https://www.tdstecnologia.com.br/comprar/lpe">Comprar no site oficial da TDS</a><p class="price-foot">A compra é finalizada no sistema oficial da TDS. Condições exibidas no checkout prevalecem.</p></div>
+        <div class="price-card reveal"><div class="price-header"><span>LÓGICA DE PROGRAMAÇÃO · LPE</span><span>100% ONLINE</span></div><div class="price-main"><small>INVESTIMENTO</small><div class="price-was">de <s>R$ 990</s></div><div class="price-line"><span>10× de</span><strong>R$ 19,90</strong></div><p>sem juros no cartão · ou R$ 199 à vista</p></div><div class="price-divider"></div><ul><li>34 aulas em 11 módulos</li><li>Ambiente VisuAlg configurado do zero</li><li>Decisões, laços, vetores e matrizes</li><li>A base para Python, Java, C# e qualquer linguagem</li><li>Acesso vitalício ao conteúdo</li><li>Certificado de conclusão (TDS)</li></ul><a class="btn btn-yellow full-btn tds-purchase" href="https://www.tdstecnologia.com.br/comprar/lpe">Comprar no site oficial da TDS</a><p class="price-foot">A compra é finalizada no sistema oficial da TDS. Condições exibidas no checkout prevalecem.</p></div>
       </div>
     </section>
 

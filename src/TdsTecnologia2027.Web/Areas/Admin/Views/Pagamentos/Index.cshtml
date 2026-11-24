@@ -51,9 +51,26 @@
     </div>
 </div>
 
+@if (TempData["ReconferirDetalhe"] is string detalhe && !string.IsNullOrWhiteSpace(detalhe))
+{
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body">
+            <h6 class="mb-2"><i class="bi bi-search me-1"></i>Resultado da reconferência</h6>
+            <pre class="small mb-0" style="white-space:pre-wrap; margin:0;">@detalhe</pre>
+        </div>
+    </div>
+}
+
 <div class="card shadow-sm border-0">
     <div class="card-body">
-        <h5 class="mb-3">Pedidos recentes</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Pedidos recentes</h5>
+            <form asp-action="ReconferirPendentes" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-repeat me-1"></i>Reconferir pendentes na InfinitePay
+                </button>
+            </form>
+        </div>
         @if (pedidos.Count == 0)
         {
             <p class="text-muted mb-0">Nenhum pedido ainda.</p>
@@ -83,7 +100,20 @@
                                         #@p.Id · nsu:<code>@p.OrderNsu</code> · slug:<code>@(p.InvoiceSlug ?? "—")</code>
                                     </div>
                                 </td>
-                                <td class="text-end text-nowrap">@p.Total.ToString("C", pt)</td>
+                                <td class="text-end text-nowrap">
+                                    @p.Total.ToString("C", pt)
+                                    @if (p.ValorRecebido.HasValue)
+                                    {
+                                        <div class="text-muted" style="font-size:11px;">
+                                            recebido @p.ValorRecebido.Value.ToString("C", pt)
+                                            @{ var taxa = p.Total - p.ValorRecebido.Value; }
+                                            @if (taxa > 0)
+                                            {
+                                                <span>· taxa @taxa.ToString("C", pt)</span>
+                                            }
+                                        </div>
+                                    }
+                                </td>
                                 <td class="small text-muted">@(p.MetodoPagamento ?? "—")</td>
                                 <td>
                                     @switch (p.Status)

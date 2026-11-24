@@ -231,9 +231,10 @@ public class LojaController : Controller
         if (pedido.Status != StatusPedido.Pago)
         {
             // Fallback: confere direto na InfinitePay (caso o webhook ainda não tenha chegado).
+            // O "paid" é a autoridade; o valor recebido vem líquido da taxa, não exigimos o cheio.
             var v = await _infinite.VerificarAsync(pedido.OrderNsu, transaction_nsu, slug);
-            if (v.Pago && v.ValorCentavos >= pedido.TotalCentavos)
-                await ConfirmarPedidoAsync(pedido, transaction_nsu, slug, v.MetodoPagamento);
+            if (v.Pago)
+                await ConfirmarPedidoAsync(pedido, transaction_nsu, slug, v.MetodoPagamento, v.ValorCentavos);
         }
 
         ViewBag.Estado = pedido.Status == StatusPedido.Pago ? "pago" : "processando";
@@ -278,20 +279,26 @@ public class LojaController : Controller
             ?? await LocalizarPedidoAsync(orderNsu, slug);
         if (pedido == null || pedido.Status == StatusPedido.Pago) return Ok(); // desconhecido ou já processado
 
-        // O webhook só é enviado quando o pagamento é aprovado, e casamos o pedido
-        // pelo slug (não adivinhável). Confirmamos conferindo o valor do próprio aviso;
-        // se o valor não vier, tentamos o payment_check como reforço.
-        if (valorCentavos >= pedido.TotalCentavos && valorCentavos > 0)
+        // O webhook só é enviado quando o pagamento é aprovado, e casamos o pedido pelo
+        // nosso próprio Id na URL. ATENÇÃO: o valor avisado vem LÍQUIDO da taxa de
+        // recebimento (ex.: Pix), então é NORMAL ser menor que o total cobrado — NÃO
+        // exigimos o valor cheio. Aceitamos um valor compatível (acima da metade do
+        // total, folga mais que suficiente para a taxa); se vier ausente/baixo demais,
+        // confirmamos pela conferência oficial (payment_check, cujo "paid" é a autoridade).
+        var minimoAceitavel = (long)decimal.Round(pedido.TotalCentavos * 0.5m);
+        if (valorCentavos > 0 && valorCentavos >= minimoAceitavel)
         {
-            await ConfirmarPedidoAsync(pedido, transactionNsu, slug, metodo);
+            await ConfirmarPedidoAsync(pedido, transactionNsu, slug, metodo, valorCentavos);
         }
         else
         {
             var v = await _infinite.VerificarAsync(pedido.OrderNsu, transactionNsu, slug);
-            if (v.Pago && v.ValorCentavos >= pedido.TotalCentavos)
-                await ConfirmarPedidoAsync(pedido, transactionNsu, slug, v.MetodoPagamento ?? metodo);
+            if (v.Pago)
+                await ConfirmarPedidoAsync(pedido, transactionNsu, slug, v.MetodoPagamento ?? metodo,
+                    v.ValorCentavos > 0 ? v.ValorCentavos : valorCentavos);
             else
-                _logger.LogWarning("[TDS] Webhook: pagamento não confirmado para pedido {Id} (slug {Slug}).", pedido.Id, slug);
+                _logger.LogWarning("[TDS] Webhook: pagamento não confirmado para pedido {Id} (recebido {Cent}c, total {Total}c, slug {Slug}).",
+                    pedido.Id, valorCentavos, pedido.TotalCentavos, slug);
         }
 
         return Ok();
@@ -377,15 +384,17 @@ public class LojaController : Controller
     }
 
     /// <summary>Marca o pedido como pago e libera o acesso (idempotente).</summary>
-    private async Task ConfirmarPedidoAsync(Pedido pedido, string? transactionNsu, string? slug, string? metodo)
+    private async Task ConfirmarPedidoAsync(Pedido pedido, string? transactionNsu, string? slug, string? metodo, long valorRecebidoCentavos = 0)
     {
         if (pedido.Status == StatusPedido.Pago) return;
 
         pedido.Status = StatusPedido.Pago;
         pedido.PagoEm = DateTime.Now;
         pedido.TransactionNsu = transactionNsu;
-        pedido.InvoiceSlug = slug;
+        if (!string.IsNullOrWhiteSpace(slug)) pedido.InvoiceSlug = slug;
         pedido.MetodoPagamento = metodo;
+        // Guarda o valor líquido informado pela InfinitePay (já com a taxa descontada).
+        if (valorRecebidoCentavos > 0) pedido.ValorRecebido = valorRecebidoCentavos / 100m;
         await _db.SaveChangesAsync();
 
         var cursoIds = pedido.Itens.Select(i => i.CursoOnlineId).ToList();

@@ -737,6 +737,9 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("ValorRecebido")
+                        .HasColumnType("decimal(10,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderNsu")

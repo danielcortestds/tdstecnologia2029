@@ -42,6 +42,14 @@ public class Pedido
     [Column(TypeName = "decimal(10,2)")]
     public decimal Total { get; set; }
 
+    /// <summary>
+    /// Valor que a InfinitePay informou como recebido (líquido da taxa de recebimento,
+    /// ex.: Pix). Fica abaixo do <see cref="Total"/> cobrado — a diferença é a taxa.
+    /// Null enquanto o pagamento não foi confirmado.
+    /// </summary>
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal? ValorRecebido { get; set; }
+
     public StatusPedido Status { get; set; } = StatusPedido.Pendente;
 
     /// <summary>Código da fatura no InfinitePay (invoice_slug).</summary>

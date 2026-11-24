@@ -2,12 +2,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TdsTecnologia2027.Web.Data;
 using TdsTecnologia2027.Web.Models;
+using TdsTecnologia2027.Web.Services;
 
 namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 
 public class HomeController : AlunoBaseController
 {
     public HomeController(ApplicationDbContext db) : base(db) { }
+
+    // Logout do aluno. Fica neste controller (autenticado no esquema "Aluno") para
+    // que o token antiforgery seja validado sob o mesmo usuário que o gerou.
+    [HttpPost("/Aluno/Sair")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Sair()
+    {
+        await AlunoAuth.SairAsync(HttpContext);
+        return Redirect("/Aluno/Entrar");
+    }
 
     // GET: /Aluno  → dashboard "Meus Cursos"
     public async Task<IActionResult> Index()

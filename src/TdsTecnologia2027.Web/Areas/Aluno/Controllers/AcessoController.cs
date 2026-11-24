@@ -84,13 +84,9 @@ public class AcessoController : Controller
         return RedirecionarSeguro(returnUrl);
     }
 
-    [HttpPost("/Aluno/Sair")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Sair()
-    {
-        await AlunoAuth.SairAsync(HttpContext);
-        return Redirect("/Aluno/Entrar");
-    }
+    // O "Sair" fica no HomeController (autenticado como Aluno), para que o token
+    // antiforgery seja validado sob o MESMO usuário com que foi gerado. Aqui, por a
+    // classe ser [AllowAnonymous], a validação cairia como anônimo e dava erro.
 
     // ── Esqueci minha senha ───────────────────────────────────────────────────
     [HttpGet("/Aluno/EsqueciSenha")]

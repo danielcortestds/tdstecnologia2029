@@ -1,4 +1,5 @@
 @model TdsTecnologia2027.Web.Models.HomeViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
 @using System.Globalization
 @{
     Layout = null;
@@ -27,6 +28,11 @@
     // Parcelamento exibido na vitrine (para o aluno não se assustar com o valor cheio).
     const int ParcelasMax = 10;
     string Parcela(decimal valor) => Moeda(valor / ParcelasMax);
+
+    // Hot site do curso: leva direto para /curso/{slug} quando a pasta existe
+    // (página completa + indexável no Google). Sem hot site, cai no modal.
+    bool TemHotsite(string? slug) => !string.IsNullOrWhiteSpace(slug)
+        && System.IO.Directory.Exists(System.IO.Path.Combine(Env.WebRootPath, "curso", slug));
 
     // Desconto no Pix (configurado também na InfinitePay). Valor já com o desconto.
     const int DescontoPixPct = 10;
@@ -420,7 +426,14 @@
 													</div>
 													<div class="tdsc-actions">
 														<button type="button" class="tdsc-btn loja-add" data-id="@curso.Id"><i class="bi bi-cart-plus"></i> Comprar agora</button>
-														<a href="#" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="tdsc-link">Ver detalhes</a>
+														@if (TemHotsite(curso.Slug))
+														{
+															<a href="/curso/@curso.Slug" class="tdsc-link">Ver detalhes</a>
+														}
+														else
+														{
+															<a href="#" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="tdsc-link">Ver detalhes</a>
+														}
 													</div>
 												</div>
 											</div>
@@ -510,11 +523,14 @@
 									var iconeCapa = string.IsNullOrWhiteSpace(curso.IconeCapa) ? "bi-play-circle-fill" : curso.IconeCapa;
 									var nAulas = curso.Modulos.Sum(m => m.Licoes.Count);
 									var temDesconto = curso.PrecoDe.HasValue && curso.PrecoDe.Value > curso.Preco;
+									var temHotsite = TemHotsite(curso.Slug);
+									var hotUrl = "/curso/" + curso.Slug;
+									var detalheAcao = temHotsite ? $"location.href='{hotUrl}'" : $"teOpenModal('modal-online-{curso.Id}');return false;";
 
 									<div class="col-lg-4 col-md-6">
 										<div class="bd-feature-card h-100 d-flex flex-column trilha-item" data-trilhas="@string.Join(" ", trilhasDo(curso.Slug))">
-											<div class="bd-feature-icon" style="background:@corCapa; cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
-											<h4 style="cursor:pointer;" onclick="teOpenModal('modal-online-@curso.Id');return false;" title="Ver detalhes do curso">@curso.Nome</h4>
+											<div class="bd-feature-icon" style="background:@corCapa; cursor:pointer;" onclick="@detalheAcao" title="Ver detalhes do curso"><i class="bi @iconeCapa" style="color:#fff;"></i></div>
+											<h4 style="cursor:pointer;" onclick="@detalheAcao" title="Ver detalhes do curso">@curso.Nome</h4>
 											<p>@curso.DescricaoCurta</p>
 											<div class="d-flex flex-wrap gap-2 mt-3 mb-3">
 												<div class="bd-integration-pill" style="font-size:0.72rem;"><i class="bi bi-clock" style="margin-right:4px;"></i>@curso.CargaHoraria h</div>
@@ -537,7 +553,14 @@
 													<div class="loja-avista">ou @PrecoPix(curso.Preco) no Pix &middot; 10% off</div>
 											</div>
 											<div class="d-flex align-items-center gap-2">
-												<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</button>
+												@if (temHotsite)
+												{
+													<a href="@hotUrl" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488; text-decoration:none;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</a>
+												}
+												else
+												{
+													<button type="button" onclick="teOpenModal('modal-online-@curso.Id');return false;" class="btn-bd-outline" style="font-size:0.8rem; padding:8px 16px; color:#0d9488 !important; border-color:#0d9488;"><i class="bi bi-list-ul" style="margin-right:5px;"></i>Ver detalhes</button>
+												}
 												<button type="button" class="btn-bd-primary loja-add" data-id="@curso.Id" style="font-size:0.8rem; padding:8px 18px;"><i class="bi bi-cart-plus" style="margin-right:5px;"></i>Adicionar</button>
 											</div>
 										</div>

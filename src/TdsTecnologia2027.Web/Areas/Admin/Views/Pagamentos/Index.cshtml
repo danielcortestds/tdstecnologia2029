@@ -106,10 +106,10 @@
                                     {
                                         <div class="text-muted" style="font-size:11px;">
                                             recebido @p.ValorRecebido.Value.ToString("C", pt)
-                                            @{ var taxa = p.Total - p.ValorRecebido.Value; }
-                                            @if (taxa > 0)
+                                            @{ var descontoPix = p.Total - p.ValorRecebido.Value; }
+                                            @if (descontoPix > 0)
                                             {
-                                                <span>· taxa @taxa.ToString("C", pt)</span>
+                                                <span>· desconto Pix @descontoPix.ToString("C", pt)</span>
                                             }
                                         </div>
                                     }

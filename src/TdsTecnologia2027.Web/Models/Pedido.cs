@@ -43,9 +43,9 @@ public class Pedido
     public decimal Total { get; set; }
 
     /// <summary>
-    /// Valor que a InfinitePay informou como recebido (líquido da taxa de recebimento,
-    /// ex.: Pix). Fica abaixo do <see cref="Total"/> cobrado — a diferença é a taxa.
-    /// Null enquanto o pagamento não foi confirmado.
+    /// Valor que a InfinitePay informou como recebido. No Pix fica abaixo do
+    /// <see cref="Total"/> cobrado — a diferença é o DESCONTO do Pix (só vale no Pix;
+    /// não é taxa da operadora de crédito). Null enquanto o pagamento não foi confirmado.
     /// </summary>
     [Column(TypeName = "decimal(10,2)")]
     public decimal? ValorRecebido { get; set; }

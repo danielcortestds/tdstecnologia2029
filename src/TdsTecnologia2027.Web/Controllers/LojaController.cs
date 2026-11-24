@@ -280,11 +280,12 @@ public class LojaController : Controller
         if (pedido == null || pedido.Status == StatusPedido.Pago) return Ok(); // desconhecido ou já processado
 
         // O webhook só é enviado quando o pagamento é aprovado, e casamos o pedido pelo
-        // nosso próprio Id na URL. ATENÇÃO: o valor avisado vem LÍQUIDO da taxa de
-        // recebimento (ex.: Pix), então é NORMAL ser menor que o total cobrado — NÃO
-        // exigimos o valor cheio. Aceitamos um valor compatível (acima da metade do
-        // total, folga mais que suficiente para a taxa); se vier ausente/baixo demais,
-        // confirmamos pela conferência oficial (payment_check, cujo "paid" é a autoridade).
+        // nosso próprio Id na URL. ATENÇÃO: no Pix o valor avisado vem com o DESCONTO do
+        // Pix já aplicado (não é taxa da operadora), então é NORMAL ser menor que o total
+        // cobrado — NÃO exigimos o valor cheio. Aceitamos um valor compatível (acima da
+        // metade do total, folga mais que suficiente para o desconto); se vier
+        // ausente/baixo demais, confirmamos pela conferência oficial (payment_check,
+        // cujo "paid" é a autoridade).
         var minimoAceitavel = (long)decimal.Round(pedido.TotalCentavos * 0.5m);
         if (valorCentavos > 0 && valorCentavos >= minimoAceitavel)
         {
@@ -393,7 +394,7 @@ public class LojaController : Controller
         pedido.TransactionNsu = transactionNsu;
         if (!string.IsNullOrWhiteSpace(slug)) pedido.InvoiceSlug = slug;
         pedido.MetodoPagamento = metodo;
-        // Guarda o valor líquido informado pela InfinitePay (já com a taxa descontada).
+        // Guarda o valor informado pela InfinitePay (no Pix, já com o desconto do Pix aplicado).
         if (valorRecebidoCentavos > 0) pedido.ValorRecebido = valorRecebidoCentavos / 100m;
         await _db.SaveChangesAsync();
 

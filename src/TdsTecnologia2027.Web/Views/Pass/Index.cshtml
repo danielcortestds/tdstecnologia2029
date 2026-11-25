@@ -9,6 +9,12 @@
     var parcela = (plano.Preco / 10m).ToString("C", pt);      // R$ 189,00
     var pix = (plano.Preco * 0.9m).ToString("C0", pt);        // R$ 1.701
     var nCursos = Model.Cursos.Count;
+    // Economia: soma do preço individual de todos os cursos vs. o preço do Pass.
+    var totalIndividual = Model.Cursos.Sum(c => c.Preco);
+    var economia = totalIndividual - plano.Preco;
+    var pctEco = totalIndividual > 0 ? (int)Math.Round((economia / totalIndividual) * 100m) : 0;
+    var totalHoras = Model.Cursos.Sum(c => c.CargaHoraria);
+    var totalAulas = Model.Cursos.Sum(c => c.Modulos.Sum(m => m.Licoes.Count));
 
     string Icone(TdsTecnologia2027.Web.Models.CursoOnline c) =>
         string.IsNullOrWhiteSpace(c.IconeCapa) ? "bi-play-circle-fill" : c.IconeCapa;
@@ -103,6 +109,16 @@
         .faq summary::after{content:'+';color:var(--teal);font-weight:800}
         .faq details[open] summary::after{content:'–'}
         .faq p{color:var(--muted);margin:-4px 0 20px;font-size:.95rem;max-width:660px}
+        .eco-section{background:radial-gradient(900px 400px at 50% -25%,rgba(45,212,191,.14),transparent 60%),#06110f;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+        .eco-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:0 0 34px}
+        .eco-stat{text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 10px}
+        .eco-stat strong{display:block;font:800 clamp(1.7rem,3.4vw,2.6rem) var(--display);color:#fff;letter-spacing:-.04em}
+        .eco-stat span{color:var(--muted);font-size:.82rem;font-weight:600}
+        .eco-save{text-align:center}
+        .eco-de{color:var(--muted);font-size:1.05rem}.eco-de s{color:#7e8b97}
+        .eco-por{color:#fff;font-size:1.05rem;margin-left:14px}.eco-por b{color:var(--teal-soft);font-size:1.35rem}
+        .eco-badge{display:inline-block;margin-top:18px;background:var(--teal);color:#06231f;font:800 1.08rem var(--display);padding:13px 28px;border-radius:999px;box-shadow:0 12px 34px rgba(45,212,191,.28)}
+        @@media(max-width:620px){.eco-stats{grid-template-columns:repeat(2,1fr)}.eco-por{display:block;margin:8px 0 0 0}}
         footer{border-top:1px solid var(--line);background:#04070a;padding:40px 0 30px}
         .foot-in{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;color:var(--muted);font-size:.82rem}
         .foot-back{display:inline-flex;align-items:center;gap:7px;padding:9px 17px;border:1px solid #33424f;border-radius:20px;color:var(--ink);font-weight:700;font-size:.82rem}
@@ -138,7 +154,7 @@
                 <a class="btn btn-teal" href="/assinar"><i class="bi bi-infinity"></i> Assinar · <span class="price-pill"><b>@mensal</b>/mês</span></a>
                 <a class="btn btn-ghost" href="#inclui">Ver tudo que inclui</a>
             </div>
-            <div class="hero-micro">@nCursos cursos hoje &middot; novos entram automático &middot; certificados inclusos &middot; @plano.DuracaoMeses meses de acesso@(plano.BonusAtivo ? $" (+{plano.BonusMeses} de bônus)" : "")</div>
+            <div class="hero-micro">@nCursos cursos &middot; +@totalHoras h de aula &middot; @totalAulas aulas &middot; certificados &middot; @plano.DuracaoMeses meses@(plano.BonusAtivo ? $" (+{plano.BonusMeses} de bônus)" : "")</div>
         </div>
     </section>
 
@@ -186,7 +202,29 @@
         <div class="count-note">E a lista só cresce: <b>todo curso novo entra no Pass automaticamente</b>, sem custo extra.</div>
     </section>
 
-    <section class="block" style="background:#070b10;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+    <section class="block eco-section">
+        <div class="wrap">
+            <div class="sec-head">
+                <h2>Faça as contas.<br><span>O Pass se paga.</span></h2>
+                <p>Tudo o que entra no Pass, somado, custaria muito mais comprado curso a curso.</p>
+            </div>
+            <div class="eco-stats">
+                <div class="eco-stat"><strong>@nCursos</strong><span>cursos</span></div>
+                <div class="eco-stat"><strong>+@totalHoras h</strong><span>de aula</span></div>
+                <div class="eco-stat"><strong>@totalAulas</strong><span>aulas</span></div>
+                <div class="eco-stat"><strong>&infin;</strong><span>no seu ritmo</span></div>
+            </div>
+            <div class="eco-save">
+                <div>
+                    <span class="eco-de">Comprando cada curso: <s>@totalIndividual.ToString("C0", pt)</s></span>
+                    <span class="eco-por">No TDS Pass: <b>@total</b></span>
+                </div>
+                <div class="eco-badge">Você economiza @economia.ToString("C0", pt) &middot; @pctEco% de desconto</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block" style="background:#070b10;border-bottom:1px solid var(--line)">
         <div class="wrap">
             <div class="values">
                 <div class="value"><i class="bi bi-stars"></i><h3>Premium incluído</h3><p>Até os cursos mais caros (Mashup, EXIN e os que vierem) entram no Pass — sem pagar à parte.</p></div>

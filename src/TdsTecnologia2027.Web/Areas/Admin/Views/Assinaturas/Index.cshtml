@@ -1,0 +1,103 @@
+@model TdsTecnologia2027.Web.Models.PlanoAssinatura
+@using System.Globalization
+@{
+    ViewData["Title"] = "TDS Pass";
+    Layout = "_LayoutAdmin";
+    var pt = new CultureInfo("pt-BR");
+    var assinaturas = ViewBag.Assinaturas as List<TdsTecnologia2027.Web.Models.Assinatura> ?? new();
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-infinity me-1"></i>TDS Pass — Assinaturas</h1>
+
+@if (TempData["AssOk"] != null) { <div class="alert alert-success">@TempData["AssOk"]</div> }
+@if (TempData["AssErro"] != null) { <div class="alert alert-danger">@TempData["AssErro"]</div> }
+
+@if (Model == null)
+{
+    <div class="alert alert-warning">Plano TDS Pass não encontrado. Reinicie a aplicação para semeá-lo.</div>
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-header">Configuração do plano</div>
+        <div class="card-body">
+            <form asp-action="SalvarPlano" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div class="col-md-6"><label class="form-label">Nome</label><input asp-for="Nome" class="form-control" /></div>
+                <div class="col-md-3"><label class="form-label">Preço (R$)</label><input asp-for="Preco" type="number" step="0.01" class="form-control" /></div>
+                <div class="col-md-3"><label class="form-label">Preço "de" (opcional)</label><input asp-for="PrecoDe" type="number" step="0.01" class="form-control" /></div>
+                <div class="col-md-3"><label class="form-label">Duração base (meses)</label><input asp-for="DuracaoMeses" type="number" class="form-control" /></div>
+                <div class="col-md-3"><label class="form-label">Bônus (meses)</label><input asp-for="BonusMeses" type="number" class="form-control" /></div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check form-switch"><input asp-for="BonusAtivo" class="form-check-input" type="checkbox" /><label class="form-check-label" asp-for="BonusAtivo">Bônus ativo</label></div>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check form-switch"><input asp-for="Ativo" class="form-check-input" type="checkbox" /><label class="form-check-label" asp-for="Ativo">À venda</label></div>
+                </div>
+                <div class="col-12"><label class="form-label">Descrição</label><textarea asp-for="Descricao" class="form-control" rows="2"></textarea></div>
+                <div class="col-12">
+                    <button class="btn btn-success">Salvar plano</button>
+                    <span class="text-muted ms-2">Acesso na compra: <strong>@Model.MesesTotais() meses</strong> &middot; 10&times; de @((Model.Preco / 10m).ToString("C", pt)) &middot; @((Model.Preco * 0.9m).ToString("C", pt)) no Pix</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Assinaturas (@assinaturas.Count)</span>
+            <a href="/assinar" target="_blank" class="btn btn-sm btn-outline-success">Abrir página de assinatura</a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm mb-0 align-middle">
+                <thead><tr><th>Aluno</th><th>Início</th><th>Fim</th><th>Status</th><th class="text-end">Ações</th></tr></thead>
+                <tbody>
+                    @if (assinaturas.Count == 0)
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">Nenhuma assinatura ainda.</td></tr>
+                    }
+                    @foreach (var a in assinaturas)
+                    {
+                        var ativa = a.AcessoValido();
+                        <tr>
+                            <td>@(a.Aluno?.NomeCompleto ?? "—")<br><small class="text-muted">@(a.Aluno?.Email)</small></td>
+                            <td>@a.DataInicio.ToString("dd/MM/yyyy")</td>
+                            <td>@a.DataFim.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (a.Status == TdsTecnologia2027.Web.Models.StatusAssinatura.Cancelada)
+                                {
+                                    <span class="badge bg-secondary">Cancelada</span>
+                                }
+                                else if (ativa)
+                                {
+                                    <span class="badge bg-success">Ativa</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Expirada</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <form asp-action="Estender" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@a.Id" />
+                                    <input type="hidden" name="meses" value="6" />
+                                    <button class="btn btn-sm btn-outline-primary" title="Estender a validade em 6 meses">+6 meses</button>
+                                </form>
+                                @if (a.Status != TdsTecnologia2027.Web.Models.StatusAssinatura.Cancelada)
+                                {
+                                    <form asp-action="Cancelar" method="post" class="d-inline" onsubmit="return confirm('Cancelar esta assinatura?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@a.Id" />
+                                        <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

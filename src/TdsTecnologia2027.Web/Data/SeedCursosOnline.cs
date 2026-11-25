@@ -18,6 +18,26 @@ public static class SeedCursosOnline
         // AtualizadoEm: depois de rodar (ou se o admin editar o curso), não mexe
         // mais — assim não atropela mudanças futuras feitas no painel.
         await AtivarVendaAsync(db, "power-bi-essencial", 990m);
+
+        await GarantirPlanoAsync(db);
+    }
+
+    /// <summary>Cria o plano TDS Pass (assinatura anual) se ainda não existir. Idempotente por slug.</summary>
+    private static async Task GarantirPlanoAsync(ApplicationDbContext db)
+    {
+        if (await db.Planos.AnyAsync(p => p.Slug == "tds-pass")) return;
+        db.Planos.Add(new PlanoAssinatura
+        {
+            Nome = "TDS Pass",
+            Slug = "tds-pass",
+            Descricao = "Acesso a todos os cursos online da TDS por 12 meses, com +6 meses de bônus no lançamento. Inclui os cursos premium e os novos que entrarem.",
+            Preco = 1890m,
+            DuracaoMeses = 12,
+            BonusMeses = 6,
+            BonusAtivo = true,
+            Ativo = true
+        });
+        await db.SaveChangesAsync();
     }
 
     /// <summary>Coloca o curso à venda com o preço informado, só se ele ainda não

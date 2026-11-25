@@ -1,0 +1,74 @@
+@model TdsTecnologia2027.Web.Models.AssinarViewModel
+@using System.Globalization
+@{
+    Layout = "_LayoutLoja";
+    ViewData["Title"] = "Assinar o TDS Pass";
+    var pt = new CultureInfo("pt-BR");
+    var plano = Model.Plano;
+    var meses = plano.MesesTotais();
+}
+
+<h1 style="font-size:1.4rem; margin-bottom:4px;">Assinar o @plano.Nome</h1>
+<p class="text-muted-2" style="margin-bottom:22px;">Acesso a <strong>todos os cursos online</strong> da TDS — inclusive os premium e os novos que entrarem. Pague com Pix, cartão ou boleto.</p>
+
+@if (ViewBag.Erro != null)
+{
+    <div class="alert alert-danger">@ViewBag.Erro</div>
+}
+
+<div style="background:#0b1220; border:1px solid rgba(148,163,184,0.15); border-radius:12px; padding:16px 18px; margin-bottom:22px;">
+    <div class="text-muted-2 small mb-2" style="text-transform:uppercase; letter-spacing:0.05em;">Sua assinatura</div>
+    <div class="loja-resumo-item">
+        <span>@plano.Nome <span class="text-muted-2">· acesso a todos os cursos por @meses meses</span></span>
+        <span style="display:flex; align-items:center; gap:12px;">
+            @if (plano.PrecoDe.HasValue && plano.PrecoDe.Value > plano.Preco)
+            {
+                <span class="text-muted-2"><s>@plano.PrecoDe.Value.ToString("C", pt)</s></span>
+            }
+            <strong>@plano.Preco.ToString("C", pt)</strong>
+        </span>
+    </div>
+    <div class="loja-resumo-item" style="border-bottom:none; margin-top:6px;">
+        <span style="font-weight:700;">Total</span>
+        <strong style="color:var(--tds-teal); font-size:1.2rem;">@plano.Preco.ToString("C", pt)</strong>
+    </div>
+    <div style="border-top:1px solid rgba(148,163,184,0.14); margin-top:10px; padding-top:10px; display:flex; align-items:center; gap:8px;">
+        <i class="bi bi-credit-card-2-front" style="color:var(--tds-teal); font-size:1.05rem;"></i>
+        <span class="small" style="color:#cbd5e1;">
+            em até <strong style="color:#f1f5f9;">10&times; de @((plano.Preco / 10m).ToString("C", pt))</strong> sem juros no cartão
+        </span>
+    </div>
+    <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+        <i class="bi bi-qr-code" style="color:var(--tds-teal); font-size:1.05rem;"></i>
+        <span class="small" style="color:#cbd5e1;">
+            ou <strong style="color:#f1f5f9;">@((plano.Preco * 0.9m).ToString("C", pt)) no Pix</strong>
+            <span style="color:var(--tds-teal); font-weight:700;">(10% de desconto)</span>
+        </span>
+    </div>
+</div>
+
+<form asp-action="Assinar" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    <div class="mb-3">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" placeholder="Seu nome completo" />
+        <span asp-validation-for="Nome" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" placeholder="seu@email.com" />
+        <span asp-validation-for="Email" class="text-danger small"></span>
+        <div class="text-muted-2 small mt-1">O acesso ao TDS Pass será liberado para este e-mail.</div>
+    </div>
+    <div class="mb-4">
+        <label asp-for="Telefone" class="form-label"></label>
+        <input asp-for="Telefone" class="form-control" placeholder="(65) 9 9999-9999" />
+        <span asp-validation-for="Telefone" class="text-danger small"></span>
+    </div>
+    <button type="submit" class="btn btn-tds"><i class="bi bi-lock-fill me-1"></i>Ir para o pagamento</button>
+    <div class="text-center mt-3"><a href="/#features" class="small">&larr; Voltar aos cursos</a></div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

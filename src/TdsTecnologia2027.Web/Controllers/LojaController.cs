@@ -18,16 +18,18 @@ public class LojaController : Controller
     private readonly CarrinhoService _carrinho;
     private readonly InfinitePayService _infinite;
     private readonly MatriculaService _matricula;
+    private readonly IEmailSender _email;
     private readonly ApplicationDbContext _db;
     private readonly ILogger<LojaController> _logger;
 
     public LojaController(
         CarrinhoService carrinho, InfinitePayService infinite, MatriculaService matricula,
-        ApplicationDbContext db, ILogger<LojaController> logger)
+        IEmailSender email, ApplicationDbContext db, ILogger<LojaController> logger)
     {
         _carrinho = carrinho;
         _infinite = infinite;
         _matricula = matricula;
+        _email = email;
         _db = db;
         _logger = logger;
     }
@@ -72,6 +74,83 @@ public class LojaController : Controller
         }
         return Redirect("/#features"); // curso inexistente ou fora de venda
     }
+
+    // ── TDS Pass (assinatura) ──────────────────────────────────────────────
+    /// <summary>Página de assinatura do TDS Pass (checkout dedicado, fora do carrinho de cursos).</summary>
+    [HttpGet("/assinar")]
+    public async Task<IActionResult> Assinar()
+    {
+        var plano = await PlanoAtivoAsync();
+        if (plano == null) return Redirect("/#features");
+
+        var vm = new AssinarViewModel { Plano = plano };
+        // Pré-preenche se for um ALUNO logado (nunca a sessão de admin).
+        var alunoAuth = await HttpContext.AuthenticateAsync(AlunoAuth.Scheme);
+        if (alunoAuth.Succeeded && alunoAuth.Principal != null)
+        {
+            vm.Email = alunoAuth.Principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+            vm.Nome = alunoAuth.Principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        }
+        return View(vm);
+    }
+
+    [HttpPost("/assinar")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Assinar(AssinarViewModel model)
+    {
+        var plano = await PlanoAtivoAsync();
+        if (plano == null) return Redirect("/#features");
+        model.Plano = plano;
+
+        if (!ModelState.IsValid) return View(model);
+
+        // Pedido de assinatura (um item = o plano). Reaproveita o fluxo InfinitePay.
+        var pedido = new Pedido
+        {
+            NomeCliente = model.Nome.Trim(),
+            EmailCliente = model.Email.Trim().ToLowerInvariant(),
+            TelefoneCliente = model.Telefone?.Trim(),
+            Total = plano.Preco,
+            Status = StatusPedido.Pendente,
+            Itens = new List<PedidoItem>
+            {
+                new() { PlanoAssinaturaId = plano.Id, Descricao = $"{plano.Nome} — acesso anual a todos os cursos", Preco = plano.Preco }
+            }
+        };
+        _db.Pedidos.Add(pedido);
+        await _db.SaveChangesAsync();
+        pedido.OrderNsu = pedido.Id.ToString();
+
+        var redirectUrl = Url.Action(nameof(Retorno), "Loja", new { id = pedido.Id }, Request.Scheme)!;
+        var webhookUrl = Url.Action(nameof(Webhook), "Loja", new { id = pedido.Id }, Request.Scheme)!;
+
+        string? url;
+        try
+        {
+            url = await _infinite.CriarLinkAsync(pedido, redirectUrl, webhookUrl);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "[TDS] Assinar: pagamento não configurado.");
+            ViewBag.Erro = "O pagamento online ainda não está disponível. Fale conosco pelo WhatsApp.";
+            return View(model);
+        }
+
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            ViewBag.Erro = "Não foi possível iniciar o pagamento agora. Tente novamente em instantes.";
+            return View(model);
+        }
+
+        pedido.InvoiceSlug = ExtrairSlug(url);
+        await _db.SaveChangesAsync();
+        return Redirect(url);
+    }
+
+    /// <summary>Plano ativo preferindo o slug "tds-pass"; cai para qualquer plano à venda.</summary>
+    private async Task<PlanoAssinatura?> PlanoAtivoAsync() =>
+        await _db.Planos.AsNoTracking().FirstOrDefaultAsync(p => p.Ativo && p.Slug == "tds-pass")
+        ?? await _db.Planos.AsNoTracking().FirstOrDefaultAsync(p => p.Ativo);
 
     /// <summary>
     /// Remove um curso direto da tela de checkout e volta para ela (útil quando o
@@ -398,8 +477,24 @@ public class LojaController : Controller
         if (valorRecebidoCentavos > 0) pedido.ValorRecebido = valorRecebidoCentavos / 100m;
         await _db.SaveChangesAsync();
 
-        var cursoIds = pedido.Itens.Select(i => i.CursoOnlineId).ToList();
-        await _matricula.ProvisionarAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, cursoIds);
+        // Cursos avulsos no pedido → matrícula vitalícia.
+        var cursoIds = pedido.Itens.Where(i => i.CursoOnlineId.HasValue).Select(i => i.CursoOnlineId!.Value).ToList();
+        if (cursoIds.Count > 0)
+            await _matricula.ProvisionarAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, cursoIds);
+
+        // Planos de assinatura (TDS Pass) no pedido → cria/ativa a assinatura.
+        var planoIds = pedido.Itens.Where(i => i.PlanoAssinaturaId.HasValue).Select(i => i.PlanoAssinaturaId!.Value).Distinct().ToList();
+        foreach (var planoId in planoIds)
+        {
+            var plano = await _db.Planos.FirstOrDefaultAsync(p => p.Id == planoId);
+            if (plano != null)
+                await _matricula.ProvisionarAssinaturaAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, plano, pedido.Id);
+        }
+
         _logger.LogInformation("[TDS] Pedido {Nsu} pago e acesso liberado para {Email}.", pedido.OrderNsu, pedido.EmailCliente);
+
+        // Aviso de nova compra para a TDS (não falha a confirmação se o e-mail não sair).
+        try { await _email.EnviarAvisoCompraAsync(pedido); }
+        catch (Exception ex) { _logger.LogError(ex, "[TDS] Falha ao enviar aviso de compra do pedido {Id}.", pedido.Id); }
     }
 }

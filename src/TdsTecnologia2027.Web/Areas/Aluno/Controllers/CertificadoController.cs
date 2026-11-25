@@ -9,10 +9,12 @@ namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 public class CertificadoController : AlunoBaseController
 {
     private readonly CertificadoService _cert;
+    private readonly AcessoService _acesso;
 
-    public CertificadoController(ApplicationDbContext db, CertificadoService cert) : base(db)
+    public CertificadoController(ApplicationDbContext db, CertificadoService cert, AcessoService acesso) : base(db)
     {
         _cert = cert;
+        _acesso = acesso;
     }
 
     // POST: /Aluno/Certificado/Emitir/{cursoId}
@@ -70,8 +72,7 @@ public class CertificadoController : AlunoBaseController
         if (aluno == null || aluno.Status != StatusAluno.Ativo)
             return (null, null, "Seu acesso está indisponível.");
 
-        var matricula = await Db.Matriculas.FirstOrDefaultAsync(m => m.AlunoId == aluno.Id && m.CursoOnlineId == id);
-        if (matricula == null || !matricula.AcessoValido())
+        if (!await _acesso.TemAcessoAsync(aluno.Id, id))
             return (null, null, "Você não tem acesso a este curso.");
 
         var curso = await Db.CursosOnline.FirstOrDefaultAsync(c => c.Id == id);

@@ -8,7 +8,12 @@ namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 
 public class HomeController : AlunoBaseController
 {
-    public HomeController(ApplicationDbContext db) : base(db) { }
+    private readonly AcessoService _acesso;
+
+    public HomeController(ApplicationDbContext db, AcessoService acesso) : base(db)
+    {
+        _acesso = acesso;
+    }
 
     // Logout do aluno. Fica neste controller (autenticado no esquema "Aluno") para
     // que o token antiforgery seja validado sob o mesmo usuário que o gerou.
@@ -28,19 +33,35 @@ public class HomeController : AlunoBaseController
         if (aluno.Status != StatusAluno.Ativo)
             return View("Aviso", "Seu acesso está inativo ou bloqueado. Entre em contato com a TDS Tecnologia.");
 
-        var matriculas = await Db.Matriculas
-            .Include(m => m.CursoOnline!).ThenInclude(c => c.Modulos).ThenInclude(mo => mo.Licoes)
-            .Where(m => m.AlunoId == aluno.Id)
-            .ToListAsync();
+        // Assinante (TDS Pass) enxerga TODOS os cursos publicados; senão, só os matriculados.
+        var assinante = await _acesso.AssinaturaAtivaAsync(aluno.Id);
+
+        List<CursoOnline> cursosAcesso;
+        if (assinante)
+        {
+            cursosAcesso = await Db.CursosOnline
+                .Include(c => c.Modulos).ThenInclude(mo => mo.Licoes)
+                .Where(c => c.Status == StatusCursoOnline.Publicado)
+                .OrderBy(c => c.Ordem)
+                .ToListAsync();
+        }
+        else
+        {
+            var matriculas = await Db.Matriculas
+                .Include(m => m.CursoOnline!).ThenInclude(c => c.Modulos).ThenInclude(mo => mo.Licoes)
+                .Where(m => m.AlunoId == aluno.Id)
+                .ToListAsync();
+            cursosAcesso = matriculas
+                .Where(m => m.AcessoValido() && m.CursoOnline!.Status == StatusCursoOnline.Publicado)
+                .Select(m => m.CursoOnline!)
+                .ToList();
+        }
 
         var progressos = await Db.ProgressosLicao.Where(p => p.AlunoId == aluno.Id).ToListAsync();
 
         var cursos = new List<MeuCursoViewModel>();
-        foreach (var m in matriculas)
+        foreach (var curso in cursosAcesso)
         {
-            var curso = m.CursoOnline!;
-            if (!m.AcessoValido() || curso.Status != StatusCursoOnline.Publicado) continue;
-
             var licoesOrdenadas = curso.Modulos.OrderBy(mo => mo.Ordem)
                 .SelectMany(mo => mo.Licoes.OrderBy(l => l.Ordem)).ToList();
             var total = licoesOrdenadas.Count;
@@ -59,6 +80,16 @@ public class HomeController : AlunoBaseController
                 ContinuarLicaoId = continuar,
                 UltimoAcesso = ultimo?.UltimoAcesso
             });
+        }
+
+        // Dados do Pass para o cabeçalho do dashboard (badge "TDS Pass ativo").
+        ViewBag.Assinante = assinante;
+        if (assinante)
+        {
+            var ass = await Db.Assinaturas
+                .Where(a => a.AlunoId == aluno.Id && a.Status == StatusAssinatura.Ativa)
+                .OrderByDescending(a => a.DataFim).FirstOrDefaultAsync();
+            ViewBag.PassValidade = ass?.DataFim;
         }
 
         return View(cursos.OrderByDescending(c => c.UltimoAcesso ?? DateTime.MinValue).ToList());

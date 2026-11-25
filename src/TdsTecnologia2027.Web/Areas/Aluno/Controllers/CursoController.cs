@@ -9,10 +9,12 @@ namespace TdsTecnologia2027.Web.Areas.Aluno.Controllers;
 public class CursoController : AlunoBaseController
 {
     private readonly IWebHostEnvironment _env;
+    private readonly AcessoService _acesso;
 
-    public CursoController(ApplicationDbContext db, IWebHostEnvironment env) : base(db)
+    public CursoController(ApplicationDbContext db, IWebHostEnvironment env, AcessoService acesso) : base(db)
     {
         _env = env;
+        _acesso = acesso;
     }
 
     // GET: /Aluno/Curso/Assistir/{id}?licao={licaoId}
@@ -22,8 +24,7 @@ public class CursoController : AlunoBaseController
         if (aluno == null || aluno.Status != StatusAluno.Ativo)
             return View("Aviso", "Seu acesso está indisponível. Entre em contato com a TDS Tecnologia.");
 
-        var matricula = await Db.Matriculas.FirstOrDefaultAsync(m => m.AlunoId == aluno.Id && m.CursoOnlineId == id);
-        if (matricula == null || !matricula.AcessoValido())
+        if (!await _acesso.TemAcessoAsync(aluno.Id, id))
             return View("Aviso", "Você não tem acesso a este curso (ou o prazo expirou).");
 
         var curso = await Db.CursosOnline
@@ -102,8 +103,7 @@ public class CursoController : AlunoBaseController
         var mat = await Db.MateriaisApoio.FindAsync(id);
         if (mat == null) return NotFound();
 
-        var matricula = await Db.Matriculas.FirstOrDefaultAsync(m => m.AlunoId == aluno.Id && m.CursoOnlineId == mat.CursoOnlineId);
-        if (matricula == null || !matricula.AcessoValido()) return Forbid();
+        if (!await _acesso.TemAcessoAsync(aluno.Id, mat.CursoOnlineId)) return Forbid();
 
         var caminho = Armazenamento.CaminhoArquivo(_env, mat.ArquivoArmazenado);
         if (!System.IO.File.Exists(caminho)) return NotFound();
@@ -124,8 +124,7 @@ public class CursoController : AlunoBaseController
 
         // valida acesso ao curso
         var cursoId = licao.Modulo!.CursoOnlineId;
-        var matricula = await Db.Matriculas.FirstOrDefaultAsync(m => m.AlunoId == aluno.Id && m.CursoOnlineId == cursoId);
-        if (matricula == null || !matricula.AcessoValido()) return Forbid();
+        if (!await _acesso.TemAcessoAsync(aluno.Id, cursoId)) return Forbid();
 
         var prog = await Db.ProgressosLicao.FirstOrDefaultAsync(p => p.AlunoId == aluno.Id && p.LicaoId == licaoId);
         if (prog == null)

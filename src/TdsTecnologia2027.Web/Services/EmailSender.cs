@@ -18,6 +18,12 @@ public interface IEmailSender
 
     /// <summary>E-mail de liberação de acesso (compra ou voucher), com login e senha se for conta nova.</summary>
     Task EnviarAcessoAsync(string email, string nome, IEnumerable<string> cursos, string? senhaTemporaria);
+
+    /// <summary>E-mail de boas-vindas da assinatura (TDS Pass), com login/senha e a data de validade.</summary>
+    Task EnviarAcessoPassAsync(string email, string nome, DateTime dataFim, string? senhaTemporaria);
+
+    /// <summary>Avisa a TDS (destino configurado) que houve uma nova compra no site.</summary>
+    Task EnviarAvisoCompraAsync(Pedido pedido);
 }
 
 /// <summary>
@@ -72,6 +78,69 @@ public class EmailSender : IEmailSender
             """;
 
         await EnviarAsync(para: email, assunto: "Seu acesso na TDS Tecnologia está liberado", corpoHtml: corpo);
+    }
+
+    public async Task EnviarAcessoPassAsync(string email, string nome, DateTime dataFim, string? senhaTemporaria)
+    {
+        var req = _http.HttpContext?.Request;
+        var baseUrl = req != null ? $"{req.Scheme}://{req.Host}" : "https://tdstecnologia.com.br";
+        var loginUrl = $"{baseUrl}/Aluno/Entrar";
+        var validade = dataFim.ToString("dd/MM/yyyy", new System.Globalization.CultureInfo("pt-BR"));
+
+        var blocoAcesso = string.IsNullOrWhiteSpace(senhaTemporaria)
+            ? "<p>Use o e-mail e a senha que você já tem na plataforma. Esqueceu a senha? Fale com a gente.</p>"
+            : $"""
+                <p>Criamos seu acesso. Use os dados abaixo para entrar (recomendamos trocar a senha depois):</p>
+                <table style="border-collapse:collapse; margin:12px 0;">
+                  <tr><td style="padding:6px 14px; background:#f1f5f9; font-weight:bold;">E-mail</td><td style="padding:6px 14px; border:1px solid #e2e8f0;">{Escapar(email)}</td></tr>
+                  <tr><td style="padding:6px 14px; background:#f1f5f9; font-weight:bold;">Senha</td><td style="padding:6px 14px; border:1px solid #e2e8f0;"><code>{Escapar(senhaTemporaria!)}</code></td></tr>
+                </table>
+                """;
+
+        var corpo = $"""
+            <div style="font-family:Arial,sans-serif; color:#0f172a;">
+              <h2 style="color:#0d9488;">Bem-vindo ao TDS Pass! 🎉</h2>
+              <p>Olá, {Escapar(nome)}!</p>
+              <p>Sua assinatura está ativa: você tem acesso a <strong>todos os cursos online da TDS</strong>, inclusive os novos que entrarem, válido até <strong>{validade}</strong>.</p>
+              {blocoAcesso}
+              <p style="margin:24px 0;">
+                <a href="{loginUrl}" style="background:#14b8a6; color:#04201c; font-weight:bold; text-decoration:none; padding:12px 26px; border-radius:999px; display:inline-block;">Acessar meus cursos</a>
+              </p>
+              <p style="color:#64748b; font-size:13px;">Se o botão não funcionar, acesse: {loginUrl}</p>
+              <p style="color:#64748b; font-size:13px;">Bons estudos! — Equipe TDS Tecnologia</p>
+            </div>
+            """;
+
+        await EnviarAsync(para: email, assunto: "Seu TDS Pass está ativo — acesso a todos os cursos", corpoHtml: corpo);
+    }
+
+    public async Task EnviarAvisoCompraAsync(Pedido pedido)
+    {
+        var pt = new System.Globalization.CultureInfo("pt-BR");
+        var linhas = string.Join("", pedido.Itens.Select(i =>
+            $"""<tr><td style="padding:5px 12px; border:1px solid #e2e8f0;">{Escapar(i.Descricao)}</td><td style="padding:5px 12px; border:1px solid #e2e8f0; text-align:right;">{i.Preco.ToString("C", pt)}</td></tr>"""));
+        var recebido = pedido.ValorRecebido.HasValue ? pedido.ValorRecebido.Value.ToString("C", pt) : "—";
+        var metodo = string.IsNullOrWhiteSpace(pedido.MetodoPagamento) ? "—" : pedido.MetodoPagamento;
+
+        var corpo = $"""
+            <div style="font-family:Arial,sans-serif; color:#0f172a;">
+              <h2 style="color:#0d9488;">💰 Nova compra no site</h2>
+              <p><strong>Pedido #{pedido.Id}</strong> — {pedido.PagoEm:dd/MM/yyyy HH:mm}</p>
+              <p><strong>Cliente:</strong> {Escapar(pedido.NomeCliente)}<br>
+                 <strong>E-mail:</strong> {Escapar(pedido.EmailCliente)}<br>
+                 <strong>Telefone:</strong> {Escapar(pedido.TelefoneCliente ?? "—")}</p>
+              <table style="border-collapse:collapse; margin:12px 0; min-width:360px;">
+                <tr><th style="padding:5px 12px; background:#f1f5f9; text-align:left;">Item</th><th style="padding:5px 12px; background:#f1f5f9; text-align:right;">Valor</th></tr>
+                {linhas}
+                <tr><td style="padding:5px 12px; border:1px solid #e2e8f0; font-weight:bold;">Total</td><td style="padding:5px 12px; border:1px solid #e2e8f0; text-align:right; font-weight:bold;">{pedido.Total.ToString("C", pt)}</td></tr>
+              </table>
+              <p><strong>Método:</strong> {Escapar(metodo)} &middot; <strong>Recebido:</strong> {recebido}</p>
+              <p style="color:#64748b; font-size:13px;">Aviso automático — TDS Tecnologia.</p>
+            </div>
+            """;
+
+        // para vazio → usa o destino configurado (a caixa da TDS).
+        await EnviarAsync(para: null!, assunto: $"Nova compra no site — {pedido.NomeCliente} — {pedido.Total.ToString("C", pt)}", corpoHtml: corpo);
     }
 
     public async Task EnviarContatoAsync(ContatoForm contato)

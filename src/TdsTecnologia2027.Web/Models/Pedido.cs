@@ -78,8 +78,13 @@ public class PedidoItem
     public int PedidoId { get; set; }
     public Pedido? Pedido { get; set; }
 
-    public int CursoOnlineId { get; set; }
+    /// <summary>Curso do item (null quando o item é um plano de assinatura).</summary>
+    public int? CursoOnlineId { get; set; }
     public CursoOnline? CursoOnline { get; set; }
+
+    /// <summary>Plano de assinatura do item (null quando o item é um curso).</summary>
+    public int? PlanoAssinaturaId { get; set; }
+    public PlanoAssinatura? PlanoAssinatura { get; set; }
 
     [Required]
     [StringLength(160)]

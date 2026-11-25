@@ -28,6 +28,10 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<PedidoItem> PedidosItens { get; set; }
     public DbSet<ConfiguracaoLoja> ConfiguracoesLoja { get; set; }
+
+    // Assinatura (TDS Pass)
+    public DbSet<PlanoAssinatura> Planos { get; set; }
+    public DbSet<Assinatura> Assinaturas { get; set; }
     public DbSet<Voucher> Vouchers { get; set; }
     public DbSet<VoucherResgate> VouchersResgates { get; set; }
 
@@ -139,9 +143,38 @@ public class ApplicationDbContext : IdentityDbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Preco).HasPrecision(10, 2);
             // Não cascateia a exclusão do curso para o histórico do pedido.
+            // CursoOnlineId é opcional (null quando o item é um plano de assinatura).
             entity.HasOne(i => i.CursoOnline)
                   .WithMany()
                   .HasForeignKey(i => i.CursoOnlineId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(i => i.PlanoAssinatura)
+                  .WithMany()
+                  .HasForeignKey(i => i.PlanoAssinaturaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ── Assinatura (TDS Pass) ─────────────────────────────────────────
+        builder.Entity<PlanoAssinatura>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Slug).HasMaxLength(80).IsRequired();
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.Property(e => e.Preco).HasPrecision(10, 2);
+            entity.Property(e => e.PrecoDe).HasPrecision(10, 2);
+        });
+
+        builder.Entity<Assinatura>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.AlunoId);
+            entity.HasOne(a => a.Aluno)
+                  .WithMany()
+                  .HasForeignKey(a => a.AlunoId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(a => a.Plano)
+                  .WithMany(p => p.Assinaturas)
+                  .HasForeignKey(a => a.PlanoAssinaturaId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
 

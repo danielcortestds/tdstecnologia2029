@@ -142,7 +142,16 @@ public class PagamentosController : Controller
             await _db.SaveChangesAsync();
         }
 
-        var cursoIds = pedido.Itens.Select(i => i.CursoOnlineId).ToList();
-        await _matricula.ProvisionarAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, cursoIds);
+        var cursoIds = pedido.Itens.Where(i => i.CursoOnlineId.HasValue).Select(i => i.CursoOnlineId!.Value).ToList();
+        if (cursoIds.Count > 0)
+            await _matricula.ProvisionarAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, cursoIds);
+
+        var planoIds = pedido.Itens.Where(i => i.PlanoAssinaturaId.HasValue).Select(i => i.PlanoAssinaturaId!.Value).Distinct().ToList();
+        foreach (var planoId in planoIds)
+        {
+            var plano = await _db.Planos.FirstOrDefaultAsync(p => p.Id == planoId);
+            if (plano != null)
+                await _matricula.ProvisionarAssinaturaAsync(pedido.NomeCliente, pedido.EmailCliente, pedido.TelefoneCliente, plano, pedido.Id);
+        }
     }
 }

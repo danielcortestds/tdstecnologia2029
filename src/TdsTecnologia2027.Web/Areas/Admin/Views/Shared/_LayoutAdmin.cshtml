@@ -78,6 +78,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Assinaturas" ? "active" : "")"
+                           href="/Admin/Assinaturas">
+                            <i class="bi bi-infinity me-2"></i>TDS Pass
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Vouchers" ? "active" : "")"
                            href="/Admin/Vouchers">
                             <i class="bi bi-ticket-perforated me-2"></i>Vouchers

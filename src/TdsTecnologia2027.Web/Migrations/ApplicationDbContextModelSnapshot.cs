@@ -266,6 +266,42 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.ToTable("Alunos");
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Assinatura", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataFim")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataInicio")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("PedidoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PlanoAssinaturaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlunoId");
+
+                    b.HasIndex("PlanoAssinaturaId");
+
+                    b.ToTable("Assinaturas");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Certificado", b =>
                 {
                     b.Property<int>("Id")
@@ -754,7 +790,7 @@ namespace TdsTecnologia2027.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CursoOnlineId")
+                    b.Property<int?>("CursoOnlineId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Descricao")
@@ -763,6 +799,9 @@ namespace TdsTecnologia2027.Web.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("PedidoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PlanoAssinaturaId")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Preco")
@@ -775,7 +814,63 @@ namespace TdsTecnologia2027.Web.Migrations
 
                     b.HasIndex("PedidoId");
 
+                    b.HasIndex("PlanoAssinaturaId");
+
                     b.ToTable("PedidosItens");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.PlanoAssinatura", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("AtualizadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("BonusAtivo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BonusMeses")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(600)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DuracaoMeses")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Preco")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal?>("PrecoDe")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Planos");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
@@ -934,6 +1029,25 @@ namespace TdsTecnologia2027.Web.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.Assinatura", b =>
+                {
+                    b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
+                        .WithMany()
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TdsTecnologia2027.Web.Models.PlanoAssinatura", "Plano")
+                        .WithMany("Assinaturas")
+                        .HasForeignKey("PlanoAssinaturaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("Plano");
+                });
+
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Certificado", b =>
                 {
                     b.HasOne("TdsTecnologia2027.Web.Models.Aluno", "Aluno")
@@ -1010,8 +1124,7 @@ namespace TdsTecnologia2027.Web.Migrations
                     b.HasOne("TdsTecnologia2027.Web.Models.CursoOnline", "CursoOnline")
                         .WithMany()
                         .HasForeignKey("CursoOnlineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TdsTecnologia2027.Web.Models.Pedido", "Pedido")
                         .WithMany("Itens")
@@ -1019,9 +1132,16 @@ namespace TdsTecnologia2027.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TdsTecnologia2027.Web.Models.PlanoAssinatura", "PlanoAssinatura")
+                        .WithMany()
+                        .HasForeignKey("PlanoAssinaturaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("CursoOnline");
 
                     b.Navigation("Pedido");
+
+                    b.Navigation("PlanoAssinatura");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.ProgressoLicao", b =>
@@ -1085,6 +1205,11 @@ namespace TdsTecnologia2027.Web.Migrations
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Pedido", b =>
                 {
                     b.Navigation("Itens");
+                });
+
+            modelBuilder.Entity("TdsTecnologia2027.Web.Models.PlanoAssinatura", b =>
+                {
+                    b.Navigation("Assinaturas");
                 });
 
             modelBuilder.Entity("TdsTecnologia2027.Web.Models.Voucher", b =>

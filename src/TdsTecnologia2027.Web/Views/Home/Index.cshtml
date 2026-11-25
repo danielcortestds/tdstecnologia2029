@@ -392,6 +392,27 @@
 								</div>
 								<div class="tdsc-viewport">
 									<div class="tdsc-track" id="tdscTrack">
+										@* Slide de destaque fixo: TDS Pass (sempre o primeiro, tema preto). *@
+										<div class="tdsc-slide">
+											<div class="tdsc-card" style="background:linear-gradient(165deg,#05080c,#141b24); border-color:#2b3442;">
+												<div class="tdsc-icon" style="background:#000; color:#5eead4;"><i class="bi bi-infinity"></i></div>
+												<span class="tdsc-cat" style="color:#5eead4;">★ TDS Pass &middot; assinatura</span>
+												<h3 class="tdsc-title">Todos os cursos.<br>Um acesso só.</h3>
+												<p class="tdsc-desc">Acesso a <strong>TODOS</strong> os cursos da TDS — inclusive os premium e os novos que entrarem. 12 meses.</p>
+												<div class="tdsc-meta">
+													<span><i class="bi bi-collection-play"></i>+12 cursos</span>
+													<span><i class="bi bi-patch-check"></i>Certificados</span>
+													<span><i class="bi bi-infinity"></i>Tudo incluído</span>
+												</div>
+												<div class="tdsc-price">
+													<div><span class="tdsc-val">R$ 189</span> <span class="tdsc-x">/mês</span></div>
+													<span class="tdsc-avista">acesso a todos os cursos da TDS</span>
+												</div>
+												<div class="tdsc-actions">
+													<a href="/assinar" class="tdsc-btn" style="background:#5eead4; color:#06231f; text-decoration:none;"><i class="bi bi-infinity"></i> Assinar o Pass</a>
+												</div>
+											</div>
+										</div>
 										@foreach (var curso in cursosCarrossel)
 										{
 											var corCapaCar = string.IsNullOrWhiteSpace(curso.CorCapa) ? "#0d9488" : curso.CorCapa;
@@ -441,9 +462,10 @@
 									</div>
 								</div>
 								<div class="tdsc-dots" id="tdscDots">
+									<button type="button" class="tdsc-dot active" data-i="0" aria-label="TDS Pass"></button>
 									@for (var i = 0; i < cursosCarrossel.Count; i++)
 									{
-										<button type="button" class="tdsc-dot @(i == 0 ? "active" : "")" data-i="@i" aria-label="Ir para o curso @(i + 1)"></button>
+										<button type="button" class="tdsc-dot" data-i="@(i + 1)" aria-label="Ir para o curso @(i + 1)"></button>
 									}
 								</div>
 							</div>
@@ -466,15 +488,15 @@
 								<h2 class="bd-section-h2 mt-1 mb-3">Aprenda no seu ritmo, com acesso vitalício.</h2>
 								<p style="font-family:'Inter',sans-serif; color:#64748b; font-size:1rem; max-width:560px; margin:0 auto; line-height:1.7;">Cursos 100% online, gravados, com certificado. Compre, assista quando quiser e tenha acesso para sempre.</p>
 									<a href="/assinar" style="display:block; max-width:780px; margin:26px auto 0; text-decoration:none; font-family:'Inter',sans-serif;">
-										<div style="background:linear-gradient(100deg,#0d9488,#0f766e); border-radius:16px; padding:18px 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px 24px; box-shadow:0 14px 40px rgba(13,148,136,.25);">
+										<div style="background:linear-gradient(120deg,#05080c,#161c24); border:1px solid #2b3442; border-radius:16px; padding:18px 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px 24px; box-shadow:0 14px 40px rgba(0,0,0,.4);">
 											<div style="text-align:left;">
-												<div style="color:#bafaf0; font-weight:800; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;">★ TDS Pass · Novo</div>
+												<div style="color:#5eead4; font-weight:800; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;">★ TDS Pass · Novo</div>
 												<div style="color:#fff; font-weight:800; font-size:1.16rem; line-height:1.25;">Assine e tenha acesso a <u>todos os cursos</u></div>
-												<div style="color:#d6fbf4; font-size:.88rem;">Inclui os premium e os novos que entrarem · 12 meses de acesso</div>
+												<div style="color:#9fb0c0; font-size:.88rem;">Inclui os premium e os novos que entrarem · 12 meses de acesso</div>
 											</div>
 											<div style="display:flex; align-items:center; gap:14px; margin-left:auto;">
-												<div style="text-align:right; color:#fff; line-height:1.1;"><span style="font-size:.78rem; opacity:.85;">10&times; de</span> <strong style="font-size:1.45rem;">R$ 189</strong></div>
-												<span style="background:#07201c; color:#fff; font-weight:800; padding:11px 20px; border-radius:999px; white-space:nowrap;">Assinar &rarr;</span>
+												<div style="text-align:right; color:#fff; line-height:1;"><strong style="font-size:1.6rem;">R$ 189</strong><span style="font-size:.9rem; color:#9fb0c0;">/mês</span></div>
+												<span style="background:#5eead4; color:#06231f; font-weight:800; padding:11px 20px; border-radius:999px; white-space:nowrap;">Assinar &rarr;</span>
 											</div>
 										</div>
 									</a>

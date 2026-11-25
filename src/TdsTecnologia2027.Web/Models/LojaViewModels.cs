@@ -25,6 +25,13 @@ public class CheckoutViewModel
     public decimal Total { get; set; }
 }
 
+/// <summary>Dados do hot site dinâmico do TDS Pass (plano + cursos incluídos).</summary>
+public class PassHotsiteViewModel
+{
+    public PlanoAssinatura Plano { get; set; } = null!;
+    public List<CursoOnline> Cursos { get; set; } = new();
+}
+
 public class AssinarViewModel
 {
     [Required(ErrorMessage = "Informe seu nome.")]

@@ -58,3 +58,5 @@
 
 /* Imagem do certificado (modelo Power BI · Microsoft Partner) */
 .certificate-img{width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 34px 70px rgba(16,24,32,.30);border:1px solid rgba(16,24,32,.08)}
+
+.course-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;display:block;background:#000}

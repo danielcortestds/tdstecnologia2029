@@ -28,3 +28,14 @@
 /* Versão objetiva: produto, demonstração, ementa e compra */
 .tds-section{padding-top:76px;padding-bottom:76px}.project-head{margin-bottom:30px}.curriculum-intro>p{max-width:350px}.offer{gap:60px}.offer-brand{margin-top:32px}.price strong{font-size:60px;letter-spacing:-2px;white-space:nowrap}.price strong>span{font-size:23px;letter-spacing:-1px}.price>small:last-child{margin:0 0 16px}.price-card ul{padding:14px 0}.price-card .tds-purchase{font-size:16px}.tds-hero h1{font-size:clamp(43px,4.8vw,70px);letter-spacing:-3px}.hero-meta{max-width:500px;flex-wrap:wrap;gap:12px 20px}.faq{padding-top:65px;padding-bottom:65px}
 @media(max-width:700px){.tds-section{padding-top:52px;padding-bottom:52px}.tds-hero h1{font-size:46px;letter-spacing:-2.5px}.hero-photo{top:400px}.tds-hero{min-height:900px}.offer{gap:28px}.price strong{font-size:49px}.price strong>span{font-size:21px}.price-card .tds-purchase{font-size:15px;gap:12px}}
+
+/* === Vídeo promocional === */
+.video{background:radial-gradient(ellipse at 85% 20%,#ffffff0f,transparent 55%),var(--bg-2,var(--navy,#131b26));max-width:none;display:grid;grid-template-columns:auto auto;justify-content:center;gap:60px;align-items:center}
+.video-copy{max-width:470px}
+.video-copy h2{margin-top:18px}
+.video-copy>p{color:var(--muted,#9ca8bd);font-size:17px;line-height:1.8;margin:24px 0 32px}
+.video-frame{justify-self:center}
+.video-embed{position:relative;width:330px;max-width:78vw;aspect-ratio:240/426;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff26;box-shadow:0 30px 90px #0009,0 0 0 8px #ffffff06}
+.video-embed video,.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;object-fit:cover}
+@media(max-width:1000px){.video{gap:40px}}
+@media(max-width:760px){.video{grid-template-columns:1fr;gap:28px;justify-items:center;text-align:center}.video-copy{text-align:center}.video-copy>.tds-btn{margin:0 auto}.video-embed{width:290px}}
